@@ -123,6 +123,8 @@ class MyApp(QWidget):
         self.selected_senario_subclass = None
 
     def init_UI(self):
+        #시나리오 딕셔너리 선언
+        self.scenario_dic = {}
 
         img = QImage('./dark_gray.png')
         scaledImg = img.scaled(QSize(1000, 700))
@@ -990,6 +992,9 @@ class MyApp(QWidget):
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D9_clickcount = 0
+
         self.dialog9.setLayout(main_layout)
         self.dialog9.setGeometry(300, 300, 500, 150)
         self.dialog9.setWindowTitle("Scenario9")
@@ -1314,14 +1319,15 @@ class MyApp(QWidget):
     ###########################
     ####추가하셔야 하는 함수들#####
     ###########################
-    def AddSheetButton_Clicked(self):
-        return
+    def Sheet_ComboBox_Selected(self, text):
+        model = DataFrameModel(self.scenario_dic[text])
+        self.viewtable.setModel(model)
+        self.selected_scenario_group = text
 
     def RemoveSheetButton_Clicked(self):
-        return
-
-    def Sheet_ComboBox_Selected(self):
-        return
+        temp = self.combo_sheet.findText(self.selected_scenario_group)
+        self.combo_sheet.removeItem(temp)
+        del self.scenario_dic[self.selected_scenario_group]
 
     def Save_Buttons_Group(self):
         ##GroupBox
@@ -1333,21 +1339,10 @@ class MyApp(QWidget):
 
         ##GroupBox에 넣을 Layout들
         layout = QHBoxLayout()
-
         left_sublayout = QGridLayout()
-
         right_sublayout1 = QVBoxLayout()
         right_sublayout2 = QHBoxLayout()
         right_sublayout3 = QHBoxLayout()
-
-
-        ##Add Sheet 버튼
-        AddSheet_button = QPushButton('Add Sheet')
-        AddSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        AddSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
-        font_AddSheet = AddSheet_button.font()
-        font_AddSheet.setBold(True)
-        AddSheet_button.setFont(font_AddSheet)
 
         ##RemoveSheet 버튼
         RemoveSheet_button = QPushButton('Remove Sheet')
@@ -1356,7 +1351,6 @@ class MyApp(QWidget):
         font_RemoveSheet = RemoveSheet_button.font()
         font_RemoveSheet.setBold(True)
         RemoveSheet_button.setFont(font_RemoveSheet)
-
 
         #label
         label_sheet = QLabel("Sheet names: ", self)
@@ -1399,11 +1393,10 @@ class MyApp(QWidget):
 
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
-        AddSheet_button.clicked.connect(self.AddSheetButton_Clicked)
         RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
         save_path_button.clicked.connect(self.saveFileDialog)
         export_file_button.clicked.connect(self.saveFile)
-        self.combo_sheet.currentIndexChanged.connect(self.Sheet_ComboBox_Selected)
+        self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
 
 
         ##layout 쌓기
@@ -1412,8 +1405,7 @@ class MyApp(QWidget):
         left_sublayout.addWidget(label_savepath, 1, 0)
         left_sublayout.addWidget(self.line_savepath, 1, 1)
 
-        right_sublayout2.addWidget(AddSheet_button, stretch=1)
-        right_sublayout2.addWidget(RemoveSheet_button, stretch=1)
+        right_sublayout2.addWidget(RemoveSheet_button, stretch=2)
         right_sublayout3.addWidget(save_path_button, stretch=1)
         right_sublayout3.addWidget(export_file_button, stretch=1)
 
@@ -1426,7 +1418,6 @@ class MyApp(QWidget):
         groupbox.setLayout(layout)
 
         return groupbox
-
 
     def projectselected(self, text):
         self.Project_ID_Selected(text)
@@ -1491,8 +1482,8 @@ class MyApp(QWidget):
 
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
-    
-        def extButtonClicked5_SAP(self):
+
+    def extButtonClicked5_SAP(self):
         ### ListBox 인풋값 append
         dropped_items = []
         for i in range(self.listbox_drops.count()):
@@ -1748,6 +1739,8 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
     def extButtonClicked9(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D9_clickcount = self.D9_clickcount + 1
         passwords = ''
         users = 'guest'
         server = ids
@@ -1791,13 +1784,18 @@ class MyApp(QWidget):
                        , JournalEntries.ApproverID											
                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.Amount > {amount}
                    ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+                '''.format(field=fields, amount=tempTE)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
-            model = DataFrameModel(self.dataframe)
+            #딕셔너리 선언 및 시나리오 콤보 박스 추가
+            self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            model = DataFrameModel(self.scenario_dic[result[1]])
+            self.combo_sheet.addItem(str(result[1]))
             self.viewtable.setModel(model)
 
     def extButtonClicked10(self):
