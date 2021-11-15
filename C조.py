@@ -1,5 +1,5 @@
 import sys
-import re
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -86,13 +86,13 @@ class MyApp(QWidget):
 
     def init_UI(self):
 
-        img = QImage('C:/Users/BZ297TR/OneDrive - EY/Desktop/dark_gray.png')
+        img = QImage('./dark_gray.png')
         scaledImg = img.scaled(QSize(1000, 700))
         palette = QPalette()
         palette.setBrush(10, QBrush(scaledImg))
         self.setPalette(palette)
 
-        pixmap = QPixmap('C:/Users/BZ297TR/OneDrive - EY/Desktop/title.png')
+        pixmap = QPixmap('./title.png')
         lbl_img = QLabel()
         lbl_img.setPixmap(pixmap)
         lbl_img.setStyleSheet("background-color:#000000")
@@ -109,7 +109,7 @@ class MyApp(QWidget):
         widget_layout.addWidget(self.splitter_layout)
         self.setLayout(widget_layout)
 
-        self.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.setWindowIcon(QIcon("./EY_logo.png"))
         self.setWindowTitle('Scenario')
 
         self.setGeometry(300, 300, 1000, 700)
@@ -304,7 +304,7 @@ class MyApp(QWidget):
         font1 = btn1.font()
         font1.setBold(True)
         btn1.setFont(font1)
-        btn1.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        btn1.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         btn1.clicked.connect(self.connectButtonClicked)
 
@@ -317,7 +317,7 @@ class MyApp(QWidget):
         font2 = btn2.font()
         font2.setBold(True)
         btn2.setFont(font2)
-        btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         btn2.clicked.connect(self.connectDialog)
 
@@ -341,21 +341,19 @@ class MyApp(QWidget):
     def Dialog4(self):
         self.dialog4 = QDialog()
         self.dialog4.setStyleSheet('background-color: #2E2E38')
-        self.dialog4.setWindowIcon(QIcon('C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png'))
+        self.dialog4.setWindowIcon(QIcon('./EY_logo.png'))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog4)
-        self.btn2.move(70, 200)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog4)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked4)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton('Close', self.dialog4)
-        self.btnDialog.move(180, 200)
+        self.btnDialog = QPushButton('   Close', self.dialog4)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close4)
 
         font10 = self.btnDialog.font()
@@ -366,7 +364,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         label_freq = QLabel('사용빈도(N)* :', self.dialog4)
-        label_freq.move(50, 80)
         label_freq.setStyleSheet('color: white;')
 
         font1 = label_freq.font()
@@ -375,10 +372,8 @@ class MyApp(QWidget):
 
         self.D4_N = QLineEdit(self.dialog4)
         self.D4_N.setStyleSheet('background-color: white;')
-        self.D4_N.move(150, 80)
 
         label_TE = QLabel('중요성금액: ', self.dialog4)
-        label_TE.move(50, 110)
         label_TE.setStyleSheet('color: white;')
 
         font2 = label_TE.font()
@@ -387,24 +382,46 @@ class MyApp(QWidget):
 
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
-        self.D4_TE.move(150, 110)
 
-        self.dialog4.setGeometry(300, 300, 350, 300)
+        self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(label_freq, 0, 0)
+        layout1.addWidget(self.D4_N, 0, 1)
+        layout1.addWidget(label_TE, 1, 0)
+        layout1.addWidget(self.D4_TE, 1, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog4.setLayout(main_layout)
+        self.dialog4.setGeometry(300, 300, 500, 150)
 
         self.dialog4.setWindowTitle('Scenario4')
         self.dialog4.setWindowModality(Qt.NonModal)
         self.dialog4.show()
 
-    def Dialog5(self):
+    def Dialog5(self):  # QDialog 창 수정하지 말 것
         self.dialog5 = QDialog()
         self.dialog5.resize(200, 200)
         self.dialog5.setStyleSheet('background-color: #2E2E38')
-        self.dialog5.setWindowIcon(QIcon('C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png'))
+        self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
 
         ### Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog5)
         self.btn2.move(90, 330)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked5)
 
         font9 = self.btn2.font()
@@ -415,7 +432,7 @@ class MyApp(QWidget):
         self.btnDialog = QPushButton('Close', self.dialog5)
         self.btnDialog.move(250, 330)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close5)
 
         font10 = self.btnDialog.font()
@@ -462,21 +479,19 @@ class MyApp(QWidget):
     def Dialog6(self):
         self.dialog6 = QDialog()
         self.dialog6.setStyleSheet('background-color: #2E2E38')
-        self.dialog6.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog6)
-        self.btn2.move(70, 200)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog6)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked6)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton(" Close", self.dialog6)
-        self.btnDialog.move(180, 200)
+        self.btnDialog = QPushButton("   Close", self.dialog6)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close6)
 
         font10 = self.btnDialog.font()
@@ -487,7 +502,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         labelDate = QLabel('결산일* : ', self.dialog6)
-        labelDate.move(50, 50)
         labelDate.setStyleSheet("color: white;")
 
         font1 = labelDate.font()
@@ -496,11 +510,9 @@ class MyApp(QWidget):
 
         self.D6_Date = QLineEdit(self.dialog6)
         self.D6_Date.setStyleSheet("background-color: white;")
-        self.D6_Date.move(150, 50)
         self.D6_Date.setInputMask("0000-00-00;*")
 
         labelDate2 = QLabel('T일* : ', self.dialog6)
-        labelDate2.move(50, 80)
         labelDate2.setStyleSheet("color: white;")
 
         font2 = labelDate2.font()
@@ -509,10 +521,8 @@ class MyApp(QWidget):
 
         self.D6_Date2 = QLineEdit(self.dialog6)
         self.D6_Date2.setStyleSheet("background-color: white;")
-        self.D6_Date2.move(150, 80)
 
         labelAccount = QLabel('특정계정 : ', self.dialog6)
-        labelAccount.move(50, 110)
         labelAccount.setStyleSheet("color: white;")
 
         font3 = labelAccount.font()
@@ -521,10 +531,8 @@ class MyApp(QWidget):
 
         self.D6_Account = QLineEdit(self.dialog6)
         self.D6_Account.setStyleSheet("background-color: white;")
-        self.D6_Account.move(150, 110)
 
         labelJE = QLabel('전표입력자 : ', self.dialog6)
-        labelJE.move(50, 140)
         labelJE.setStyleSheet("color: white;")
 
         font4 = labelJE.font()
@@ -533,10 +541,8 @@ class MyApp(QWidget):
 
         self.D6_JE = QLineEdit(self.dialog6)
         self.D6_JE.setStyleSheet("background-color: white;")
-        self.D6_JE.move(150, 140)
 
         labelCost = QLabel('중요성금액 : ', self.dialog6)
-        labelCost.move(50, 170)
         labelCost.setStyleSheet("color: white;")
 
         font5 = labelCost.font()
@@ -545,9 +551,40 @@ class MyApp(QWidget):
 
         self.D6_Cost = QLineEdit(self.dialog6)
         self.D6_Cost.setStyleSheet("background-color: white;")
-        self.D6_Cost.move(150, 170)
 
-        self.dialog6.setGeometry(300, 300, 350, 300)
+        self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D6_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D6_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D6_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelDate, 0, 0)
+        layout1.addWidget(self.D6_Date, 0, 1)
+        layout1.addWidget(labelDate2, 1, 0)
+        layout1.addWidget(self.D6_Date2, 1, 1)
+        layout1.addWidget(labelAccount, 2, 0)
+        layout1.addWidget(self.D6_Account, 2, 1)
+        layout1.addWidget(labelJE, 3, 0)
+        layout1.addWidget(self.D6_JE, 3, 1)
+        layout1.addWidget(labelCost, 4, 0)
+        layout1.addWidget(self.D6_Cost, 4, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog6.setLayout(main_layout)
+        self.dialog6.setGeometry(300, 300, 500, 250)
 
         self.dialog6.setWindowTitle("Scenario6")
         self.dialog6.setWindowModality(Qt.NonModal)
@@ -556,21 +593,19 @@ class MyApp(QWidget):
     def Dialog7(self):
         self.dialog7 = QDialog()
         self.dialog7.setStyleSheet('background-color: #2E2E38')
-        self.dialog7.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.dialog7.setWindowIcon(QIcon("./EY_logo.png"))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog7)
-        self.btn2.move(80, 200)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog7)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked7)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton(" Close", self.dialog7)
-        self.btnDialog.move(190, 200)
+        self.btnDialog = QPushButton("   Close", self.dialog7)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close7)
 
         font10 = self.btnDialog.font()
@@ -581,7 +616,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         self.rbtn1 = QRadioButton('Effective Date', self.dialog7)
-        self.rbtn1.move(10, 50)
         self.rbtn1.setStyleSheet("color: white;")
 
         font1 = self.rbtn1.font()
@@ -592,14 +626,12 @@ class MyApp(QWidget):
 
         self.rbtn2 = QRadioButton('Entry Date', self.dialog7)
         self.rbtn2.setStyleSheet("color: white;")
-        self.rbtn2.move(200, 50)
 
         font2 = self.rbtn2.font()
         font2.setBold(True)
         self.rbtn2.setFont(font2)
 
         labelDate = QLabel('Effective Date/Entry Date* : ', self.dialog7)
-        labelDate.move(10, 80)
         labelDate.setStyleSheet("color: white;")
 
         font3 = labelDate.font()
@@ -609,10 +641,8 @@ class MyApp(QWidget):
         self.D7_Date = QLineEdit(self.dialog7)
         self.D7_Date.setInputMask("0000-00-00;*")
         self.D7_Date.setStyleSheet("background-color: white;")
-        self.D7_Date.move(200, 80)
 
         labelAccount = QLabel('특정계정 : ', self.dialog7)
-        labelAccount.move(10, 110)
         labelAccount.setStyleSheet("color: white;")
 
         font4 = labelAccount.font()
@@ -621,10 +651,8 @@ class MyApp(QWidget):
 
         self.D7_Account = QLineEdit(self.dialog7)
         self.D7_Account.setStyleSheet("background-color: white;")
-        self.D7_Account.move(200, 110)
 
         labelJE = QLabel('전표입력자 : ', self.dialog7)
-        labelJE.move(10, 140)
         labelJE.setStyleSheet("color: white;")
 
         font5 = labelJE.font()
@@ -633,10 +661,8 @@ class MyApp(QWidget):
 
         self.D7_JE = QLineEdit(self.dialog7)
         self.D7_JE.setStyleSheet("background-color: white;")
-        self.D7_JE.move(200, 140)
 
         labelCost = QLabel('중요성금액 : ', self.dialog7)
-        labelCost.move(10, 170)
         labelCost.setStyleSheet("color: white;")
 
         font6 = labelCost.font()
@@ -645,10 +671,42 @@ class MyApp(QWidget):
 
         self.D7_Cost = QLineEdit(self.dialog7)
         self.D7_Cost.setStyleSheet("background-color: white;")
-        self.D7_Cost.move(200, 170)
 
-        self.dialog7.setGeometry(300, 300, 350, 300)
+        self.D7_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D7_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D7_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D7_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        layout0 = QGridLayout()
+        layout0.addWidget(self.rbtn1, 0, 0)
+        layout0.addWidget(self.rbtn2, 0, 1)
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelDate, 0, 0)
+        layout1.addWidget(self.D7_Date, 0, 1)
+        layout1.addWidget(labelAccount, 1, 0)
+        layout1.addWidget(self.D7_Account, 1, 1)
+        layout1.addWidget(labelJE, 2, 0)
+        layout1.addWidget(self.D7_JE, 2, 1)
+        layout1.addWidget(labelCost, 3, 0)
+        layout1.addWidget(self.D7_Cost, 3, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout0)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog7.setLayout(main_layout)
+        self.dialog7.setGeometry(300, 300, 500, 200)
         self.dialog7.setWindowTitle("Scenario7")
         self.dialog7.setWindowModality(Qt.NonModal)
         self.dialog7.show()
@@ -656,21 +714,19 @@ class MyApp(QWidget):
     def Dialog8(self):
         self.dialog8 = QDialog()
         self.dialog8.setStyleSheet('background-color: #2E2E38')
-        self.dialog8.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.dialog8.setWindowIcon(QIcon("./EY_logo.png"))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog8)
-        self.btn2.move(60, 180)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog8)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked8)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton(" Close", self.dialog8)
-        self.btnDialog.move(170, 180)
+        self.btnDialog = QPushButton("   Close", self.dialog8)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close8)
 
         font10 = self.btnDialog.font()
@@ -681,7 +737,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         labelDate = QLabel('N일* : ', self.dialog8)
-        labelDate.move(50, 50)
         labelDate.setStyleSheet("color: white;")
 
         font1 = labelDate.font()
@@ -690,10 +745,8 @@ class MyApp(QWidget):
 
         self.D8_N = QLineEdit(self.dialog8)
         self.D8_N.setStyleSheet("background-color: white;")
-        self.D8_N.move(150, 50)
 
         labelAccount = QLabel('특정계정 : ', self.dialog8)
-        labelAccount.move(50, 80)
         labelAccount.setStyleSheet("color: white;")
 
         font2 = labelAccount.font()
@@ -702,10 +755,8 @@ class MyApp(QWidget):
 
         self.D8_Account = QLineEdit(self.dialog8)
         self.D8_Account.setStyleSheet("background-color: white;")
-        self.D8_Account.move(150, 80)
 
         labelJE = QLabel('전표입력자 : ', self.dialog8)
-        labelJE.move(50, 110)
         labelJE.setStyleSheet("color: white;")
 
         font3 = labelJE.font()
@@ -714,10 +765,8 @@ class MyApp(QWidget):
 
         self.D8_JE = QLineEdit(self.dialog8)
         self.D8_JE.setStyleSheet("background-color: white;")
-        self.D8_JE.move(150, 110)
 
         labelCost = QLabel('중요성금액 : ', self.dialog8)
-        labelCost.move(50, 140)
         labelCost.setStyleSheet("color: white;")
 
         font4 = labelCost.font()
@@ -726,9 +775,37 @@ class MyApp(QWidget):
 
         self.D8_Cost = QLineEdit(self.dialog8)
         self.D8_Cost.setStyleSheet("background-color: white;")
-        self.D8_Cost.move(150, 140)
 
-        self.dialog8.setGeometry(300, 300, 350, 300)
+        self.D8_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D8_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D8_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D8_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelDate, 0, 0)
+        layout1.addWidget(self.D8_N, 0, 1)
+        layout1.addWidget(labelAccount, 1, 0)
+        layout1.addWidget(self.D8_Account, 1, 1)
+        layout1.addWidget(labelJE, 2, 0)
+        layout1.addWidget(self.D8_JE, 2, 1)
+        layout1.addWidget(labelCost, 3, 0)
+        layout1.addWidget(self.D8_Cost, 3, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog8.setLayout(main_layout)
+        self.dialog8.setGeometry(300, 300, 500, 200)
 
         self.dialog8.setWindowTitle("Scenario8")
         self.dialog8.setWindowModality(Qt.NonModal)
@@ -736,6 +813,8 @@ class MyApp(QWidget):
 
     def Dialog9(self):
         self.dialog9 = QDialog()
+        groupbox = QGroupBox('접속 정보')
+
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
 
@@ -809,21 +888,19 @@ class MyApp(QWidget):
     def Dialog10(self):
         self.dialog10 = QDialog()
         self.dialog10.setStyleSheet('background-color: #2E2E38')
-        self.dialog10.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.dialog10.setWindowIcon(QIcon("./EY_logo.png"))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog10)
-        self.btn2.move(60, 180)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog10)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked10)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton(" Close", self.dialog10)
-        self.btnDialog.move(170, 180)
+        self.btnDialog = QPushButton("   Close", self.dialog10)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close10)
 
         font10 = self.btnDialog.font()
@@ -834,7 +911,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         labelKeyword = QLabel('전표입력자 : ', self.dialog10)
-        labelKeyword.move(50, 30)
         labelKeyword.setStyleSheet("color: white;")
 
         font1 = labelKeyword.font()
@@ -843,10 +919,8 @@ class MyApp(QWidget):
 
         self.D10_Search = QLineEdit(self.dialog10)
         self.D10_Search.setStyleSheet("background-color: white;")
-        self.D10_Search.move(150, 30)
 
         labelPoint = QLabel('특정시점 : ', self.dialog10)
-        labelPoint.move(50, 60)
         labelPoint.setStyleSheet("color: white;")
 
         font2 = labelPoint.font()
@@ -855,10 +929,8 @@ class MyApp(QWidget):
 
         self.D10_Point = QLineEdit(self.dialog10)
         self.D10_Point.setStyleSheet("background-color: white;")
-        self.D10_Point.move(150, 60)
 
         labelAccount = QLabel('특정계정 : ', self.dialog10)
-        labelAccount.move(50, 90)
         labelAccount.setStyleSheet("color: white;")
 
         font3 = labelAccount.font()
@@ -867,10 +939,8 @@ class MyApp(QWidget):
 
         self.D10_Account = QLineEdit(self.dialog10)
         self.D10_Account.setStyleSheet("background-color: white;")
-        self.D10_Account.move(150, 90)
 
         labelTE = QLabel('TE : ', self.dialog10)
-        labelTE.move(50, 120)
         labelTE.setStyleSheet("color: white;")
 
         font4 = labelTE.font()
@@ -879,7 +949,37 @@ class MyApp(QWidget):
 
         self.D10_TE = QLineEdit(self.dialog10)
         self.D10_TE.setStyleSheet("background-color: white;")
-        self.D10_TE.move(150, 120)
+
+        self.D10_Search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D10_Point.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D10_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D10_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelKeyword, 0, 0)
+        layout1.addWidget(self.D10_Search, 0, 1)
+        layout1.addWidget(labelPoint, 1, 0)
+        layout1.addWidget(self.D10_Point, 1, 1)
+        layout1.addWidget(labelAccount, 2, 0)
+        layout1.addWidget(self.D10_Account, 2, 1)
+        layout1.addWidget(labelTE, 3, 0)
+        layout1.addWidget(self.D10_TE, 3, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog10.setLayout(main_layout)
+        self.dialog10.setGeometry(300, 300, 500, 200)
 
         self.dialog10.setWindowTitle("Scenario10")
         self.dialog10.setWindowModality(Qt.NonModal)
@@ -894,21 +994,19 @@ class MyApp(QWidget):
     def Dialog13(self):
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
-        self.dialog13.setWindowIcon(QIcon('C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png'))
+        self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog13)
-        self.btn2.move(70, 200)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog13)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked13)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton('Close', self.dialog13)
-        self.btnDialog.move(180, 200)
+        self.btnDialog = QPushButton('   Close', self.dialog13)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close13)
 
         font10 = self.btnDialog.font()
@@ -919,7 +1017,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         labelContinuous = QLabel('연속된 자릿수* : ', self.dialog13)
-        labelContinuous.move(40, 80)
         labelContinuous.setStyleSheet("color: white;")
 
         font1 = labelContinuous.font()
@@ -928,10 +1025,8 @@ class MyApp(QWidget):
 
         self.D13_continuous = QLineEdit(self.dialog13)
         self.D13_continuous.setStyleSheet("background-color: white;")
-        self.D13_continuous.move(170, 80)
 
         labelAccount = QLabel('특정계정 : ', self.dialog13)
-        labelAccount.move(40, 110)
         labelAccount.setStyleSheet("color: white;")
 
         font2 = labelAccount.font()
@@ -940,10 +1035,8 @@ class MyApp(QWidget):
 
         self.D13_account = QLineEdit(self.dialog13)
         self.D13_account.setStyleSheet("background-color: white;")
-        self.D13_account.move(170, 110)
 
         labelCost = QLabel('중요성금액 : ', self.dialog13)
-        labelCost.move(40, 140)
         labelCost.setStyleSheet("color: white;")
 
         font3 = labelCost.font()
@@ -952,9 +1045,34 @@ class MyApp(QWidget):
 
         self.D13_cost = QLineEdit(self.dialog13)
         self.D13_cost.setStyleSheet("background-color: white;")
-        self.D13_cost.move(170, 140)
 
-        self.dialog13.setGeometry(300, 300, 350, 300)
+        self.D13_continuous.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D13_account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D13_cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelContinuous, 0, 0)
+        layout1.addWidget(self.D13_continuous, 0, 1)
+        layout1.addWidget(labelAccount, 1, 0)
+        layout1.addWidget(self.D13_account, 1, 1)
+        layout1.addWidget(labelCost, 2, 0)
+        layout1.addWidget(self.D13_cost, 2, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog13.setLayout(main_layout)
+        self.dialog13.setGeometry(300, 300, 500, 170)
 
         self.dialog13.setWindowTitle('Scenario13')
         self.dialog13.setWindowModality(Qt.NonModal)
@@ -963,21 +1081,19 @@ class MyApp(QWidget):
     def Dialog14(self):
         self.dialog14 = QDialog()
         self.dialog14.setStyleSheet('background-color: #2E2E38')
-        self.dialog14.setWindowIcon(QIcon("C:/Users/BZ297TR/OneDrive - EY/Desktop/EY_logo.png"))
+        self.dialog14.setWindowIcon(QIcon("./EY_logo.png"))
 
-        self.btn2 = QPushButton(' Extract Data', self.dialog14)
-        self.btn2.move(60, 180)
-        self.btn2.setStyleSheet('color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn2 = QPushButton('   Extract Data', self.dialog14)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked14)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton(" Close", self.dialog14)
-        self.btnDialog.move(170, 180)
+        self.btnDialog = QPushButton("   Close", self.dialog14)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close14)
 
         font10 = self.btnDialog.font()
@@ -988,7 +1104,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
 
         labelKeyword = QLabel('Key Words : ', self.dialog14)
-        labelKeyword.move(50, 50)
         labelKeyword.setStyleSheet("color: white;")
 
         font1 = labelKeyword.font()
@@ -997,10 +1112,8 @@ class MyApp(QWidget):
 
         self.D14_Key = QLineEdit(self.dialog14)
         self.D14_Key.setStyleSheet("background-color: white;")
-        self.D14_Key.move(150, 50)
 
         labelTE = QLabel('TE : ', self.dialog14)
-        labelTE.move(50, 80)
         labelTE.setStyleSheet("color: white;")
 
         font2 = labelTE.font()
@@ -1009,7 +1122,31 @@ class MyApp(QWidget):
 
         self.D14_TE = QLineEdit(self.dialog14)
         self.D14_TE.setStyleSheet("background-color: white;")
-        self.D14_TE.move(150, 80)
+
+        self.D14_Key.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        layout1 = QGridLayout()
+        layout1.addWidget(labelKeyword, 0, 0)
+        layout1.addWidget(self.D14_Key, 0, 1)
+        layout1.addWidget(labelTE, 1, 0)
+        layout1.addWidget(self.D14_TE, 1, 1)
+
+        layout2 = QHBoxLayout()
+        layout2.addStretch()
+        layout2.addStretch()
+        layout2.addWidget(self.btn2)
+        layout2.addWidget(self.btnDialog)
+
+        layout2.setContentsMargins(-1, 10, -1, -1)
+
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout1)
+        main_layout.addLayout(layout2)
+
+        self.dialog14.setLayout(main_layout)
+        self.dialog14.setGeometry(300, 300, 500, 150)
 
         self.dialog14.setWindowTitle("Scenario14")
         self.dialog14.setWindowModality(Qt.NonModal)
@@ -1080,12 +1217,12 @@ class MyApp(QWidget):
         self.btn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.btn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        self.btn3.setStyleSheet('color:white;background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn3.setStyleSheet('color:white;background-image : url(./bar.png)')
         font1 = self.btn3.font()
         font1.setBold(True)
         self.btn3.setFont(font1)
 
-        self.btn4.setStyleSheet('color:white;background-image : url(C:/Users/BZ297TR/OneDrive - EY/Desktop/bar.png)')
+        self.btn4.setStyleSheet('color:white;background-image : url(./bar.png)')
         font2 = self.btn4.font()
         font2.setBold(True)
         self.btn4.setFont(font2)
@@ -1190,8 +1327,6 @@ class MyApp(QWidget):
         password = passwords
 
         temp_Code = self.D5_Code.text()
-        temp_Code = re.sub(r"[:,|\s]", ",", temp_Code)
-        temp_Code = re.split(",", temp_Code)
 
         if temp_Code == '':
             self.alertbox_open()
@@ -1609,3 +1744,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MyApp()
     sys.exit(app.exec_())
+
