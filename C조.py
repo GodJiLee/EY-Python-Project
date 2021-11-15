@@ -1492,18 +1492,68 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
     
-    def extButtonClicked5_SAP(self):
-        return
-    
-    def extButtonClicked5_No_SAP(self):
+        def extButtonClicked5_SAP(self):
+        ### ListBox 인풋값 append
+        dropped_items = []
+        for i in range(self.listbox_drops.count()):
+            dropped_items.append(self.listbox_drops.item(i))
+
+        ### 파일 경로 unicode 문제 해결
+        for i in range(self.dropped_items.count()):
+            dropped_items[i] = re.sub(r'\'', '/', dropped_items[i])
+
+        ### dataframe으로 저장
+        df = pd.DataFrame()
+        for i in range(len(dropped_items)):
+            df = df.append(pd.read_csv(dropped_items[i]))
+
+        ### 당기 생성된 계정 코드 반환
+        temp_AccCode = list()
+
+        for i in range(len(df2)):
+            df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
+            year = df.loc[i, 'ERDAT'][0:4]
+
+            ### 당기 시점 지정
+            now = datetime.datetime.now()
+            before_three_months = now - relativedelta(month=3)
+
+            if int(year) == before_three_months.year:
+                temp_AccCode.append(df.loc[i, 'SAKNR'])
+
+        if temp_AccCode == '':
+            self.alertbox_open()
+
+        else:
+            db = 'master'
+            user = users
+            cnxn = pyodbc.connect(
+                "DRIVER={SQL Server};SERVER=" + server +
+                ";uid=" + user +
+                ";pwd=" + password +
+                ";DATABASE=" + db +
+                ";trusted_connection=" + "yes"
+            )
+            cursor = cnxn.cursor()
+
+            sql_query = """""".format(field=fields)
+
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+        model = DataFrameModel(self.dataframe)
+        self.viewtable.setModel(model)
+
+    def extButtonClicked5_Non_SAP(self):
         passwords = ''
         users = 'guest'
         server = ids
         password = passwords
 
-        temp_Code = self.D5_Code.text()
+        temp_Code_Non_SAP = self.D5_Code.text()
+        temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
+        temp_Code_Non_SAP = re.split(",", temp_Code_Non_SAP)
 
-        if temp_Code == '':
+        if temp_Code_Non_SAP == '':
             self.alertbox_open()
 
         else:
