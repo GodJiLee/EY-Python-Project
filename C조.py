@@ -1486,7 +1486,7 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
-    def extButtonClicked5_SAP(self):
+        def extButtonClicked5_SAP(self):
         ### ListBox 인풋값 append
         dropped_items = []
         for i in range(self.listbox_drops.count()):
@@ -1499,12 +1499,12 @@ class MyApp(QWidget):
         ### dataframe으로 저장
         df = pd.DataFrame()
         for i in range(len(dropped_items)):
-            df = df.append(pd.read_csv(dropped_items[i]))
+            df = df.append(pd.read_csv(dropped_items[i], sep='|'))
 
         ### 당기 생성된 계정 코드 반환
         temp_AccCode = list()
 
-        for i in range(len(df2)):
+        for i in range(len(df)):
             df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
             year = df.loc[i, 'ERDAT'][0:4]
 
