@@ -72,6 +72,30 @@ class DataFrameModel(QAbstractTableModel):
         }
         return roles
 
+
+class Calendar(QDialog):
+    def __init__(self, parent):
+        super(Calendar, self).__init__(parent)
+        self.MyApp = MyApp
+
+        self.setGeometry(500, 500, 400, 200)
+        self.setWindowTitle("PyQt5 QCalendar")
+        self.setWindowIcon(QIcon("python.png"))
+        self.setWindowModality(Qt.NonModal)
+
+        vbox = QVBoxLayout()
+        self.calendar = QCalendarWidget()
+        self.calendar.setGridVisible(True)
+
+        self.label = QLabel("")
+        self.label.setFont(QFont("Sanserif", 15))
+        self.label.setStyleSheet('color:red')
+
+        vbox.addWidget(self.calendar)
+        vbox.addWidget(self.label)
+
+        self.setLayout(vbox)
+
 class ListBoxWidget(QListWidget):
 
     def __init__(self, parent=None):
@@ -381,6 +405,15 @@ class MyApp(QWidget):
 
         return groupbox
 
+    def handle_date_clicked(self, date):
+        self.D6_Date.setText(date.toString("yyyy-MM-dd"))
+
+    def handle_date_clicked2(self, date):
+        self.D7_Date.setText(date.toString("yyyy-MM-dd"))
+
+    def calendar(self):
+        self.new_calendar.show()
+
     def Dialog4(self):
         self.dialog4 = QDialog()
         self.dialog4.setStyleSheet('background-color: #2E2E38')
@@ -626,7 +659,19 @@ class MyApp(QWidget):
 
         self.D6_Date = QLineEdit(self.dialog6)
         self.D6_Date.setStyleSheet("background-color: white;")
-        self.D6_Date.setInputMask("0000-00-00;*")
+        self.D6_Date.setPlaceholderText('날짜를 선택하세요')
+
+        self.btnDate = QPushButton("Date", self.dialog6)
+        self.btnDate.resize(65, 22)
+        self.new_calendar = Calendar(self)
+        self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
+        self.btnDate.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
+        self.btnDate.clicked.connect(self.calendar)
+
+        font11 = self.btnDate.font()
+        font11.setBold(True)
+        self.btnDate.setFont(font11)
 
         labelDate2 = QLabel('T일* : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
@@ -637,6 +682,7 @@ class MyApp(QWidget):
 
         self.D6_Date2 = QLineEdit(self.dialog6)
         self.D6_Date2.setStyleSheet("background-color: white;")
+        self.D6_Date2.setPlaceholderText('T 값을 입력하세요')
 
         labelAccount = QLabel('특정계정 : ', self.dialog6)
         labelAccount.setStyleSheet("color: white;")
@@ -647,6 +693,7 @@ class MyApp(QWidget):
 
         self.D6_Account = QLineEdit(self.dialog6)
         self.D6_Account.setStyleSheet("background-color: white;")
+        self.D6_Account.setPlaceholderText('계정명을 입력하세요')
 
         labelJE = QLabel('전표입력자 : ', self.dialog6)
         labelJE.setStyleSheet("color: white;")
@@ -657,6 +704,7 @@ class MyApp(QWidget):
 
         self.D6_JE = QLineEdit(self.dialog6)
         self.D6_JE.setStyleSheet("background-color: white;")
+        self.D6_JE.setPlaceholderText('전표입력자 ID를 입력하세요')
 
         labelCost = QLabel('중요성금액 : ', self.dialog6)
         labelCost.setStyleSheet("color: white;")
@@ -667,6 +715,7 @@ class MyApp(QWidget):
 
         self.D6_Cost = QLineEdit(self.dialog6)
         self.D6_Cost.setStyleSheet("background-color: white;")
+        self.D6_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
 
         self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -677,6 +726,7 @@ class MyApp(QWidget):
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
         layout1.addWidget(self.D6_Date, 0, 1)
+        layout1.addWidget(self.btnDate, 0, 2)
         layout1.addWidget(labelDate2, 1, 0)
         layout1.addWidget(self.D6_Date2, 1, 1)
         layout1.addWidget(labelAccount, 2, 0)
@@ -755,8 +805,20 @@ class MyApp(QWidget):
         labelDate.setFont(font3)
 
         self.D7_Date = QLineEdit(self.dialog7)
-        self.D7_Date.setInputMask("0000-00-00;*")
         self.D7_Date.setStyleSheet("background-color: white;")
+        self.D7_Date.setPlaceholderText('날짜를 선택하세요')
+
+        self.btnDate = QPushButton("Date", self.dialog7)
+        self.btnDate.resize(65, 22)
+        self.new_calendar = Calendar(self)
+        self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
+        self.btnDate.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
+        self.btnDate.clicked.connect(self.calendar)
+
+        font11 = self.btnDate.font()
+        font11.setBold(True)
+        self.btnDate.setFont(font11)
 
         labelAccount = QLabel('특정계정 : ', self.dialog7)
         labelAccount.setStyleSheet("color: white;")
@@ -767,6 +829,7 @@ class MyApp(QWidget):
 
         self.D7_Account = QLineEdit(self.dialog7)
         self.D7_Account.setStyleSheet("background-color: white;")
+        self.D7_Account.setPlaceholderText('계정명을 입력하세요')
 
         labelJE = QLabel('전표입력자 : ', self.dialog7)
         labelJE.setStyleSheet("color: white;")
@@ -777,6 +840,7 @@ class MyApp(QWidget):
 
         self.D7_JE = QLineEdit(self.dialog7)
         self.D7_JE.setStyleSheet("background-color: white;")
+        self.D7_JE.setPlaceholderText('전표입력자 ID를 입력하세요')
 
         labelCost = QLabel('중요성금액 : ', self.dialog7)
         labelCost.setStyleSheet("color: white;")
@@ -787,6 +851,7 @@ class MyApp(QWidget):
 
         self.D7_Cost = QLineEdit(self.dialog7)
         self.D7_Cost.setStyleSheet("background-color: white;")
+        self.D7_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
 
         self.D7_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -800,6 +865,7 @@ class MyApp(QWidget):
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
         layout1.addWidget(self.D7_Date, 0, 1)
+        layout1.addWidget(self.btnDate, 0, 2)
         layout1.addWidget(labelAccount, 1, 0)
         layout1.addWidget(self.D7_Account, 1, 1)
         layout1.addWidget(labelJE, 2, 0)
@@ -822,7 +888,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog7.setLayout(main_layout)
-        self.dialog7.setGeometry(300, 300, 500, 200)
+        self.dialog7.setGeometry(300, 300, 600, 200)
         self.dialog7.setWindowTitle("Scenario7")
         self.dialog7.setWindowModality(Qt.NonModal)
         self.dialog7.show()
@@ -861,6 +927,7 @@ class MyApp(QWidget):
 
         self.D8_N = QLineEdit(self.dialog8)
         self.D8_N.setStyleSheet("background-color: white;")
+        self.D8_N.setPlaceholderText('N 값을 입력하세요')
 
         labelAccount = QLabel('특정계정 : ', self.dialog8)
         labelAccount.setStyleSheet("color: white;")
@@ -871,6 +938,7 @@ class MyApp(QWidget):
 
         self.D8_Account = QLineEdit(self.dialog8)
         self.D8_Account.setStyleSheet("background-color: white;")
+        self.D8_Account.setPlaceholderText('계정명을 입력하세요')
 
         labelJE = QLabel('전표입력자 : ', self.dialog8)
         labelJE.setStyleSheet("color: white;")
@@ -881,6 +949,7 @@ class MyApp(QWidget):
 
         self.D8_JE = QLineEdit(self.dialog8)
         self.D8_JE.setStyleSheet("background-color: white;")
+        self.D8_JE.setPlaceholderText('전표입력자 ID를 입력하세요')
 
         labelCost = QLabel('중요성금액 : ', self.dialog8)
         labelCost.setStyleSheet("color: white;")
@@ -891,6 +960,7 @@ class MyApp(QWidget):
 
         self.D8_Cost = QLineEdit(self.dialog8)
         self.D8_Cost.setStyleSheet("background-color: white;")
+        self.D8_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
 
         self.D8_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -1454,6 +1524,13 @@ class MyApp(QWidget):
         self.alt.setText('필수 입력값이 누락되었습니다.')
         self.alt.exec_()
 
+    def alertbox_open2(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('필수 입력값 타입 오류')
+        self.alt.setText('숫자로만 입력해주시기 바랍니다.')
+        self.alt.exec_()
+
     def extButtonClicked4(self):
         password = ''
         users = 'guest'
@@ -1486,7 +1563,8 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
-        def extButtonClicked5_SAP(self):
+    def extButtonClicked5_SAP(self):
+
         ### ListBox 인풋값 append
         dropped_items = []
         for i in range(self.listbox_drops.count()):
@@ -1508,12 +1586,12 @@ class MyApp(QWidget):
             df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
             year = df.loc[i, 'ERDAT'][0:4]
 
-            ### 당기 시점 지정
-            now = datetime.datetime.now()
-            before_three_months = now - relativedelta(month=3)
+        ### 당기 시점 지정
+        now = datetime.datetime.now()
+        before_three_months = now - relativedelta(month=3)
 
-            if int(year) == before_three_months.year:
-                temp_AccCode.append(df.loc[i, 'SAKNR'])
+        if int(year) == before_three_months.year:
+            temp_AccCode.append(df.loc[i, 'SAKNR'])
 
         if temp_AccCode == '':
             self.alertbox_open()
@@ -1581,49 +1659,57 @@ class MyApp(QWidget):
         tempJE = self.D6_JE.text()
         tempCost = self.D6_Cost.text()
 
-        if tempDate == '--' or tempTDate == '':
+        if tempTDate == '' or tempDate == '':
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+            if tempCost == '': tempCost = 0
 
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                    ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+            try:
+                int(tempTDate)
+                int(tempCost)
+                db = 'master'
+                user = users
+                cnxn = pyodbc.connect(
+                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+                cursor = cnxn.cursor()
 
-            self.dataframe = pd.read_sql(sql, self.cnxn)
+                # sql문 수정
+                sql = '''
+                               SELECT TOP 100											
+                                   JournalEntries.BusinessUnit											
+                                   , JournalEntries.JENumber											
+                                   , JournalEntries.JELineNumber											
+                                   , JournalEntries.EffectiveDate											
+                                   , JournalEntries.EntryDate											
+                                   , JournalEntries.Period											
+                                   , JournalEntries.GLAccountNumber											
+                                   , CoA.GLAccountName											
+                                   , JournalEntries.Debit											
+                                   , JournalEntries.Credit											
+                                   , CASE
+                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                        END AS DebitCredit
+                                   , JournalEntries.Amount											
+                                   , JournalEntries.FunctionalCurrencyCode											
+                                   , JournalEntries.JEDescription											
+                                   , JournalEntries.JELineDescription											
+                                   , JournalEntries.Source											
+                                   , JournalEntries.PreparerID											
+                                   , JournalEntries.ApproverID											
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                                ORDER BY JENumber, JELineNumber											
+                            '''.format(field=fields)
 
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            except ValueError:
+                self.alertbox_open2()
 
     def extButtonClicked7(self):
         passwords = ''
@@ -1642,10 +1728,14 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             tempState = 'Entry Date'
 
-        if tempDate == '--':
+        if tempCost == '':
+            tempCost = 0
+
+        if tempDate == '':
             self.alertbox_open()
 
-        else:
+        try:
+            int(tempCost)
             db = 'master'
             user = users
             cnxn = pyodbc.connect(
@@ -1654,37 +1744,40 @@ class MyApp(QWidget):
 
             # sql문 수정
             sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+                           SELECT TOP 100											
+                               JournalEntries.BusinessUnit											
+                               , JournalEntries.JENumber											
+                               , JournalEntries.JELineNumber											
+                               , JournalEntries.EffectiveDate											
+                               , JournalEntries.EntryDate											
+                               , JournalEntries.Period											
+                               , JournalEntries.GLAccountNumber											
+                               , CoA.GLAccountName											
+                               , JournalEntries.Debit											
+                               , JournalEntries.Credit											
+                               , CASE
+                                   WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                   END AS DebitCredit
+                               , JournalEntries.Amount											
+                               , JournalEntries.FunctionalCurrencyCode											
+                               , JournalEntries.JEDescription											
+                               , JournalEntries.JELineDescription											
+                               , JournalEntries.Source											
+                               , JournalEntries.PreparerID											
+                               , JournalEntries.ApproverID											
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                   [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                           ORDER BY JENumber, JELineNumber											
+                       '''.format(field=fields)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
+
+        except ValueError:
+            self.alertbox_open2()
 
     def extButtonClicked8(self):
         passwords = ''
@@ -1701,45 +1794,52 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+            if tempCost == '': tempCost = 0
+            try:
+                int(tempN)
+                int(tempCost)
+                db = 'master'
+                user = users
+                cnxn = pyodbc.connect(
+                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+                cursor = cnxn.cursor()
 
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+                # sql문 수정
+                sql = '''
+                               SELECT TOP 100											
+                                   JournalEntries.BusinessUnit											
+                                   , JournalEntries.JENumber											
+                                   , JournalEntries.JELineNumber											
+                                   , JournalEntries.EffectiveDate											
+                                   , JournalEntries.EntryDate											
+                                   , JournalEntries.Period											
+                                   , JournalEntries.GLAccountNumber											
+                                   , CoA.GLAccountName											
+                                   , JournalEntries.Debit											
+                                   , JournalEntries.Credit											
+                                   , CASE
+                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                        END AS DebitCredit
+                                   , JournalEntries.Amount											
+                                   , JournalEntries.FunctionalCurrencyCode											
+                                   , JournalEntries.JEDescription											
+                                   , JournalEntries.JELineDescription											
+                                   , JournalEntries.Source											
+                                   , JournalEntries.PreparerID											
+                                   , JournalEntries.ApproverID											
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                               ORDER BY JENumber, JELineNumber											
+                            '''.format(field=fields)
 
-            self.dataframe = pd.read_sql(sql, self.cnxn)
+                self.dataframe = pd.read_sql(sql, self.cnxn)
 
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            except ValueError:
+                self.alertbox_open2()
 
     def extButtonClicked9(self):
         # 다이얼로그별 Clickcount 설정
