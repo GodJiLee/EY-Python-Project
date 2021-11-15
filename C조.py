@@ -69,7 +69,45 @@ class DataFrameModel(QAbstractTableModel):
         }
         return roles
 
+class ListBoxWidget(QListWidget):
 
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAcceptDrops(True)
+        self.resize(600, 600)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+
+            links = []
+            for url in event.mimeData().urls():
+
+                if url.isLocalFile():
+                    links.append(str(url.toLocalFile()))
+                else:
+                    links.append(str(url.toString()))
+            self.addItems(links)
+        else:
+            event.ignore()
+    
+
+    
+    
 class MyApp(QWidget):
 
     def __init__(self):
@@ -414,23 +452,28 @@ class MyApp(QWidget):
 
     def Dialog5(self):  # QDialog 창 수정하지 말 것
         self.dialog5 = QDialog()
-        self.dialog5.resize(200, 200)
         self.dialog5.setStyleSheet('background-color: #2E2E38')
         self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
 
         ### Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog5)
-        self.btn2.move(90, 330)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btn2.clicked.connect(self.extButtonClicked5)
+        self.btn2.clicked.connect(self.extButtonClicked5_No_SAP)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
+        self.btn3 = QPushButton(' Extract Data', self.dialog5)
+        self.btn3.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn3.clicked.connect(self.extButtonClicked5_SAP)
+
+        font11 = self.btn3.font()
+        font11.setBold(True)
+        self.btn3.setFont(font11)
+
         ### Close
         self.btnDialog = QPushButton('Close', self.dialog5)
-        self.btnDialog.move(250, 330)
         self.btnDialog.setStyleSheet(
             'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close5)
@@ -439,12 +482,17 @@ class MyApp(QWidget):
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
-        self.btn2.resize(110, 30)
-        self.btnDialog.resize(110, 30)
+        self.btnDialog1 = QPushButton('Close', self.dialog5)
+        self.btnDialog1.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
+        self.btnDialog1.clicked.connect(self.dialog_close5)
+
+        font13 = self.btnDialog1.font()
+        font13.setBold(True)
+        self.btnDialog1.setFont(font13)
 
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
-        label_AccCode.move(20, 40)
         label_AccCode.setStyleSheet('color: white;')
         label_AccCode.setFont(QFont('Arial', 12))
 
@@ -454,7 +502,6 @@ class MyApp(QWidget):
 
         ### 라벨 2 - 입력 예시
         label_Example = QLabel('※ 입력 예시: OO', self.dialog5)
-        label_Example.move(40, 70)
         label_Example.setStyleSheet('color: red;')
         label_Example.setFont(QFont('Times font', 9))
 
@@ -462,15 +509,79 @@ class MyApp(QWidget):
         font2.setBold(False)
         label_Example.setFont(font2)
 
-        ### TextEdit - 계정코드 Paste
-        self.D5_Code = QTextEdit(self.dialog5)
-        self.D5_Code.setAcceptRichText(False)
-        self.D5_Code.resize(350, 200)
-        self.D5_Code.move(60, 110)
-        self.D5_Code.setStyleSheet('color: black;')
-        self.D5_Code.setStyleSheet('background-color: white;')
 
-        self.dialog5.setGeometry(400, 400, 465, 400)
+        label_SAP_Example = QLabel('※ SKA1 파일을 Drop하시오', self.dialog5)
+        label_SAP_Example.setStyleSheet('color: red;')
+        label_SAP_Example.setFont(QFont('Times font', 9))
+
+        font12 = label_SAP_Example.font()
+        font12.setBold(False)
+        label_SAP_Example.setFont(font12)
+
+        ### TextEdit - 계정코드 Paste
+        self.MyInput = QTextEdit(self.dialog5)
+        self.MyInput.setAcceptRichText(False)
+        self.MyInput.setStyleSheet('background-color: white;')
+
+
+        ### ListBox Widget
+        self.listbox_drops = ListBoxWidget()
+        self.listbox_drops.setStyleSheet('background-color: white;')
+
+        layout = QVBoxLayout()
+
+        layout1 = QVBoxLayout()
+        sublayout1 = QVBoxLayout()
+        sublayout2 = QHBoxLayout()
+
+        layout2 = QVBoxLayout()
+        sublayout3 = QVBoxLayout()
+        sublayout4 = QHBoxLayout()
+
+
+        tab1 = QWidget()
+        tab2 = QWidget()
+        tabs = QTabWidget()
+
+
+        sublayout1.addWidget(label_AccCode)
+        sublayout1.addWidget(label_Example)
+        sublayout1.addWidget(self.MyInput)
+
+        sublayout2.addStretch(1)
+        sublayout2.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addStretch(1)
+
+        layout1.addLayout(sublayout1, stretch=4)
+        layout1.addLayout(sublayout2, stretch=1)
+
+
+        sublayout3.addWidget(label_SAP_Example)
+        sublayout3.addWidget(self.listbox_drops)
+
+        sublayout4.addStretch(1)
+        sublayout4.addWidget(self.btn3, stretch=1, alignment=Qt.AlignBottom)
+        sublayout4.addWidget(self.btnDialog1, stretch=1, alignment=Qt.AlignBottom)
+        sublayout4.addStretch(1)
+
+
+
+        layout2.addLayout(sublayout3, stretch=4)
+        layout2.addLayout(sublayout4, stretch=1)
+
+        tab1.setLayout(layout1)
+        tab2.setLayout(layout2)
+
+
+        tabs.addTab(tab1, "Non-SAP")
+        tabs.addTab(tab2, "SAP")
+
+        layout.addWidget(tabs)
+
+        self.dialog5.setLayout(layout)
+
+        self.dialog5.resize(465, 400)
 
         self.dialog5.setWindowTitle('Scenario5')
         self.dialog5.setWindowModality(Qt.NonModal)
