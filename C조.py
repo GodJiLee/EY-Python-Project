@@ -1311,61 +1311,122 @@ class MyApp(QWidget):
 
         return tables
 
+    ###########################
+    ####추가하셔야 하는 함수들#####
+    ###########################
+    def AddSheetButton_Clicked(self):
+        return
+
+    def RemoveSheetButton_Clicked(self):
+        return
+
+    def Sheet_ComboBox_Selected(self):
+        return
+
     def Save_Buttons_Group(self):
-        groupbox3 = QGroupBox('저장')
+        ##GroupBox
+        groupbox = QGroupBox("저장")
+        font_groupbox = groupbox.font()
+        font_groupbox.setBold(True)
+        groupbox.setFont(font_groupbox)
         self.setStyleSheet('QGroupBox  {color: white;}')
-        font7 = groupbox3.font()
-        font7.setBold(True)
-        groupbox3.setFont(font7)
 
-        layout1 = QVBoxLayout()
-        layout2 = QHBoxLayout()
-        layout3 = QHBoxLayout()
-        layout4 = QHBoxLayout()
+        ##GroupBox에 넣을 Layout들
+        layout = QHBoxLayout()
 
-        self.btn3 = QPushButton('Setting Save Route', self)
-        self.btn4 = QPushButton('Save', self)
-        self.btn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.btn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        left_sublayout = QGridLayout()
 
-        self.btn3.setStyleSheet('color:white;background-image : url(./bar.png)')
-        font1 = self.btn3.font()
-        font1.setBold(True)
-        self.btn3.setFont(font1)
+        right_sublayout1 = QVBoxLayout()
+        right_sublayout2 = QHBoxLayout()
+        right_sublayout3 = QHBoxLayout()
 
-        self.btn4.setStyleSheet('color:white;background-image : url(./bar.png)')
-        font2 = self.btn4.font()
-        font2.setBold(True)
-        self.btn4.setFont(font2)
 
-        label_savepath = QLabel("Save Route: ")
+        ##Add Sheet 버튼
+        AddSheet_button = QPushButton('Add Sheet')
+        AddSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        AddSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        font_AddSheet = AddSheet_button.font()
+        font_AddSheet.setBold(True)
+        AddSheet_button.setFont(font_AddSheet)
+
+        ##RemoveSheet 버튼
+        RemoveSheet_button = QPushButton('Remove Sheet')
+        RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        font_RemoveSheet = RemoveSheet_button.font()
+        font_RemoveSheet.setBold(True)
+        RemoveSheet_button.setFont(font_RemoveSheet)
+
+
+        #label
+        label_sheet = QLabel("Sheet names: ", self)
+        font_sheet = label_sheet.font()
+        font_sheet.setBold(True)
+        label_sheet.setFont(font_sheet)
+        label_sheet.setStyleSheet('color:white;')
+
+        label_savepath = QLabel(f"Save Route: {' ' * 12}", self)
         font_savepath = label_savepath.font()
         font_savepath.setBold(True)
         label_savepath.setFont(font_savepath)
         label_savepath.setStyleSheet('color:white;')
 
+        ##시나리오 Sheet를 표현할 콤보박스
+        self.combo_sheet = QComboBox(self)
+
+        ##저장 경로를 표현할 LineEdit
         self.line_savepath = QLineEdit(self)
         self.line_savepath.setText("")
         self.line_savepath.setDisabled(True)
 
-        self.btn3.clicked.connect(self.saveFileDialog)
-        self.btn4.clicked.connect(self.saveFile)
 
-        layout2.addWidget(label_savepath)
-        layout2.addWidget(self.line_savepath)
+        ## Setting Save Route 버튼
+        save_path_button = QPushButton("Setting Save Route", self)
+        save_path_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        font_path_button = save_path_button.font()
+        font_path_button.setBold(True)
+        save_path_button.setFont(font_path_button)
+        save_path_button.setStyleSheet('color:white;background-image : url(./bar.png)')
 
-        layout4.addWidget(self.btn3, stretch=1)
-        layout4.addWidget(self.btn4, stretch=1)
 
-        layout3.addStretch(2)
-        layout3.addLayout(layout4, stretch=1)
+        ## Save 버튼
+        export_file_button = QPushButton("Save", self)
+        export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        font_export_button = export_file_button.font()
+        font_export_button.setBold(True)
+        export_file_button.setFont(font_export_button)
+        export_file_button.setStyleSheet('color:white;background-image : url(./bar.png)')
 
-        layout1.addLayout(layout2)
-        layout1.addLayout(layout3)
+        #########
+        #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
+        AddSheet_button.clicked.connect(self.AddSheetButton_Clicked)
+        RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
+        save_path_button.clicked.connect(self.saveFileDialog)
+        export_file_button.clicked.connect(self.saveFile)
+        self.combo_sheet.currentIndexChanged.connect(self.Sheet_ComboBox_Selected)
 
-        groupbox3.setLayout(layout1)
 
-        return groupbox3
+        ##layout 쌓기
+        left_sublayout.addWidget(label_sheet, 0, 0)
+        left_sublayout.addWidget(self.combo_sheet, 0, 1)
+        left_sublayout.addWidget(label_savepath, 1, 0)
+        left_sublayout.addWidget(self.line_savepath, 1, 1)
+
+        right_sublayout2.addWidget(AddSheet_button, stretch=1)
+        right_sublayout2.addWidget(RemoveSheet_button, stretch=1)
+        right_sublayout3.addWidget(save_path_button, stretch=1)
+        right_sublayout3.addWidget(export_file_button, stretch=1)
+
+        right_sublayout1.addLayout(right_sublayout2, stretch=1)
+        right_sublayout1.addLayout(right_sublayout3, stretch=1)
+
+        layout.addLayout(left_sublayout, stretch=2)
+        layout.addLayout(right_sublayout1, stretch=1)
+
+        groupbox.setLayout(layout)
+
+        return groupbox
+
 
     def projectselected(self, text):
         self.Project_ID_Selected(text)
