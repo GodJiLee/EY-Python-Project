@@ -1430,8 +1430,11 @@ class MyApp(QWidget):
 
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
-
-    def extButtonClicked5(self):
+    
+    def extButtonClicked5_SAP(self):
+        return
+    
+    def extButtonClicked5_No_SAP(self):
         passwords = ''
         users = 'guest'
         server = ids
