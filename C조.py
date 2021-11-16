@@ -109,7 +109,7 @@ class ListBoxWidget(QListWidget):
         else:
             event.ignore()
 
- # classForm(QWidget):
+ # class Form(QWidget):
  #    def __init__(self):
  #        QWidget.__init__(self, flags=Qt.widget)
  #        self.setWindowTitle('QTreeWidget')
@@ -1153,8 +1153,6 @@ class MyApp(QWidget):
     # A,B,C조 작성 - 추후 논의
     # def Dialog12(self):
 
-    ###############################################################################################
-    #######################################################for 플로우차트###########################
     def Dialog13(self):
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
@@ -1169,14 +1167,6 @@ class MyApp(QWidget):
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btn3 = QPushButton(' Extract Data', self.dialog13)
-        self.btn3.setStyleSheet('color:white; background-image : url(./bar.png)')
-        self.btn3.clicked.connect(self.extButtonClicked13)
-
-        font11 = self.btn3.font()
-        font11.setBold(True)
-        self.btn3.setFont(font11)
-
         ### 버튼 - Close
         self.btnDialog = QPushButton('Close', self.dialog13)
         self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -1186,16 +1176,23 @@ class MyApp(QWidget):
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
-        self.btnDialog1 = QPushButton('Close', self.dialog13)
-        self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog1.clicked.connect(self.dialog_close13)
-
-        font12 = self.btnDialog1.font()
-        font12.setBold(True)
-        self.btnDialog1.setFont(font12)
-
         ### 버튼 3 - Save
+        self.btnSave = QPushButton(' Save', self.dialog13)
+        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
+        self.btnSave.clicked.connect(self.extButtonClicked13)
 
+        font13 = self.btnSave.font()
+        font13.setBold(True)
+        self.btnSave.setFont(font13)
+
+        ### 버튼 4 - Save and Process
+        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog13)
+        self.btnSaveProceed.setStyleSheet('color: whitel background-image: url(./bar.png)')
+        self.btnSaveProceed.clicked.connect(self.extButtonClicked13)
+
+        font14 = self.btnSaveProceed.font()
+        font14.setBold(True)
+        self.btnSaveProceed.setFont(font14)
 
         ### 라벨 1 - 연속된 자릿수
         label_Continuous = QLabel('연속된 자릿수 (ex. 3333, 6666): ', self.dialog13)
@@ -1208,6 +1205,7 @@ class MyApp(QWidget):
 
         ### Text Edit - 연속된 자릿수
         self.text_continuous = QTextEdit(self.dialog13)
+        self.text_continuous.setAcceptRichText(False)
         self.text_continuous.setStyleSheet("background-color: white;")
 
         ### 라벨 2 - 중요성 금액
@@ -1221,14 +1219,22 @@ class MyApp(QWidget):
 
         ### Line Edit - 중요성 금액
         self.line_amount = QLineEdit(self.dialog13)
-        self.line_amount.setAcceptRichText(False)
         self.line_amount.setStyleSheet("background-color: white;")
+
+        ### 라벨 3 - 계정 트리
+        label_tree = QLabel('원하는 계정명을 선택하세요.', self.dialog13)
+        label_tree.setStyleSheet("color: white;")
+        label_tree.setFont(QFont('Times, font', 9))
+
+        font4 = label_tree.font()
+        font4.setBold(True)
+        label_tree.setFont(font4)
 
         ### Layout - 다이얼로그 UI
         main_layout = QVBoxLayout()
 
         layout1 = QVBoxLayout()
-        sublayout1 = QGridLayout()
+        sublayout1 = QVBoxLayout()
         sublayout2 = QHBoxLayout()
 
         layout2 = QVBoxLayout()
@@ -1239,23 +1245,40 @@ class MyApp(QWidget):
         tab2 = QWidget()
         tabs = QTabWidget()
 
-        sublayout1.addWidget(label_Continuous, 0, 0)
-        sublayout1.addWidget(self.text_continuous, 0, 1)
-        sublayout1.addWidget(label_amount, 1, 0)
-        sublayout1.addWidget(self.line_amount, 1, 1)
+        sublayout1.addWidget(label_Continuous)
+        sublayout1.addWidget(self.text_continuous)
+        sublayout1.addWidget(label_amount)
+        sublayout1.addWidget(self.line_amount)
 
-        sublayout2.addStretch(5)
-        sublayout2.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addStretch(1)
+        sublayout2.addWidget(self.btnSave, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addWidget(self.btnSaveProceed, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addStretch(1)
 
         layout1.addLayout(sublayout1, stretch=4)
         layout1.addLayout(sublayout2, stretch=1)
 
+        sublayout3.addWidget(label_tree)
+        # sublayout3.addWidget(self.tree_drops)
+
+        sublayout4.addStretch(1)
+        sublayout4.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
+        sublayout4.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
+        sublayout4.addStretch(1)
+
+        layout2.addLayout(sublayout3, stretch=4)
+        layout2.addLayout(sublayout4, stretch=1)
+
         tab1.setLayout(layout1)
-        # tab2.setLayout(layout2)
-        # tabs.addTab(tab1, "자릿수/금액")
-        # tabs.addTab(tab2, "계정 선택")
-        # main_layout.addWidget(tabs)
-        # self.dialog13.setLayout(main_layout)
+        tab2.setLayout(layout2)
+
+        tabs.addTab(tab1, "자릿수/금액")
+        tabs.addTab(tab2, "계정 선택")
+
+        main_layout.addWidget(tabs)
+
+        self.dialog13.setLayout(main_layout)
+
         self.dialog13.resize(500, 400)
 
         self.dialog13.setWindowTitle('Scenario13')
@@ -1599,8 +1622,7 @@ class MyApp(QWidget):
 
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
-###################################################################################################################
-########################################################################for 플로우차트##############################
+
     def extButtonClicked5_Non_SAP(self):
         passwords = ''
         users = 'guest'
@@ -1927,11 +1949,10 @@ class MyApp(QWidget):
         server = ids
         password = passwords
 
-        temp_continuous = self.D13_continuous.text()  # 필수
-        temp_account_13 = self.D13_account.text()
-        temp_cost_13 = self.D13_cost.text()
+        temp_Continuous = self.text_continuous.text()  # 필수
+        temp_TE_13 = self.line_amount.text()
 
-        if temp_continuous == '' or temp_account_13 == '' or temp_cost_13 == '':
+        if temp_Continuous == '' or temp_TE_13 == '':
             self.alertbox_open()
 
         else:
