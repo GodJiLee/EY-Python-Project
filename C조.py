@@ -9,6 +9,62 @@ from PyQt5.QtCore import *
 import pyodbc
 import pandas as pd
 
+class Form(QWidget):
+    def __init__(self):
+        QWidget.__init__(self, flags=Qt.widget)
+        self.setWindowTitle('QTreeWidget')
+        self.setFixedWidth(210)
+        self.setFixedHeight(150)
+
+        ### QTreeView 생성 및 설정
+        self.tw = QTreeWidget(self)
+        self.tw.setColumnCount(2)
+        self.tw.setHeaderLabels(['Account Type', 'Account Class'])
+        self.tw.setAlternatingRowColors(True)
+        self.tw.header().setSectionResizeMode(QHeaderView.Stretch)
+        self.root = self.tw.invisibleRootItem()
+
+        ### 데이터 계층적으로 저장하기
+        # data = [
+        #     {"type": "1_Assets",
+        #      "objects": [("11_유동자산"), ("12_비유동자산")]},
+        #     {"type": "2_Liability",
+        #      "objects": [("21_유동부채"), ("22_비유동부채")]}
+        # ]
+
+        for d in data:
+            parent = self.add_tree_root(d['type'], "")
+            for child in d['objects']:
+                self.add_tree_child(parent, *child)
+
+        def add_tree_root(self, name: str, description: str):
+            item = QTreeWidgetItem(self.tw)
+            item.setText(0, name)
+            item.setText(1, description)
+            return item
+
+        def add_tree_child(self, parent: QTreeWidgetItem, name: str, description: str):
+            item = QTreeWidgetItem()
+            item.setText(0, name)
+            item.setText(1, description)
+            parent.addChild(item)
+            return item
+
+        item = QTreeWidgetItem()
+        item.setText(0, "1_Assets")
+        sub_item = QTreeWidgetItem()
+
+        sub_item.setText(0, "11_유동자산")
+        sub_item.setText(1, "12_비유동자산")
+
+        item.setText(1, "2_Liability")
+        sub_item.setText(0, "21_유동부채")
+        sub_item.setText(1, "22_비유동부채")
+
+        item.addChild(sub_item)
+        self.root.addChild(item)
+
+        self.root.addChild(item)
 
 class DataFrameModel(QAbstractTableModel):
     DtypeRole = Qt.UserRole + 1000
@@ -32,7 +88,7 @@ class DataFrameModel(QAbstractTableModel):
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return self._dataframe.columns[section] 
+                return self._dataframe.columns[section]
             else:
                 return str(self._dataframe.index[section])
         return QVariant()
@@ -108,61 +164,6 @@ class ListBoxWidget(QListWidget):
             self.addItems(links)
         else:
             event.ignore()
-
- # class Form(QWidget):
- #    def __init__(self):
- #        QWidget.__init__(self, flags=Qt.widget)
- #        self.setWindowTitle('QTreeWidget')
- #        self.setFixedWidth(210)
- #        self.setFixedHeight(150)
- #
- #        ### QTreeView 생성 및 설정
- #        self.tw = QTreeWidget(self)
- #        self.tw.setColumnCount(1)
- #        self.tw.setHeaderLabels(['Account Name'])
- #        self.root = self.tw.invisibleRootItem()
- #
- #        ### 데이터 계층적으로 저장하기
- #        data = [
- #            {"type": "1_Assets",
- #             "objects": [("11_유동자산"), ("12_비유동자산")]},
- #            {"type": "2_Liability",
- #             "objects": [("21_유동부채"), ("22_비유동부채")]}
- #        ]
- #
- #        for d in data:
- #            parent = self.add_tree_root(d['type'], "")
- #            for child in d['objects']:
- #                self.add_tree_child(parent, *child)
- #
- #        def add_tree_root(self, name: str, description: str):
- #            item = QTreeWidgetItem(self.tw)
- #            item.setText(0, name)
- #            item.setText(1, description)
- #            return item
- #
- #        def add_tree_child(self, parent: QTreeWidgetItem, name: str, description: str):
- #            item = QTreeWidgetItem()
- #            item.setText(0, name)
- #            item.setText(1, description)
- #            parent.addChild(item)
- #            return item
- #
- #        # item = QTreeWidgetItem()
- #        # item.setText(0, "1_Assets")
- #        # sub_item = QTreeWidgetItem()
- #        #
- #        # sub_item.setText(0, "11_유동자산")
- #        # sub_item.setText(1, "12_비유동자산")
- #        #
- #        # item.setText(1, "2_Liability")
- #        # sub_item.setText(0, "21_유동부채")
- #        # sub_item.setText(1, "22_비유동부채")
- #        #
- #        # item.addChild(sub_item)
- #        # self.root.addChild(item)
- #        #
- #        # self.root.addChild(item)
 
 class MyApp(QWidget):
 
@@ -1187,7 +1188,7 @@ class MyApp(QWidget):
 
         ### 버튼 4 - Save and Process
         self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog13)
-        self.btnSaveProceed.setStyleSheet('color: whitel background-image: url(./bar.png)')
+        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
         self.btnSaveProceed.clicked.connect(self.extButtonClicked13)
 
         font14 = self.btnSaveProceed.font()
@@ -1195,9 +1196,9 @@ class MyApp(QWidget):
         self.btnSaveProceed.setFont(font14)
 
         ### 라벨 1 - 연속된 자릿수
-        label_Continuous = QLabel('연속된 자릿수 (ex. 3333, 6666): ', self.dialog13)
+        label_Continuous = QLabel('연속된 자릿수(ex. 3333, 6666)*: ', self.dialog13)
         label_Continuous.setStyleSheet("color: red;")
-        label_Continuous.setFont(QFont('Arial', 12))
+        label_Continuous.setFont(QFont('Arial', 9))
 
         font1 = label_Continuous.font()
         font1.setBold(True)
@@ -1222,13 +1223,38 @@ class MyApp(QWidget):
         self.line_amount.setStyleSheet("background-color: white;")
 
         ### 라벨 3 - 계정 트리
-        label_tree = QLabel('원하는 계정명을 선택하세요.', self.dialog13)
+        label_tree = QLabel('원하는 계정명을 선택하세요', self.dialog13)
         label_tree.setStyleSheet("color: white;")
         label_tree.setFont(QFont('Times, font', 9))
 
         font4 = label_tree.font()
         font4.setBold(True)
         label_tree.setFont(font4)
+
+        ### TreeWidget
+        self.account_tree = QTreeWidget(self.dialog13)
+        self.account_tree.setStyleSheet("background-color: white;")
+        self.account_tree.setHeaderLabels(['Account Type'])
+        self.account_tree.setAlternatingRowColors(True)
+        self.account_tree.header().setVisible(True)
+
+        itemTop1 = QTreeWidgetItem(self.account_tree)
+        itemTop1.setText(0, "1_Assets")
+        itemChild1 = QTreeWidgetItem(itemTop1)
+        itemChild1.setText(0, '11_유동자산')
+        itemChild11 = QTreeWidgetItem(itemChild1)
+        itemChild11.setText(0, '1101_현금및현금성자산')
+        itemChild12 = QTreeWidgetItem(itemChild1)
+        itemChild12.setText(0, '1105_매출채권')
+        itemChild2 = QTreeWidgetItem(itemTop1)
+        itemChild2.setText(0, '12_비유동자산')
+
+        itemTop2 = QTreeWidgetItem(self.account_tree)
+        itemTop2.setText(0, '2_Liability')
+        itemChild3 = QTreeWidgetItem(itemTop2)
+        itemChild3.setText(0, '21_유동부채')
+        itemChild4 = QTreeWidgetItem(itemTop2)
+        itemChild4.setText(0, '22_비유동부채')
 
         ### Layout - 다이얼로그 UI
         main_layout = QVBoxLayout()
@@ -1259,7 +1285,7 @@ class MyApp(QWidget):
         layout1.addLayout(sublayout2, stretch=1)
 
         sublayout3.addWidget(label_tree)
-        # sublayout3.addWidget(self.tree_drops)
+        sublayout3.addWidget(self.account_tree)
 
         sublayout4.addStretch(1)
         sublayout4.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
@@ -1950,9 +1976,10 @@ class MyApp(QWidget):
         password = passwords
 
         temp_Continuous = self.text_continuous.text()  # 필수
+        temp_Tree = self.account_tree.text()
         temp_TE_13 = self.line_amount.text()
 
-        if temp_Continuous == '' or temp_TE_13 == '':
+        if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '':
             self.alertbox_open()
 
         else:
@@ -2056,4 +2083,3 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MyApp()
     sys.exit(app.exec_())
-
