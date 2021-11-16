@@ -32,7 +32,7 @@ class DataFrameModel(QAbstractTableModel):
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return self._dataframe.columns[section]
+                return self._dataframe.columns[section] 
             else:
                 return str(self._dataframe.index[section])
         return QVariant()
