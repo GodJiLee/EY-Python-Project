@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 import pyodbc
 import pandas as pd
 
+
 class Calendar(QDialog):
     def __init__(self, parent):
         super(Calendar, self).__init__(parent)
@@ -31,6 +32,7 @@ class Calendar(QDialog):
         vbox.addWidget(self.label)
 
         self.setLayout(vbox)
+
 
 class Form(QWidget):
     def __init__(self):
@@ -88,6 +90,7 @@ class Form(QWidget):
         self.root.addChild(item)
 
         self.root.addChild(item)
+
 
 class DataFrameModel(QAbstractTableModel):
     DtypeRole = Qt.UserRole + 1000
@@ -188,8 +191,6 @@ class ListBoxWidget(QListWidget):
             event.ignore()
 
 
-
-
 class MyApp(QWidget):
 
     def __init__(self):
@@ -206,7 +207,6 @@ class MyApp(QWidget):
         self.selected_scenario_group = None
         self.SaveRoute = None
 
-
     def MessageBox_Open(self, text):
         self.msg = QMessageBox()
         self.msg.setIcon(QMessageBox.Information)
@@ -214,7 +214,6 @@ class MyApp(QWidget):
         self.msg.setWindowIcon(QIcon("./EY_logo.png"))
         self.msg.setText(text)
         self.msg.exec_()
-
 
     def alertbox_open(self):
         self.alt = QMessageBox()
@@ -224,7 +223,6 @@ class MyApp(QWidget):
         self.alt.setText('필수 입력값이 누락되었습니다.')
         self.alt.exec_()
 
-
     def alertbox_open2(self, state):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
@@ -233,7 +231,6 @@ class MyApp(QWidget):
         self.alt.setWindowIcon(QIcon("./EY_logo.png"))
         self.alt.setText(txt + ' 값을 ' + '숫자로만 입력해주시기 바랍니다.')
         self.alt.exec_()
-
 
     def init_UI(self):
 
@@ -266,12 +263,10 @@ class MyApp(QWidget):
         self.setGeometry(300, 100, 1000, 900)
         self.show()
 
-
-
     def connectButtonClicked(self):
 
         password = ''
-        ecode = self.line_ecode.text().strip() ##leading/trailing space 포함시 제거
+        ecode = self.line_ecode.text().strip()  ##leading/trailing space 포함시 제거
         user = 'guest'
         server = self.selected_server_name
         db = 'master'
@@ -287,7 +282,6 @@ class MyApp(QWidget):
             self.ProjectCombobox.clear()
             self.ProjectCombobox.addItem("프로젝트가 없습니다")
             return
-
 
         server_path = f"DRIVER={{SQL Server}};SERVER={server};uid={user};pwd={password};DATABASE={db};trusted_connection=yes"
 
@@ -307,7 +301,6 @@ class MyApp(QWidget):
                            AND DeletedBy IS NULL
                      """
 
-
         try:
             selected_project_names = pd.read_sql(sql_query, self.cnxn)
 
@@ -323,7 +316,6 @@ class MyApp(QWidget):
             self.ProjectCombobox.clear()
             self.ProjectCombobox.addItem("프로젝트가 없습니다.")
             return
-
 
         ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
         del self.selected_project_id, self.dataframe, self.scenario_dic
@@ -365,8 +357,6 @@ class MyApp(QWidget):
         except:
             self.selected_project_id = None
 
-
-
     def Connect_ServerInfo_Group(self):
 
         groupbox = QGroupBox('접속 정보')
@@ -399,24 +389,24 @@ class MyApp(QWidget):
         label3.setStyleSheet("color: white;")
         label4.setStyleSheet("color: white;")
 
-
         ##서버 선택 콤보박스
         self.cb_server = QComboBox(self)
         self.cb_server.addItem('--서버 목록--')
         for i in range(1, 9):
             self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
 
-
         ##scenario 유형 콤보박스
         self.comboBig = QComboBox(self)
 
         self.comboBig.addItem('Data 완전성', ['--시나리오 목록--', '04 : 계정 사용빈도 N번이하인 계정이 포함된 전표리스트', '05 : 당기 생성된 계정리스트 추출'])
         self.comboBig.addItem('Data Timing',
-                              ['--시나리오 목록--', '06 : 결산일 전후 T일 입력 전표', '07 : 영업일 전기/입력 전표', '08 : 효력, 입력 일자 간 차이가 N일 이상인 전표'])
+                              ['--시나리오 목록--', '06 : 결산일 전후 T일 입력 전표', '07 : 영업일 전기/입력 전표',
+                               '08 : 효력, 입력 일자 간 차이가 N일 이상인 전표'])
         self.comboBig.addItem('Data 업무분장',
                               ['--시나리오 목록--', '09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', '10 : 특정 전표 입력자(W)에 의해 생성된 전표'])
         self.comboBig.addItem('Data 분개검토',
-                              ['--시나리오 목록--', '11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', '12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토'])
+                              ['--시나리오 목록--', '11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토',
+                               '12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토'])
         self.comboBig.addItem('기타', ['--시나리오 목록--', '13 : 연속된 숫자로 끝나는 금액 검토',
                                      '14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)'])
 
@@ -469,17 +459,14 @@ class MyApp(QWidget):
         groupbox.setLayout(grid)
         return groupbox
 
-
     def ComboBig_Selected(self, text):
         idx = self.comboBig.currentIndex()
         self.selected_scenario_class_index = idx
         self.comboSmall.clear()
         self.comboSmall.addItems(self.comboBig.itemData(idx))
 
-
     def ComboSmall_Selected(self, text):
         self.selected_scenario_subclass_index = self.comboSmall.currentIndex()
-
 
     def connectDialog(self):
         if self.cnxn is None:
@@ -526,9 +513,6 @@ class MyApp(QWidget):
 
         elif self.selected_scenario_class_index == 4 and self.selected_scenario_subclass_index == 2:
             self.Dialog14()
-
-
-
 
     def Dialog4(self):
         self.dialog4 = QDialog()
@@ -578,6 +562,9 @@ class MyApp(QWidget):
         self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D4_clickcount = 0
+
         layout1 = QGridLayout()
         layout1.addWidget(label_freq, 0, 0)
         layout1.addWidget(self.D4_N, 0, 1)
@@ -625,6 +612,9 @@ class MyApp(QWidget):
         font11 = self.btn3.font()
         font11.setBold(True)
         self.btn3.setFont(font11)
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D5_clickcount = 0
 
         ### Close
         self.btnDialog = QPushButton('Close', self.dialog5)
@@ -787,6 +777,9 @@ class MyApp(QWidget):
         self.D6_Date2 = QLineEdit(self.dialog6)
         self.D6_Date2.setStyleSheet("background-color: white;")
         self.D6_Date2.setPlaceholderText('T 값을 입력하세요')
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D6_clickcount = 0
 
         label_tree = QLabel('특정 계정명 : ', self.dialog6)
         label_tree.setStyleSheet("color: white;")
@@ -969,6 +962,9 @@ class MyApp(QWidget):
         font4 = label_tree.font()
         font4.setBold(True)
         label_tree.setFont(font4)
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D7_clickcount = 0
 
         # 트리 예시
         self.account_tree = QTreeWidget(self.dialog7)
@@ -1176,6 +1172,9 @@ class MyApp(QWidget):
         self.D8_JE.setStyleSheet("background-color: white;")
         self.D8_JE.setPlaceholderText('전표입력자 ID를 입력하세요')
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D8_clickcount = 0
+
         labelCost = QLabel('중요성금액 : ', self.dialog8)
         labelCost.setStyleSheet("color: white;")
 
@@ -1256,6 +1255,9 @@ class MyApp(QWidget):
 
         labelTE = QLabel('TE : ', self.dialog9)
         labelTE.setStyleSheet("color: white;")
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D9_clickcount = 0
 
         font2 = labelTE.font()
         font2.setBold(True)
@@ -1353,6 +1355,9 @@ class MyApp(QWidget):
         self.D10_Account = QLineEdit(self.dialog10)
         self.D10_Account.setStyleSheet("background-color: white;")
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D10_clickcount = 0
+
         labelTE = QLabel('TE : ', self.dialog10)
         labelTE.setStyleSheet("color: white;")
 
@@ -1437,6 +1442,9 @@ class MyApp(QWidget):
         self.btnDialog2.setFont(font10)
         self.btn2.resize(110, 30)
         self.btnDialog2.resize(110, 30)
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D12_clickcount = 0
 
         # 라벨값
         labelAccount = QLabel('Account Code* : ', self.dialog12)
@@ -1652,6 +1660,9 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D13_clickcount = 0
+
         ### TreeWidget
         self.account_tree = QTreeWidget(self.dialog13)
         self.account_tree.setColumnCount(2)
@@ -1797,6 +1808,9 @@ class MyApp(QWidget):
 
         self.D14_TE = QLineEdit(self.dialog14)
         self.D14_TE.setStyleSheet("background-color: white;")
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D14_clickcount = 0
 
         self.D14_Key.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -1985,6 +1999,8 @@ class MyApp(QWidget):
         self.new_calendar.show()
 
     def extButtonClicked4(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D4_clickcount = self.D4_clickcount + 1
 
         temp_N = self.D4_N.text()
         temp_TE = self.D4_TE.text()
@@ -2002,6 +2018,12 @@ class MyApp(QWidget):
 
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
+
+        self.scenario_dic[
+            '계정 사용빈도 N번이하인 계정이 포함된 전표리스트_' + str(self.D4_clickcount) + ' (N = ' + temp_N + ')'] = self.dataframe
+        key_list = list(self.scenario_dic.keys())
+        result = [key_list[0], key_list[-1]]
+        self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_SAP(self):
 
@@ -2046,6 +2068,11 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
+        self.scenario_dic['당기 생성된 계정리스트 추출_' + str(self.D5_clickcount) + ' '] = self.dataframe
+        key_list = list(self.scenario_dic.keys())
+        result = [key_list[0], key_list[-1]]
+        self.combo_sheet.addItem(str(result[1]))
+
     def extButtonClicked5_Non_SAP(self):
 
         temp_Code_Non_SAP = self.D5_Code.text()
@@ -2065,11 +2092,17 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
+        self.scenario_dic['당기 생성된 계정리스트 추출_' + str(self.D5_clickcount) + ' '] = self.dataframe
+        key_list = list(self.scenario_dic.keys())
+        result = [key_list[0], key_list[-1]]
+        self.combo_sheet.addItem(str(result[1]))
+
     def extButtonClicked6(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D6_clickcount = self.D6_clickcount + 1
 
         tempDate = self.D6_Date.text()  # 필수값
         tempTDate = self.D6_Date2.text()  # 필수값
-        tempAccount = self.D6_Account.text()
         tempJE = self.D6_JE.text()
         tempCost = self.D6_Cost.text()
 
@@ -2118,6 +2151,12 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
+                self.scenario_dic['결산일 전후 T일 입력 전표_' + str(self.D6_clickcount) +
+                                  ' (결산일 = ' + tempDate + ', T일 = ' + tempTDate + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
+
             except ValueError:
                 try:
                     int(tempTDate)
@@ -2134,8 +2173,10 @@ class MyApp(QWidget):
 
     def extButtonClicked7(self):
 
+        # 다이얼로그별 Clickcount 설정
+        self.D7_clickcount = self.D7_clickcount + 1
+
         tempDate = self.D7_Date.text()  # 필수값
-        tempAccount = self.D7_Account.text()
         tempJE = self.D7_JE.text()
         tempCost = self.D7_Cost.text()
 
@@ -2190,13 +2231,21 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
+                self.scenario_dic[
+                    '영업일 전기/입력 전표_' + str(self.D7_clickcount) + ' (영업일 전기/입력일 = ' + tempDate + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
+
             except ValueError:
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked8(self):
 
+        # 다이얼로그별 Clickcount 설정
+        self.D8_clickcount = self.D8_clickcount + 1
+
         tempN = self.D8_N.text()  # 필수값
-        tempAccount = self.D8_Account.text()
         tempJE = self.D8_JE.text()
         tempCost = self.D8_Cost.text()
 
@@ -2243,6 +2292,11 @@ class MyApp(QWidget):
 
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
+                self.scenario_dic[
+                    '효력, 입력 일자 간 차이가 N일 이상인 전표_' + str(self.D8_clickcount) + ' (N = ' + tempN + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
 
             except ValueError:
                 try:
@@ -2329,11 +2383,14 @@ class MyApp(QWidget):
             self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
         key_list = list(self.scenario_dic.keys())
         result = [key_list[0], key_list[-1]]
-        model = DataFrameModel(self.scenario_dic[result[1]])
         self.combo_sheet.addItem(str(result[1]))
+
+        model = DataFrameModel(self.scenario_dic[result[1]])
         self.viewtable.setModel(model)
 
     def extButtonClicked10(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D10_clickcount = self.D10_clickcount + 1
 
         tempSearch = self.D10_Search.text()  # 필수값
         tempAccount = self.D10_Account.text()
@@ -2380,7 +2437,15 @@ class MyApp(QWidget):
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
+            self.scenario_dic['특정 전표 입력자(W)에 의해 생성된 전표_' + str(
+                self.D10_clickcount) + '(전표 입력자(W) = ' + tempSearch + ', TE = ' + tempTE + ')'] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            self.combo_sheet.addItem(str(result[1]))
+
     def extButtonClicked12(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D12_clickcount = self.D12_clickcount + 1
 
         tempCode = self.D12_Code.text()
         tempCost = self.D12_Cost.text()
@@ -2399,6 +2464,7 @@ class MyApp(QWidget):
 
         else:
             try:
+                int(tempCode)
                 int(tempCost)
                 cursor = self.cnxn.cursor()
 
@@ -2436,10 +2502,18 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
+                self.scenario_dic['특정 계정(A)이 감소할 때 상대계정 리스트 검토_' + str(
+                    self.D12_clickcount) + ' (특정 계정(A) = ' + tempCode + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
+
             except ValueError:
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked13(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D13_clickcount = self.D13_clickcount + 1
 
         temp_Continuous = self.text_continuous.text()  # 필수
         temp_Tree = self.account_tree.text()
@@ -2459,7 +2533,16 @@ class MyApp(QWidget):
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
+        self.scenario_dic[
+            '연속된 숫자로 끝나는 금액 검토_' + str(self.D13_clickcount) + '연속되는 숫자 = ' + tempContinuous + ')'] = self.dataframe
+        key_list = list(self.scenario_dic.keys())
+        result = [key_list[0], key_list[-1]]
+        self.combo_sheet.addItem(str(result[1]))
+
     def extButtonClicked14(self):
+        # 다이얼로그별 Clickcount 설정
+        self.D14_clickcount = self.D14_clickcount + 1
+
         tempKey = self.D14_Key.text()  # 필수값
         tempTE = self.D14_TE.text()
 
@@ -2505,14 +2588,19 @@ class MyApp(QWidget):
                     '''.format(field=self.selected_project_id, key=tempKey, amount=tempTE)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
-
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
+
+                self.scenario_dic['전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)_' + str(
+                    self.D14_clickcount) + 'Key Word = ' + tempKey + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
+
             return
         except:
             QMessageBox.about(self, "Warning", "중요성금액에는 숫자를 입력해주세요.")
             return
-
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
@@ -2527,28 +2615,23 @@ class MyApp(QWidget):
         else:
             self.MessageBox_Open("저장 경로를 선택하지 않았습니다.")
 
-
     def saveFile(self):
         if self.dataframe is None:
             self.MessageBox_Open("저장할 데이터가 없습니다")
             return
 
-
         if self.scenario_dic == {}:
             self.MessageBox_Open("저장할 Sheet가 없습니다")
             return
-
 
         if self.SaveRoute == '' or self.SaveRoute is None:
             self.MessageBox_Open("저장 경로가 지정되지 않았습니다")
             return
 
-
         with pd.ExcelWriter(self.SaveRoute, engine='xlsxwriter') as writer:
 
             for sheet_name, df in self.scenario_dic.items():
                 df.to_excel(writer, sheet_name=sheet_name, index=False, encoding='utf-8')
-
 
 
 if __name__ == '__main__':
