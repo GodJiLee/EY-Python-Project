@@ -2,13 +2,12 @@ import sys
 import re
 import datetime
 from dateutil.relativedelta import relativedelta
-
+import gc
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import pyodbc
 import pandas as pd
-
 
 class Calendar(QDialog):
     def __init__(self, parent):
@@ -33,7 +32,6 @@ class Calendar(QDialog):
 
         self.setLayout(vbox)
 
-
 class Form(QWidget):
     def __init__(self):
         QWidget.__init__(self, flags=Qt.widget)
@@ -49,13 +47,13 @@ class Form(QWidget):
         self.tw.header().setSectionResizeMode(QHeaderView.Stretch)
         self.root = self.tw.invisibleRootItem()
 
-        ### 데이터 계층적으로 저장하기
-        # data = [
-        #     {"type": "1_Assets",
-        #      "objects": [("11_유동자산"), ("12_비유동자산")]},
-        #     {"type": "2_Liability",
-        #      "objects": [("21_유동부채"), ("22_비유동부채")]}
-        # ]
+        ## 데이터 계층적으로 저장하기
+        data = [
+            {"type": "1_Assets",
+             "objects": [("11_유동자산"), ("12_비유동자산")]},
+            {"type": "2_Liability",
+             "objects": [("21_유동부채"), ("22_비유동부채")]}
+        ]
 
         for d in data:
             parent = self.add_tree_root(d['type'], "")
@@ -90,7 +88,6 @@ class Form(QWidget):
         self.root.addChild(item)
 
         self.root.addChild(item)
-
 
 class DataFrameModel(QAbstractTableModel):
     DtypeRole = Qt.UserRole + 1000
@@ -130,8 +127,7 @@ class DataFrameModel(QAbstractTableModel):
         return self._dataframe.columns.size
 
     def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < self.rowCount() \
-                                       and 0 <= index.column() < self.columnCount()):
+        if not index.isValid() or not (0 <= index.row() < self.rowCount() and 0 <= index.column() < self.columnCount()):
             return QVariant()
         row = self._dataframe.index[index.row()]
         col = self._dataframe.columns[index.column()]
@@ -192,6 +188,8 @@ class ListBoxWidget(QListWidget):
             event.ignore()
 
 
+
+
 class MyApp(QWidget):
 
     def __init__(self):
@@ -201,17 +199,46 @@ class MyApp(QWidget):
         self.selected_project_id = None
         self.selected_server_name = "--서버 목록--"
         self.dataframe = None
-        self.users = None
         self.cnxn = None
-        self.selected_senario_class = None
-        self.selected_senario_subclass = None
+        self.selected_scenario_class_index = 0
+        self.selected_scenario_subclass_index = 0
+        self.scenario_dic = {}
+        self.selected_scenario_group = None
+        self.SaveRoute = None
+
+
+    def MessageBox_Open(self, text):
+        self.msg = QMessageBox()
+        self.msg.setIcon(QMessageBox.Information)
+        self.msg.setWindowTitle("Warning")
+        self.msg.setWindowIcon(QIcon("./EY_logo.png"))
+        self.msg.setText(text)
+        self.msg.exec_()
+
+
+    def alertbox_open(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('필수 입력값 누락')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('필수 입력값이 누락되었습니다.')
+        self.alt.exec_()
+
+
+    def alertbox_open2(self, state):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        txt = state
+        self.alt.setWindowTitle('필수 입력값 타입 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText(txt + ' 값을 ' + '숫자로만 입력해주시기 바랍니다.')
+        self.alt.exec_()
+
 
     def init_UI(self):
-        # 시나리오 딕셔너리 선언
-        self.scenario_dic = {}
 
-        img = QImage('./dark_gray.png')
-        scaledImg = img.scaled(QSize(1000, 700))
+        image = QImage('./dark_gray.png')
+        scaledImg = image.scaled(QSize(1000, 900))
         palette = QPalette()
         palette.setBrush(10, QBrush(scaledImg))
         self.setPalette(palette)
@@ -236,35 +263,37 @@ class MyApp(QWidget):
         self.setWindowIcon(QIcon("./EY_logo.png"))
         self.setWindowTitle('Scenario')
 
-        self.setGeometry(300, 300, 1000, 700)
+        self.setGeometry(300, 100, 1000, 900)
         self.show()
 
-    def Server_ComboBox_Selected(self, text):
-        self.selected_server_name = text
+
 
     def connectButtonClicked(self):
-        global passwords
-        global users
 
-        passwords = ''
-        ecode = self.le3.text()
-        users = 'guest'
+        password = ''
+        ecode = self.line_ecode.text().strip() ##leading/trailing space 포함시 제거
+        user = 'guest'
         server = self.selected_server_name
-        password = passwords
         db = 'master'
-        user = users
 
         # 예외처리 - 서버 선택
         if server == "--서버 목록--":
-            QMessageBox.about(self, "Warning", "서버가 선택되어 있지 않습니다")
+            self.MessageBox_Open("서버가 선택되어 있지 않습니다")
             return
+
+        # 예외처리 - Ecode 이상
+        elif ecode.isdigit() is False:
+            self.MessageBox_Open("Engagement Code가 잘못되었습니다")
+            self.ProjectCombobox.clear()
+            self.ProjectCombobox.addItem("프로젝트가 없습니다")
+            return
+
+
+        server_path = f"DRIVER={{SQL Server}};SERVER={server};uid={user};pwd={password};DATABASE={db};trusted_connection=yes"
 
         # 예외처리 - 접속 정보 오류
         try:
-            self.cnxn = pyodbc.connect("DRIVER={SQL Server};SERVER=" +
-                                       server + ";uid=" + user + ";pwd=" +
-                                       password + ";DATABASE=" + db +
-                                       ";trusted_connection=" + "yes")
+            self.cnxn = pyodbc.connect(server_path)
         except:
             QMessageBox.about(self, "Warning", "접속 정보가 잘못되었습니다")
             return
@@ -278,95 +307,75 @@ class MyApp(QWidget):
                            AND DeletedBy IS NULL
                      """
 
-        # 예외처리 - ecode, pname 오류
+
         try:
             selected_project_names = pd.read_sql(sql_query, self.cnxn)
-            if len(selected_project_names) == 0:
-                QMessageBox.about(self, "Warning", "해당 Engagement Code 내 프로젝트가 존재하지 않습니다.")
-                self.ProjectCombobox.clear()
-                self.ProjectCombobox.addItem("프로젝트가 없습니다.")
-
-            else:
-                self.ProjectCombobox.clear()
-                self.ProjectCombobox.addItem("--프로젝트 목록--")
-
-                for i in range(0, len(selected_project_names)):
-                    self.ProjectCombobox.addItem(selected_project_names.iloc[i, 0])
-
-            return
 
         except:
-            QMessageBox.about(self, "Warning", "Engagement Code를 입력하세요.")
+            self.MessageBox_Open("Engagement Code를 입력하세요.")
             self.ProjectCombobox.clear()
             self.ProjectCombobox.addItem("프로젝트가 없습니다")
             return
 
-    def onActivated(self, text):
-        global ids
-        ids = text
+        # 예외처리 - 해당 ecode에 아무런 프로젝트가 없는 경우
+        if len(selected_project_names) == 0:
+            self.MessageBox_Open("해당 Engagement Code 내 프로젝트가 존재하지 않습니다.")
+            self.ProjectCombobox.clear()
+            self.ProjectCombobox.addItem("프로젝트가 없습니다.")
+            return
 
-    def updateSmallCombo(self, index):
-        global big
-        big = index
-        self.comboSmall.clear()
-        sc = self.comboBig.itemData(index)
-        if sc:
-            self.comboSmall.addItems(sc)
 
-    def saveSmallCombo(self, index):
-        global small
-        small = index
+        ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
+        del self.selected_project_id, self.dataframe, self.scenario_dic
+        gc.collect()
 
-    def Project_ID_Selected(self, text):
-        self.selected_project_id = text
+        self.ProjectCombobox.clear()
+        self.ProjectCombobox.addItem("--프로젝트 목록--")
+        for i in range(len(selected_project_names)):
+            self.ProjectCombobox.addItem(selected_project_names.iloc[i, 0])
 
-    def connectDialog(self):
-        if self.selected_project_id == '--프로젝트 목록--' or self.selected_project_id == None:
-            QMessageBox.about(self, "Warning", "프로젝트를 선택하세요.")
-        else:
-            if big == 0 and small == 1:
-                self.Dialog4()
+        self.selected_project_id = None
+        self.dataframe = None
+        self.scenario_dic = {}
 
-            elif big == 0 and small == 2:
-                self.Dialog5()
+    def Server_ComboBox_Selected(self, text):
+        self.selected_server_name = text
 
-            elif big == 1 and small == 1:
-                self.Dialog6()
+    def Project_ComboBox_Selected(self, text):
+        ecode = self.line_ecode.text().strip()  # leading/trailing space 제거
+        pname = text
 
-            elif big == 1 and small == 2:
-                self.Dialog7()
+        ## 예외처리 - 서버가 연결되지 않은 상태로 Project name Combo box를 건드리는 경우
+        if self.cnxn is None:
+            return
 
-            elif big == 1 and small == 3:
-                self.Dialog8()
+        cursor = self.cnxn.cursor()
 
-            elif big == 2 and small == 1:
-                self.Dialog9()
+        sql_query = f"""
+                        SELECT Project_ID
+                        FROM [DataAnalyticsRepository].[dbo].[Projects]
+                        WHERE ProjectName IN (\'{pname}\')
+                        AND EngagementCode IN ({ecode})
+                        AND DeletedBy is Null
+                     """
 
-            elif big == 2 and small == 2:
-                self.Dialog10()
+        ## 예외처리 - 에러 표시인 "프로젝트가 없습니다"가 선택되어 있는 경우
+        try:
+            self.selected_project_id = pd.read_sql(sql_query, self.cnxn).iloc[0, 0]
+        except:
+            self.selected_project_id = None
 
-            elif big == 3 and small == 1:
-                self.Dialog11()
 
-            elif big == 3 and small == 2:
-                self.Dialog12()
-
-            elif big == 4 and small == 1:
-                self.Dialog13()
-
-            elif big == 4 and small == 2:
-                self.Dialog14()
-
-            else:
-                QMessageBox.about(self, "Warning", "시나리오를 선택하세요.")
 
     def Connect_ServerInfo_Group(self):
+
         groupbox = QGroupBox('접속 정보')
         self.setStyleSheet('QGroupBox  {color: white;}')
-        font5 = groupbox.font()
-        font5.setBold(True)
-        groupbox.setFont(font5)
+        font_groupbox = groupbox.font()
+        font_groupbox.setBold(True)
+        groupbox.setFont(font_groupbox)
 
+        ##labels 생성 및 스타일 지정
         label1 = QLabel('Server : ', self)
         label2 = QLabel('Engagement Code : ', self)
         label3 = QLabel('Project Name : ', self)
@@ -390,77 +399,136 @@ class MyApp(QWidget):
         label3.setStyleSheet("color: white;")
         label4.setStyleSheet("color: white;")
 
-        self.cb = QComboBox(self)
-        self.cb.addItem('--서버 목록--')
-        self.cb.addItem('KRSEOVMPPACSQ01\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ02\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ03\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ04\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ05\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ06\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ07\INST1')
-        self.cb.addItem('KRSEOVMPPACSQ08\INST1')
-        self.cb.move(50, 50)
 
-        self.cb.activated[str].connect(self.Server_ComboBox_Selected)
+        ##서버 선택 콤보박스
+        self.cb_server = QComboBox(self)
+        self.cb_server.addItem('--서버 목록--')
+        for i in range(1, 9):
+            self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
 
+
+        ##scenario 유형 콤보박스
         self.comboBig = QComboBox(self)
 
-        self.comboBig.addItem('Data 완전성', ['--시나리오 목록--', '계정 사용빈도 N번이하인 계정이 포함된 전표리스트', '당기 생성된 계정리스트 추출'])
+        self.comboBig.addItem('Data 완전성', ['--시나리오 목록--', '04 : 계정 사용빈도 N번이하인 계정이 포함된 전표리스트', '05 : 당기 생성된 계정리스트 추출'])
         self.comboBig.addItem('Data Timing',
-                              ['--시나리오 목록--', '결산일 전후 T일 입력 전표', '영업일 전기/입력 전표', '효력, 입력 일자 간 차이가 N일 이상인 전표'])
+                              ['--시나리오 목록--', '06 : 결산일 전후 T일 입력 전표', '07 : 영업일 전기/입력 전표', '08 : 효력, 입력 일자 간 차이가 N일 이상인 전표'])
         self.comboBig.addItem('Data 업무분장',
-                              ['--시나리오 목록--', '전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', '특정 전표 입력자(W)에 의해 생성된 전표'])
+                              ['--시나리오 목록--', '09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', '10 : 특정 전표 입력자(W)에 의해 생성된 전표'])
         self.comboBig.addItem('Data 분개검토',
-                              ['--시나리오 목록--', '특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', '특정 계정(A)이 감소할 때 상대계정 리스트 검토'])
-        self.comboBig.addItem('기타', ['--시나리오 목록--', '연속된 숫자로 끝나는 금액 검토',
-                                     '전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)'])
+                              ['--시나리오 목록--', '11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', '12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토'])
+        self.comboBig.addItem('기타', ['--시나리오 목록--', '13 : 연속된 숫자로 끝나는 금액 검토',
+                                     '14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)'])
 
+        ##시나리오 세부 내역/프로젝트 선택 콤보박스
         self.comboSmall = QComboBox(self)
-
-        self.comboBig.currentIndexChanged.connect(self.updateSmallCombo)
-        self.updateSmallCombo(self.comboBig.currentIndex())
-
-        self.comboSmall.currentIndexChanged.connect(self.saveSmallCombo)
-        self.saveSmallCombo(self.comboSmall.currentIndex())
-
-        btn1 = QPushButton('   SQL Server Connect', self)
-        font1 = btn1.font()
-        font1.setBold(True)
-        btn1.setFont(font1)
-        btn1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-
-        btn1.clicked.connect(self.connectButtonClicked)
+        self.comboSmall.addItems(self.comboBig.itemData(0))
 
         self.ProjectCombobox = QComboBox(self)
-        self.cb.activated[str].connect(self.onActivated)
-        self.ProjectCombobox.activated[str].connect(self.projectselected)
-        self.le3 = QLineEdit(self)
 
-        btn2 = QPushButton('   Input Conditions', self)
-        font2 = btn2.font()
-        font2.setBold(True)
-        btn2.setFont(font2)
-        btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        ##Engagement code 입력 line
+        self.line_ecode = QLineEdit(self)
+        self.line_ecode.setText("")
 
-        btn2.clicked.connect(self.connectDialog)
+        ##SQL SERVER CONNECT 버튼 생성 및 스타일 지정
+        btn_server = QPushButton('   SQL Server Connect', self)
+        font_btn_server = btn_server.font()
+        font_btn_server.setBold(True)
+        btn_server.setFont(font_btn_server)
+        btn_server.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
+        ##Input Conditions 버튼 생성 및 스타일 지정
+        btn_condition = QPushButton('   Input Conditions', self)
+        font_btn_condition = btn_condition.font()
+        font_btn_condition.setBold(True)
+        btn_condition.setFont(font_btn_condition)
+        btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
+
+        ##Signal 함수들
+        self.comboBig.activated[str].connect(self.ComboBig_Selected)
+        self.comboSmall.activated[str].connect(self.ComboSmall_Selected)
+        self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
+        btn_server.clicked.connect(self.connectButtonClicked)
+        self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
+        btn_condition.clicked.connect(self.connectDialog)
+
+        ##layout 쌓기
         grid = QGridLayout()
         grid.addWidget(label1, 0, 0)
         grid.addWidget(label2, 1, 0)
         grid.addWidget(label3, 2, 0)
         grid.addWidget(label4, 3, 0)
-        grid.addWidget(self.cb, 0, 1)
-        grid.addWidget(btn1, 0, 2)
+        grid.addWidget(self.cb_server, 0, 1)
+        grid.addWidget(btn_server, 0, 2)
         grid.addWidget(self.comboBig, 3, 1)
         grid.addWidget(self.comboSmall, 4, 1)
-        grid.addWidget(btn2, 4, 2)
-        grid.addWidget(self.le3, 1, 1)
+        grid.addWidget(btn_condition, 4, 2)
+        grid.addWidget(self.line_ecode, 1, 1)
         grid.addWidget(self.ProjectCombobox, 2, 1)
 
         groupbox.setLayout(grid)
-
         return groupbox
+
+
+    def ComboBig_Selected(self, text):
+        idx = self.comboBig.currentIndex()
+        self.selected_scenario_class_index = idx
+        self.comboSmall.clear()
+        self.comboSmall.addItems(self.comboBig.itemData(idx))
+
+
+    def ComboSmall_Selected(self, text):
+        self.selected_scenario_subclass_index = self.comboSmall.currentIndex()
+
+
+    def connectDialog(self):
+        if self.cnxn is None:
+            self.MessageBox_Open("SQL 서버가 연결되어 있지 않습니다")
+            return
+
+        elif self.selected_project_id is None:
+            self.MessageBox_Open("프로젝트가 선택되지 않았습니다")
+            return
+
+        elif self.selected_scenario_subclass_index == 0:
+            self.MessageBox_Open("시나리오가 선택되지 않았습니다")
+            return
+
+        if self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 1:
+            self.Dialog4()
+
+        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 2:
+            self.Dialog5()
+
+        elif self.selected_scenario_class_index == 1 and self.selected_scenario_subclass_index == 1:
+            self.Dialog6()
+
+        elif self.selected_scenario_class_index == 1 and self.selected_scenario_subclass_index == 2:
+            self.Dialog7()
+
+        elif self.selected_scenario_class_index == 1 and self.selected_scenario_subclass_index == 3:
+            self.Dialog8()
+
+        elif self.selected_scenario_class_index == 2 and self.selected_scenario_subclass_index == 1:
+            self.Dialog9()
+
+        elif self.selected_scenario_class_index == 2 and self.selected_scenario_subclass_index == 2:
+            self.Dialog10()
+
+        elif self.selected_scenario_class_index == 3 and self.selected_scenario_subclass_index == 1:
+            self.Dialog11()
+
+        elif self.selected_scenario_class_index == 3 and self.selected_scenario_subclass_index == 2:
+            self.Dialog12()
+
+        elif self.selected_scenario_class_index == 4 and self.selected_scenario_subclass_index == 1:
+            self.Dialog13()
+
+        elif self.selected_scenario_class_index == 4 and self.selected_scenario_subclass_index == 2:
+            self.Dialog14()
+
+
+
 
     def Dialog4(self):
         self.dialog4 = QDialog()
@@ -1907,46 +1975,6 @@ class MyApp(QWidget):
 
         return groupbox
 
-    def projectselected(self, text):
-        self.Project_ID_Selected(text)
-        passwords = ''
-        users = 'guest'
-
-        server = ids
-        password = passwords
-        db = 'master'
-        user = users
-        cnxn = pyodbc.connect(
-            "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-        cursor = cnxn.cursor()
-
-        sql = '''
-                    SELECT Project_ID
-                    FROM [DataAnalyticsRepository].[dbo].[Projects]
-                    WHERE ProjectName IN (\'{pname}\')
-                    AND DeletedBy is Null
-                '''.format(pname=text)
-
-        fieldID = pd.read_sql(sql, cnxn)
-
-        global fields
-        fields = fieldID.iloc[0, 0]
-
-    def alertbox_open(self):
-        self.alt = QMessageBox()
-        self.alt.setIcon(QMessageBox.Information)
-        self.alt.setWindowTitle('필수 입력값 누락')
-        self.alt.setText('필수 입력값이 누락되었습니다.')
-        self.alt.exec_()
-
-    def alertbox_open2(self, state):
-        self.alt = QMessageBox()
-        self.alt.setIcon(QMessageBox.Information)
-        txt = state
-        self.alt.setWindowTitle('필수 입력값 타입 오류')
-        self.alt.setText(txt + ' 값을 ' + '숫자로만 입력해주시기 바랍니다.')
-        self.alt.exec_()
-
     def handle_date_clicked(self, date):
         self.D6_Date.setText(date.toString("yyyy-MM-dd"))
 
@@ -1957,10 +1985,6 @@ class MyApp(QWidget):
         self.new_calendar.show()
 
     def extButtonClicked4(self):
-        password = ''
-        users = 'guest'
-        server = ids  # 서버명
-        password = passwords
 
         temp_N = self.D4_N.text()
         temp_TE = self.D4_TE.text()
@@ -1969,19 +1993,10 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server +
-                ";uid=" + user +
-                ";pwd=" + password +
-                ";DATABASE=" + db +
-                ";trusted_connection=" + "yes"
-            )
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
             sql_query = """
-            """.format(field=fields)
+            """.format(field=self.selected_project_id)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -2022,18 +2037,9 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server +
-                ";uid=" + user +
-                ";pwd=" + password +
-                ";DATABASE=" + db +
-                ";trusted_connection=" + "yes"
-            )
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
-            sql_query = """""".format(field=fields)
+            sql_query = """""".format(field=self.selected_project_id)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -2041,10 +2047,6 @@ class MyApp(QWidget):
         self.viewtable.setModel(model)
 
     def extButtonClicked5_Non_SAP(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         temp_Code_Non_SAP = self.D5_Code.text()
         temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
@@ -2054,18 +2056,9 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server +
-                ";uid=" + user +
-                ";pwd=" + password +
-                ";DATABASE=" + db +
-                ";trusted_connection=" + "yes"
-            )
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
-            sql_query = """""".format(field=fields)
+            sql_query = """""".format(field=self.selected_project_id)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -2073,10 +2066,6 @@ class MyApp(QWidget):
         self.viewtable.setModel(model)
 
     def extButtonClicked6(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempDate = self.D6_Date.text()  # 필수값
         tempTDate = self.D6_Date2.text()  # 필수값
@@ -2093,11 +2082,7 @@ class MyApp(QWidget):
             try:
                 int(tempTDate)
                 int(tempCost)
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
                 # sql문 수정
                 sql = '''
@@ -2126,7 +2111,7 @@ class MyApp(QWidget):
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                 ORDER BY JENumber, JELineNumber											
-                            '''.format(field=fields)
+                            '''.format(field=self.selected_project_id)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2148,10 +2133,6 @@ class MyApp(QWidget):
                         self.alertbox_open2('T값과 중요성금액')
 
     def extButtonClicked7(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempDate = self.D7_Date.text()  # 필수값
         tempAccount = self.D7_Account.text()
@@ -2173,11 +2154,7 @@ class MyApp(QWidget):
         else:
             try:
                 int(tempCost)
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
                 # sql문 수정
                 sql = '''
@@ -2206,7 +2183,7 @@ class MyApp(QWidget):
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                ORDER BY JENumber, JELineNumber											
-                           '''.format(field=fields)
+                           '''.format(field=self.selected_project_id)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2217,10 +2194,6 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked8(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempN = self.D8_N.text()  # 필수값
         tempAccount = self.D8_Account.text()
@@ -2235,11 +2208,7 @@ class MyApp(QWidget):
             try:
                 int(tempN)
                 int(tempCost)
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
                 # sql문 수정
                 sql = '''
@@ -2268,7 +2237,7 @@ class MyApp(QWidget):
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                ORDER BY JENumber, JELineNumber											
-                            '''.format(field=fields)
+                            '''.format(field=self.selected_project_id)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2292,11 +2261,6 @@ class MyApp(QWidget):
     def extButtonClicked9(self):
         # 다이얼로그별 Clickcount 설정
         self.D9_clickcount = self.D9_clickcount + 1
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
-
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
 
@@ -2304,11 +2268,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
             # sql문 수정
             sql = '''
@@ -2337,7 +2297,7 @@ class MyApp(QWidget):
                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.Amount > {amount}
                    ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields, amount=tempTE)
+                '''.format(field=self.selected_project_id, amount=tempTE)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2351,10 +2311,6 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
     def extButtonClicked10(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempSearch = self.D10_Search.text()  # 필수값
         tempAccount = self.D10_Account.text()
@@ -2365,11 +2321,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
             # sql문 수정
             sql = '''
@@ -2398,7 +2350,7 @@ class MyApp(QWidget):
                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                    ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+                '''.format(field=self.selected_project_id)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2406,10 +2358,6 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
     def extButtonClicked12(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempCode = self.D12_Code.text()
         tempCost = self.D12_Cost.text()
@@ -2429,11 +2377,7 @@ class MyApp(QWidget):
         else:
             try:
                 int(tempCost)
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
                 # sql문 수정
                 sql = '''
@@ -2462,7 +2406,7 @@ class MyApp(QWidget):
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                ORDER BY JENumber, JELineNumber											
-                           '''.format(field=fields)
+                           '''.format(field=self.selected_project_id)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2473,10 +2417,6 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked13(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         temp_Continuous = self.text_continuous.text()  # 필수
         temp_Tree = self.account_tree.text()
@@ -2486,30 +2426,17 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server +
-                ";uid=" + user +
-                ";pwd=" + password +
-                ";DATABASE=" + db +
-                ";trusted_connection=" + "yes"
-            )
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
             # sql문 수정
             sql_query = '''
-            '''.format(field=fields)
+            '''.format(field=self.selected_project_id)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
         model = DataFrameModel(self.dataframe)
         self.viewtable.setModel(model)
 
     def extButtonClicked14(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
 
         tempKey = self.D14_Key.text()  # 필수값
         tempTE = self.D14_TE.text()
@@ -2518,11 +2445,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+            cursor = self.cnxn.cursor()
 
             # sql문 수정
             sql = '''
@@ -2551,35 +2474,49 @@ class MyApp(QWidget):
                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                    ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+                '''.format(field=self.selected_project_id)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
+
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
         self.stk_w.setCurrentIndex(QModelIndex.row())
 
     def saveFileDialog(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
-                                                  "All Files (*);;Text Files (*.csv)", options=options)
-        if fileName:
-            global saveRoute
-            saveRoute = fileName + ".csv"
-            self.line_savepath.setText(saveRoute)
+        fileName = QFileDialog.getSaveFileName(self, "Save File", '', ".xlsx")
+
+        if fileName[0]:
+            self.SaveRoute = fileName[0] + fileName[1]
+            self.line_savepath.setText(self.SaveRoute)
+        else:
+            self.MessageBox_Open("저장 경로를 선택하지 않았습니다.")
+
 
     def saveFile(self):
         if self.dataframe is None:
-            QMessageBox.about(self, "Warning", "저장할 데이터가 없습니다")
+            self.MessageBox_Open("저장할 데이터가 없습니다")
             return
 
-        else:
-            self.dataframe.to_csv(saveRoute, index=False, encoding='utf-8-sig')
-            QMessageBox.about(self, "Warning", "데이터를 저장했습니다.")
+
+        if self.scenario_dic == {}:
+            self.MessageBox_Open("저장할 Sheet가 없습니다")
+            return
+
+
+        if self.SaveRoute == '' or self.SaveRoute is None:
+            self.MessageBox_Open("저장 경로가 지정되지 않았습니다")
+            return
+
+
+        with pd.ExcelWriter(self.SaveRoute, engine='xlsxwriter') as writer:
+
+            for sheet_name, df in self.scenario_dic.items():
+                df.to_excel(writer, sheet_name=sheet_name, index=False, encoding='utf-8')
+
 
 
 if __name__ == '__main__':
