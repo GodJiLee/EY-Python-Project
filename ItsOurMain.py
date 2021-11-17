@@ -1855,7 +1855,7 @@ class MyApp(QWidget):
         self.dialog12.setWindowModality(Qt.NonModal)
         self.dialog12.show()
 
-        def Dialog13(self):
+    def Dialog13(self):
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
         self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
@@ -2710,6 +2710,38 @@ class MyApp(QWidget):
             key_list = list(self.scenario_dic.keys())
             result = [key_list[0], key_list[-1]]
             self.combo_sheet.addItem(str(result[1]))
+
+    def extButtonClicked11(self):
+        passwords = ''
+        users = 'guest'
+        server = ids
+        password = passwords
+
+        temp_Tree_A = self.account_tree_A.text()
+        temp_Tree_B = self.account_tree_B.text()
+
+        if temp_Tree_A == '' or temp_Tree_B == '':
+            self.alertbox_open()
+
+        else:
+            db = 'master'
+            user = users
+            cnxn = pyodbc.connect(
+                "DRIVER={SQL Server};SERVER=" + server +
+                ";uid=" + user +
+                ";pwd=" + password +
+                ";DATABASE=" + db +
+                ";trusted_connection=" + "yes"
+            )
+            cursor = cnxn.cursor()
+
+            # sql문 수정
+            sql_query = '''
+                    '''.format(field=fields)
+
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+        model = DataFrameModel(self.dataframe)
+        self.viewtable.setModel(model)
 
     def extButtonClicked12(self):
         # 다이얼로그별 Clickcount 설정
