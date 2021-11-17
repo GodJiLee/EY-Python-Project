@@ -409,6 +409,7 @@ class MyApp(QWidget):
         self.cb.activated[str].connect(self.onActivated)
         self.ProjectCombobox.activated[str].connect(self.projectselected)
         self.le3 = QLineEdit(self)
+        self.le3.setText("22269553") #나중에 지워요
 
         btn2 = QPushButton('   Input Conditions', self)
         font2 = btn2.font()
@@ -1864,55 +1865,62 @@ class MyApp(QWidget):
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
 
-        if tempN == '' or tempTE == '':
-            self.alertbox_open()
+        try:
+            N = int(tempN)
+            TE = int(tempTE)
+            if tempN == '' or tempTE == '':
+                self.alertbox_open()
 
-        else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
+            else:
+                db = 'master'
+                user = users
+                cnxn = pyodbc.connect(
                 "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+                cursor = cnxn.cursor()
 
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.Amount > {amount}
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields, amount=tempTE)
+                # sql문 수정
+                sql = '''
+                    SELECT TOP 100											
+                        JournalEntries.BusinessUnit											
+                        , JournalEntries.JENumber											
+                        , JournalEntries.JELineNumber											
+                        , JournalEntries.EffectiveDate											
+                        , JournalEntries.EntryDate											
+                        , JournalEntries.Period											
+                        , JournalEntries.GLAccountNumber											
+                        , CoA.GLAccountName											
+                        , JournalEntries.Debit											
+                        , JournalEntries.Credit											
+                        , CASE
+                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                END AS DebitCredit
+                        , JournalEntries.Amount											
+                        , JournalEntries.FunctionalCurrencyCode											
+                        ,  JournalEntries.JEDescription											
+                        , JournalEntries.JELineDescription											
+                        , JournalEntries.Source											
+                        , JournalEntries.PreparerID											
+                        , JournalEntries.ApproverID											
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.Amount > {amount}
+                    ORDER BY JENumber, JELineNumber											
+                    '''.format(field=fields, amount=tempTE)
 
-            self.dataframe = pd.read_sql(sql, self.cnxn)
+                self.dataframe = pd.read_sql(sql, self.cnxn)
 
-            # 딕셔너리 선언 및 시나리오 콤보 박스 추가
-            self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(
-                self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            model = DataFrameModel(self.scenario_dic[result[1]])
-            self.combo_sheet.addItem(str(result[1]))
-            self.viewtable.setModel(model)
+                # 딕셔너리 선언 및 시나리오 콤보 박스 추가
+                self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(
+                    self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                model = DataFrameModel(self.scenario_dic[result[1]])
+                self.combo_sheet.addItem(str(result[1]))
+                self.viewtable.setModel(model)
+                return
+        except:
+            QMessageBox.about(self,"Warning","숫자가 아닙니다.")
+
 
     def extButtonClicked10(self):
         passwords = ''
@@ -2011,49 +2019,62 @@ class MyApp(QWidget):
         tempKey = self.D14_Key.text()  # 필수값
         tempTE = self.D14_TE.text()
 
-        if tempKey == '' or tempTE == '':
-            self.alertbox_open()
+        if tempTE == '':
+            tempTE = 0
 
-        else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-            cursor = cnxn.cursor()
+        try:
+            TE = int(tempTE)
+            if tempKey == '':
+                self.alertbox_open()
 
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=fields)
+            else:
+                db = 'master'
+                user = users
+                cnxn = pyodbc.connect(
+                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+                cursor = cnxn.cursor()
 
-            self.dataframe = pd.read_sql(sql, self.cnxn)
+                # sql문 수정
+                sql = '''
+                       SELECT TOP 100											
+                           JournalEntries.BusinessUnit											
+                           , JournalEntries.JENumber											
+                           , JournalEntries.JELineNumber											
+                           , JournalEntries.EffectiveDate											
+                           , JournalEntries.EntryDate											
+                           , JournalEntries.Period											
+                           , JournalEntries.GLAccountNumber											
+                           , CoA.GLAccountName											
+                           , JournalEntries.Debit											
+                           , JournalEntries.Credit											
+                           , CASE
+                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                END AS DebitCredit
+                           , JournalEntries.Amount											
+                           , JournalEntries.FunctionalCurrencyCode											
+                           , JournalEntries.JEDescription											
+                           , JournalEntries.JELineDescription											
+                           , JournalEntries.Source											
+                           , JournalEntries.PreparerID											
+                           , JournalEntries.ApproverID											
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+                       AND JournalEntries.JEDescription LIKE N'%{key}%'
+                       AND ABS(JournalEntries.Amount) > {amount} 
+                       ORDER BY JENumber, JELineNumber											
+                    '''.format(field=fields, key=tempKey, amount=tempTE)
 
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            return
+
+        except:
+            QMessageBox.about(self, "Warning", "숫자가 아닙니다.")
+            return
+
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
