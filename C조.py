@@ -436,7 +436,6 @@ class MyApp(QWidget):
         self.cb.activated[str].connect(self.onActivated)
         self.ProjectCombobox.activated[str].connect(self.projectselected)
         self.le3 = QLineEdit(self)
-        self.le3.setText("22269553") #나중에 지워요
 
         btn2 = QPushButton('   Input Conditions', self)
         font2 = btn2.font()
@@ -704,10 +703,8 @@ class MyApp(QWidget):
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
-        self.btnDate.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
+        self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar)
-
         font11 = self.btnDate.font()
         font11.setBold(True)
         self.btnDate.setFont(font11)
@@ -723,16 +720,57 @@ class MyApp(QWidget):
         self.D6_Date2.setStyleSheet("background-color: white;")
         self.D6_Date2.setPlaceholderText('T 값을 입력하세요')
 
-        labelAccount = QLabel('특정계정 : ', self.dialog6)
-        labelAccount.setStyleSheet("color: white;")
+        label_tree = QLabel('특정 계정명 : ', self.dialog6)
+        label_tree.setStyleSheet("color: white;")
+        font4 = label_tree.font()
+        font4.setBold(True)
+        label_tree.setFont(font4)
 
-        font3 = labelAccount.font()
-        font3.setBold(True)
-        labelAccount.setFont(font3)
+        # 트리 예시
+        self.account_tree = QTreeWidget(self.dialog6)
+        self.account_tree.setColumnCount(2)
+        self.account_tree.setStyleSheet("background-color: white;")
+        self.account_tree.setHeaderLabels(['Account Type'])
+        self.account_tree.setAlternatingRowColors(False)
+        self.account_tree.header().setVisible(True)
 
-        self.D6_Account = QLineEdit(self.dialog6)
-        self.D6_Account.setStyleSheet("background-color: white;")
-        self.D6_Account.setPlaceholderText('계정명을 입력하세요')
+        itemTop1 = QTreeWidgetItem(self.account_tree)
+        itemTop1.setText(0, "1_Assets")
+        itemTop1.setFlags(itemTop1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1 = QTreeWidgetItem(itemTop1)
+        itemChild1.setFlags(itemChild1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1.setText(0, '11_유동자산')
+        itemChild1.setCheckState(0, Qt.Unchecked)
+
+        itemChild11 = QTreeWidgetItem(itemChild1)
+        itemChild11.setFlags(itemChild11.flags() | Qt.ItemIsUserCheckable)
+        itemChild11.setText(0, '1101_현금및현금성자산')
+        itemChild11.setCheckState(0, Qt.Unchecked)
+
+        itemChild12 = QTreeWidgetItem(itemChild1)
+        itemChild12.setFlags(itemChild12.flags() | Qt.ItemIsUserCheckable)
+        itemChild12.setText(0, '1105_매출채권')
+        itemChild12.setCheckState(0, Qt.Unchecked)
+
+        itemChild2 = QTreeWidgetItem(itemTop1)
+        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild2.setText(0, '12_비유동자산')
+        itemChild2.setCheckState(0, Qt.Unchecked)
+
+        itemTop2 = QTreeWidgetItem(self.account_tree)
+        itemTop2.setText(0, '2_Liability')
+        itemTop2.setFlags(itemTop2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3 = QTreeWidgetItem(itemTop2)
+        itemChild3.setFlags(itemChild3.flags() | Qt.ItemIsUserCheckable)
+        itemChild3.setText(0, '21_유동부채')
+        itemChild3.setCheckState(0, Qt.Unchecked)
+
+        itemChild4 = QTreeWidgetItem(itemTop2)
+        itemChild4.setFlags(itemChild4.flags() | Qt.ItemIsUserCheckable)
+        itemChild4.setText(0, '22_비유동부채')
+        itemChild4.setCheckState(0, Qt.Unchecked)
 
         labelJE = QLabel('전표입력자 : ', self.dialog6)
         labelJE.setStyleSheet("color: white;")
@@ -758,7 +796,6 @@ class MyApp(QWidget):
 
         self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D6_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
@@ -768,8 +805,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.btnDate, 0, 2)
         layout1.addWidget(labelDate2, 1, 0)
         layout1.addWidget(self.D6_Date2, 1, 1)
-        layout1.addWidget(labelAccount, 2, 0)
-        layout1.addWidget(self.D6_Account, 2, 1)
+        layout1.addWidget(label_tree, 2, 0)
+        layout1.addWidget(self.account_tree, 2, 1)
         layout1.addWidget(labelJE, 3, 0)
         layout1.addWidget(self.D6_JE, 3, 1)
         layout1.addWidget(labelCost, 4, 0)
@@ -789,7 +826,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog6.setLayout(main_layout)
-        self.dialog6.setGeometry(300, 300, 500, 250)
+        self.dialog6.setGeometry(300, 300, 700, 400)
 
         self.dialog6.setWindowTitle("Scenario6")
         self.dialog6.setWindowModality(Qt.NonModal)
@@ -859,16 +896,57 @@ class MyApp(QWidget):
         font11.setBold(True)
         self.btnDate.setFont(font11)
 
-        labelAccount = QLabel('특정계정 : ', self.dialog7)
-        labelAccount.setStyleSheet("color: white;")
-
-        font4 = labelAccount.font()
+        label_tree = QLabel('특정 계정명 : ', self.dialog7)
+        label_tree.setStyleSheet("color: white;")
+        font4 = label_tree.font()
         font4.setBold(True)
-        labelAccount.setFont(font4)
+        label_tree.setFont(font4)
 
-        self.D7_Account = QLineEdit(self.dialog7)
-        self.D7_Account.setStyleSheet("background-color: white;")
-        self.D7_Account.setPlaceholderText('계정명을 입력하세요')
+        # 트리 예시
+        self.account_tree = QTreeWidget(self.dialog7)
+        self.account_tree.setColumnCount(2)
+        self.account_tree.setStyleSheet("background-color: white;")
+        self.account_tree.setHeaderLabels(['Account Type'])
+        self.account_tree.setAlternatingRowColors(False)
+        self.account_tree.header().setVisible(True)
+
+        itemTop1 = QTreeWidgetItem(self.account_tree)
+        itemTop1.setText(0, "1_Assets")
+        itemTop1.setFlags(itemTop1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1 = QTreeWidgetItem(itemTop1)
+        itemChild1.setFlags(itemChild1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1.setText(0, '11_유동자산')
+        itemChild1.setCheckState(0, Qt.Unchecked)
+
+        itemChild11 = QTreeWidgetItem(itemChild1)
+        itemChild11.setFlags(itemChild11.flags() | Qt.ItemIsUserCheckable)
+        itemChild11.setText(0, '1101_현금및현금성자산')
+        itemChild11.setCheckState(0, Qt.Unchecked)
+
+        itemChild12 = QTreeWidgetItem(itemChild1)
+        itemChild12.setFlags(itemChild12.flags() | Qt.ItemIsUserCheckable)
+        itemChild12.setText(0, '1105_매출채권')
+        itemChild12.setCheckState(0, Qt.Unchecked)
+
+        itemChild2 = QTreeWidgetItem(itemTop1)
+        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild2.setText(0, '12_비유동자산')
+        itemChild2.setCheckState(0, Qt.Unchecked)
+
+        itemTop2 = QTreeWidgetItem(self.account_tree)
+        itemTop2.setText(0, '2_Liability')
+        itemTop2.setFlags(itemTop2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3 = QTreeWidgetItem(itemTop2)
+        itemChild3.setFlags(itemChild3.flags() | Qt.ItemIsUserCheckable)
+        itemChild3.setText(0, '21_유동부채')
+        itemChild3.setCheckState(0, Qt.Unchecked)
+
+        itemChild4 = QTreeWidgetItem(itemTop2)
+        itemChild4.setFlags(itemChild4.flags() | Qt.ItemIsUserCheckable)
+        itemChild4.setText(0, '22_비유동부채')
+        itemChild4.setCheckState(0, Qt.Unchecked)
 
         labelJE = QLabel('전표입력자 : ', self.dialog7)
         labelJE.setStyleSheet("color: white;")
@@ -893,7 +971,6 @@ class MyApp(QWidget):
         self.D7_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
 
         self.D7_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D7_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
@@ -905,8 +982,8 @@ class MyApp(QWidget):
         layout1.addWidget(labelDate, 0, 0)
         layout1.addWidget(self.D7_Date, 0, 1)
         layout1.addWidget(self.btnDate, 0, 2)
-        layout1.addWidget(labelAccount, 1, 0)
-        layout1.addWidget(self.D7_Account, 1, 1)
+        layout1.addWidget(label_tree, 1, 0)
+        layout1.addWidget(self.account_tree, 1, 1)
         layout1.addWidget(labelJE, 2, 0)
         layout1.addWidget(self.D7_JE, 2, 1)
         layout1.addWidget(labelCost, 3, 0)
@@ -927,7 +1004,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog7.setLayout(main_layout)
-        self.dialog7.setGeometry(300, 300, 600, 200)
+        self.dialog7.setGeometry(300, 300, 700, 400)
         self.dialog7.setWindowTitle("Scenario7")
         self.dialog7.setWindowModality(Qt.NonModal)
         self.dialog7.show()
@@ -968,16 +1045,57 @@ class MyApp(QWidget):
         self.D8_N.setStyleSheet("background-color: white;")
         self.D8_N.setPlaceholderText('N 값을 입력하세요')
 
-        labelAccount = QLabel('특정계정 : ', self.dialog8)
-        labelAccount.setStyleSheet("color: white;")
+        label_tree = QLabel('특정 계정명 : ', self.dialog8)
+        label_tree.setStyleSheet("color: white;")
+        font4 = label_tree.font()
+        font4.setBold(True)
+        label_tree.setFont(font4)
 
-        font2 = labelAccount.font()
-        font2.setBold(True)
-        labelAccount.setFont(font2)
+        # 트리 예시
+        self.account_tree = QTreeWidget(self.dialog8)
+        self.account_tree.setColumnCount(2)
+        self.account_tree.setStyleSheet("background-color: white;")
+        self.account_tree.setHeaderLabels(['Account Type'])
+        self.account_tree.setAlternatingRowColors(False)
+        self.account_tree.header().setVisible(True)
 
-        self.D8_Account = QLineEdit(self.dialog8)
-        self.D8_Account.setStyleSheet("background-color: white;")
-        self.D8_Account.setPlaceholderText('계정명을 입력하세요')
+        itemTop1 = QTreeWidgetItem(self.account_tree)
+        itemTop1.setText(0, "1_Assets")
+        itemTop1.setFlags(itemTop1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1 = QTreeWidgetItem(itemTop1)
+        itemChild1.setFlags(itemChild1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1.setText(0, '11_유동자산')
+        itemChild1.setCheckState(0, Qt.Unchecked)
+
+        itemChild11 = QTreeWidgetItem(itemChild1)
+        itemChild11.setFlags(itemChild11.flags() | Qt.ItemIsUserCheckable)
+        itemChild11.setText(0, '1101_현금및현금성자산')
+        itemChild11.setCheckState(0, Qt.Unchecked)
+
+        itemChild12 = QTreeWidgetItem(itemChild1)
+        itemChild12.setFlags(itemChild12.flags() | Qt.ItemIsUserCheckable)
+        itemChild12.setText(0, '1105_매출채권')
+        itemChild12.setCheckState(0, Qt.Unchecked)
+
+        itemChild2 = QTreeWidgetItem(itemTop1)
+        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild2.setText(0, '12_비유동자산')
+        itemChild2.setCheckState(0, Qt.Unchecked)
+
+        itemTop2 = QTreeWidgetItem(self.account_tree)
+        itemTop2.setText(0, '2_Liability')
+        itemTop2.setFlags(itemTop2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3 = QTreeWidgetItem(itemTop2)
+        itemChild3.setFlags(itemChild3.flags() | Qt.ItemIsUserCheckable)
+        itemChild3.setText(0, '21_유동부채')
+        itemChild3.setCheckState(0, Qt.Unchecked)
+
+        itemChild4 = QTreeWidgetItem(itemTop2)
+        itemChild4.setFlags(itemChild4.flags() | Qt.ItemIsUserCheckable)
+        itemChild4.setText(0, '22_비유동부채')
+        itemChild4.setCheckState(0, Qt.Unchecked)
 
         labelJE = QLabel('전표입력자 : ', self.dialog8)
         labelJE.setStyleSheet("color: white;")
@@ -1002,15 +1120,14 @@ class MyApp(QWidget):
         self.D8_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
 
         self.D8_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D8_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
         layout1.addWidget(self.D8_N, 0, 1)
-        layout1.addWidget(labelAccount, 1, 0)
-        layout1.addWidget(self.D8_Account, 1, 1)
+        layout1.addWidget(label_tree, 1, 0)
+        layout1.addWidget(self.account_tree, 1, 1)
         layout1.addWidget(labelJE, 2, 0)
         layout1.addWidget(self.D8_JE, 2, 1)
         layout1.addWidget(labelCost, 3, 0)
@@ -1030,7 +1147,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog8.setLayout(main_layout)
-        self.dialog8.setGeometry(300, 300, 500, 200)
+        self.dialog8.setGeometry(300, 300, 700, 400)
 
         self.dialog8.setWindowTitle("Scenario8")
         self.dialog8.setWindowModality(Qt.NonModal)
@@ -1216,7 +1333,7 @@ class MyApp(QWidget):
     # A,B,C조 작성 - 추후 논의
     # def Dialog11(self):
 
-    def Dialog12(self):
+    def Dialog12(self):  # 수정완료
         self.dialog12 = QDialog()
         self.dialog12.setStyleSheet('background-color: #2E2E38')
         self.dialog12.setWindowIcon(QIcon('./EY_logo.png'))
@@ -2183,77 +2300,55 @@ class MyApp(QWidget):
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
 
-        if tempN == '':
+        if tempN == '' or tempTE == '':
             self.alertbox_open()
 
         else:
-            if tempTE == '': tempTE = 0
-            try:
-                int(tempN)
-                int(tempTE)
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+            db = 'master'
+            user = users
+            cnxn = pyodbc.connect(
+                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+            cursor = cnxn.cursor()
 
-                # sql문 수정
-                sql = '''
-                               SELECT TOP 100											
-                                   JournalEntries.BusinessUnit											
-                                   , JournalEntries.JENumber											
-                                   , JournalEntries.JELineNumber											
-                                   , JournalEntries.EffectiveDate											
-                                   , JournalEntries.EntryDate											
-                                   , JournalEntries.Period											
-                                   , JournalEntries.GLAccountNumber											
-                                   , CoA.GLAccountName											
-                                   , JournalEntries.Debit											
-                                   , JournalEntries.Credit											
-                                   , CASE
-                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                        END AS DebitCredit
-                                   , JournalEntries.Amount											
-                                   , JournalEntries.FunctionalCurrencyCode											
-                                   , JournalEntries.JEDescription											
-                                   , JournalEntries.JELineDescription											
-                                   , JournalEntries.Source											
-                                   , JournalEntries.PreparerID											
-                                   , JournalEntries.ApproverID											
-                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
-                               AND ABS(JournalEntries.Amount) >= {amount} 
-                               ORDER BY JENumber, JELineNumber											
-                            '''.format(field=fields,amount=tempTE)
+            # sql문 수정
+            sql = '''
+                   SELECT TOP 100											
+                       JournalEntries.BusinessUnit											
+                       , JournalEntries.JENumber											
+                       , JournalEntries.JELineNumber											
+                       , JournalEntries.EffectiveDate											
+                       , JournalEntries.EntryDate											
+                       , JournalEntries.Period											
+                       , JournalEntries.GLAccountNumber											
+                       , CoA.GLAccountName											
+                       , JournalEntries.Debit											
+                       , JournalEntries.Credit											
+                       , CASE
+                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                            END AS DebitCredit
+                       , JournalEntries.Amount											
+                       , JournalEntries.FunctionalCurrencyCode											
+                       , JournalEntries.JEDescription											
+                       , JournalEntries.JELineDescription											
+                       , JournalEntries.Source											
+                       , JournalEntries.PreparerID											
+                       , JournalEntries.ApproverID											
+                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.Amount > {amount}
+                   ORDER BY JENumber, JELineNumber											
+                '''.format(field=fields, amount=tempTE)
 
-                self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-
-            except ValueError:
-                try:
-                    int(tempN)
-                    try:
-                        int(tempCost)
-                    except:
-                        self.alertbox_open2('중요성금액')
-                except:
-                    try:
-                        int(tempCost)
-                        self.alertbox_open2('N')
-                    except:
-                        self.alertbox_open2('N값과 중요성금액')
-
-        self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(
-            self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        model = DataFrameModel(self.scenario_dic[result[1]])
-        self.combo_sheet.addItem(str(result[1]))
-        self.viewtable.setModel(model)
-
+            # 딕셔너리 선언 및 시나리오 콤보 박스 추가
+            self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(
+                self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            model = DataFrameModel(self.scenario_dic[result[1]])
+            self.combo_sheet.addItem(str(result[1]))
+            self.viewtable.setModel(model)
 
     def extButtonClicked10(self):
         passwords = ''
@@ -2419,62 +2514,49 @@ class MyApp(QWidget):
         tempKey = self.D14_Key.text()  # 필수값
         tempTE = self.D14_TE.text()
 
-        if tempTE == '':
-            tempTE = 0
+        if tempKey == '' or tempTE == '':
+            self.alertbox_open()
 
-        try:
-            TE = int(tempTE)
-            if tempKey == '':
-                self.alertbox_open()
+        else:
+            db = 'master'
+            user = users
+            cnxn = pyodbc.connect(
+                "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+            cursor = cnxn.cursor()
 
-            else:
-                db = 'master'
-                user = users
-                cnxn = pyodbc.connect(
-                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
-                cursor = cnxn.cursor()
+            # sql문 수정
+            sql = '''
+                   SELECT TOP 100											
+                       JournalEntries.BusinessUnit											
+                       , JournalEntries.JENumber											
+                       , JournalEntries.JELineNumber											
+                       , JournalEntries.EffectiveDate											
+                       , JournalEntries.EntryDate											
+                       , JournalEntries.Period											
+                       , JournalEntries.GLAccountNumber											
+                       , CoA.GLAccountName											
+                       , JournalEntries.Debit											
+                       , JournalEntries.Credit											
+                       , CASE
+                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                            END AS DebitCredit
+                       , JournalEntries.Amount											
+                       , JournalEntries.FunctionalCurrencyCode											
+                       , JournalEntries.JEDescription											
+                       , JournalEntries.JELineDescription											
+                       , JournalEntries.Source											
+                       , JournalEntries.PreparerID											
+                       , JournalEntries.ApproverID											
+                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                   ORDER BY JENumber, JELineNumber											
+                '''.format(field=fields)
 
-                # sql문 수정
-                sql = '''
-                       SELECT TOP 100											
-                           JournalEntries.BusinessUnit											
-                           , JournalEntries.JENumber											
-                           , JournalEntries.JELineNumber											
-                           , JournalEntries.EffectiveDate											
-                           , JournalEntries.EntryDate											
-                           , JournalEntries.Period											
-                           , JournalEntries.GLAccountNumber											
-                           , CoA.GLAccountName											
-                           , JournalEntries.Debit											
-                           , JournalEntries.Credit											
-                           , CASE
-                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                END AS DebitCredit
-                           , JournalEntries.Amount											
-                           , JournalEntries.FunctionalCurrencyCode											
-                           , JournalEntries.JEDescription											
-                           , JournalEntries.JELineDescription											
-                           , JournalEntries.Source											
-                           , JournalEntries.PreparerID											
-                           , JournalEntries.ApproverID											
-                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
-                       AND JournalEntries.JEDescription LIKE N'%{key}%'
-                       AND ABS(JournalEntries.Amount) > {amount} 
-                       ORDER BY JENumber, JELineNumber											
-                    '''.format(field=fields, key=tempKey, amount=tempTE)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                self.dataframe = pd.read_sql(sql, self.cnxn)
-
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-            return
-
-        except:
-            QMessageBox.about(self, "Warning", "중요성금액에는 숫자를 입력해주세요.")
-            return
-
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
