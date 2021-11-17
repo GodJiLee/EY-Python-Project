@@ -1297,6 +1297,7 @@ class MyApp(QWidget):
 
         ### TreeWidget
         self.account_tree = QTreeWidget(self.dialog13)
+        self.account_tree.setColumnCount(2)
         self.account_tree.setStyleSheet("background-color: white;")
         self.account_tree.setHeaderLabels(['Account Type'])
         self.account_tree.setAlternatingRowColors(False)
