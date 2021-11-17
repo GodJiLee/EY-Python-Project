@@ -1320,7 +1320,7 @@ class MyApp(QWidget):
         itemChild12.setCheckState(0, Qt.Unchecked)
 
         itemChild2 = QTreeWidgetItem(itemTop1)
-        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsUserCheckable)
+        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
         itemChild2.setText(0, '12_비유동자산')
         itemChild2.setCheckState(0, Qt.Unchecked)
 
