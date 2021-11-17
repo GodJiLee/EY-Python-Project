@@ -591,12 +591,12 @@ class MyApp(QWidget):
         self.dialog4.setWindowModality(Qt.NonModal)
         self.dialog4.show()
 
-    def Dialog5(self):  # QDialog 창 수정하지 말 것
+    def Dialog5(self):
         self.dialog5 = QDialog()
         self.dialog5.setStyleSheet('background-color: #2E2E38')
         self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
 
-        ### Extract Data
+        ### 버튼 1 - Extract Data (Non-SAP)
         self.btn2 = QPushButton(' Extract Data', self.dialog5)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked5_Non_SAP)
@@ -605,6 +605,7 @@ class MyApp(QWidget):
         font9.setBold(True)
         self.btn2.setFont(font9)
 
+        ### 버튼 2 - Extract Data (SAP)
         self.btn3 = QPushButton(' Extract Data', self.dialog5)
         self.btn3.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn3.clicked.connect(self.extButtonClicked5_SAP)
@@ -613,25 +614,29 @@ class MyApp(QWidget):
         font11.setBold(True)
         self.btn3.setFont(font11)
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D5_clickcount = 0
+        self.btn2.resize(110, 30)
+        self.btn3.resize(110, 30)
 
-        ### Close
+        ### 버튼 3 - Close (SAP)
         self.btnDialog = QPushButton('Close', self.dialog5)
         self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close5)
 
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
+        font9 = self.btnDialog.font()
+        font9.setBold(True)
+        self.btnDialog.setFont(font9)
 
+        ### 버튼 4 - Close (Non-SAP)
         self.btnDialog1 = QPushButton('Close', self.dialog5)
         self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog1.clicked.connect(self.dialog_close5)
 
-        font13 = self.btnDialog1.font()
-        font13.setBold(True)
-        self.btnDialog1.setFont(font13)
+        font11 = self.btnDialog1.font()
+        font11.setBold(True)
+        self.btnDialog1.setFont(font11)
+
+        self.btnDialog.resize(110, 30)
+        self.btnDialog1.resize(110, 30)
 
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
@@ -651,13 +656,13 @@ class MyApp(QWidget):
         font2.setBold(False)
         label_Example.setFont(font2)
 
-        label_SAP_Example = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
-        label_SAP_Example.setStyleSheet('color: red;')
-        label_SAP_Example.setFont(QFont('Times font', 9))
+        label_SKA1 = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
+        label_SKA1.setStyleSheet('color: red;')
+        label_SKA1.setFont(QFont('Times font', 9))
 
-        font12 = label_SAP_Example.font()
+        font12 = label_SKA1.font()
         font12.setBold(False)
-        label_SAP_Example.setFont(font12)
+        label_SKA1.setFont(font12)
 
         ### TextEdit - 계정코드 Paste
         self.MyInput = QTextEdit(self.dialog5)
@@ -668,6 +673,7 @@ class MyApp(QWidget):
         self.listbox_drops = ListBoxWidget()
         self.listbox_drops.setStyleSheet('background-color: white;')
 
+        ### Layout 구성
         layout = QVBoxLayout()
 
         layout1 = QVBoxLayout()
@@ -678,45 +684,45 @@ class MyApp(QWidget):
         sublayout3 = QVBoxLayout()
         sublayout4 = QHBoxLayout()
 
+        ### 탭
+        tabs = QTabWidget()
         tab1 = QWidget()
         tab2 = QWidget()
-        tabs = QTabWidget()
-
-        sublayout1.addWidget(label_AccCode)
-        sublayout1.addWidget(label_Example)
-        sublayout1.addWidget(self.MyInput)
-
-        sublayout2.addStretch(1)
-        sublayout2.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
-        sublayout2.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
-        sublayout2.addStretch(1)
-
-        layout1.addLayout(sublayout1, stretch=4)
-        layout1.addLayout(sublayout2, stretch=1)
-
-        sublayout3.addWidget(label_SAP_Example)
-        sublayout3.addWidget(self.listbox_drops)
-
-        sublayout4.addStretch(1)
-        sublayout4.addWidget(self.btn3, stretch=1, alignment=Qt.AlignBottom)
-        sublayout4.addWidget(self.btnDialog1, stretch=1, alignment=Qt.AlignBottom)
-        sublayout4.addStretch(1)
-
-        layout2.addLayout(sublayout3, stretch=4)
-        layout2.addLayout(sublayout4, stretch=1)
 
         tab1.setLayout(layout1)
         tab2.setLayout(layout2)
 
-        tabs.addTab(tab1, "Non-SAP")
+        tabs.addTab(tab1, "Non SAP")
         tabs.addTab(tab2, "SAP")
 
         layout.addWidget(tabs)
 
+        ### 배치 - 탭 1
+        sublayout1.addWidget(label_AccCode)
+        sublayout1.addWidget(label_Example)
+        sublayout1.addWidget(self.MyInput)
+
+        layout1.addLayout(sublayout1, stretch=4)
+        layout1.addLayout(sublayout2, stretch=1)
+
+        sublayout2.addStretch(2)
+        sublayout2.addWidget(self.btn2)
+        sublayout2.addWidget(self.btnDialog)
+
+        ### 배치 - 탭 2
+        sublayout3.addWidget(label_SKA1)
+        sublayout3.addWidget(self.listbox_drops)
+
+        layout2.addLayout(sublayout3, stretch=4)
+        layout2.addLayout(sublayout4, stretch=1)
+
+        sublayout4.addStretch(2)
+        sublayout4.addWidget(self.btn3)
+        sublayout4.addWidget(self.btnDialog1)
+
+        ### 공통 지정
         self.dialog5.setLayout(layout)
-
         self.dialog5.resize(465, 400)
-
         self.dialog5.setWindowTitle('Scenario5')
         self.dialog5.setWindowModality(Qt.NonModal)
         self.dialog5.show()
@@ -1403,8 +1409,274 @@ class MyApp(QWidget):
         self.dialog10.setWindowModality(Qt.NonModal)
         self.dialog10.show()
 
-    # A,B,C조 작성 - 추후 논의
-    # def Dialog11(self):
+    def Dialog11(self):
+        self.dialog11 = QDialog()
+        self.dialog11.setStyleSheet('background-color: #2E2E38')
+        self.dialog11.setWindowIcon(QIcon('./EY_logo.png'))
+
+        ### 버튼 1 - Extract Data Tab 1
+        self.btn2 = QPushButton(' Extract Data', self.dialog11)
+        self.btn2.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btn2.clicked.connect(self.extButtonClicked11)
+
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
+
+        ### 버튼 2 - Close Tab 1
+        self.btnDialog = QPushButton('Close', self.dialog11)
+        self.btnDialog.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btnDialog.clicked.connect(self.dialog_close11)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+
+        ### 버튼 3 - Extract Data Tab 2
+        self.btn3 = QPushButton(' Extract Data', self.dialog11)
+        self.btn3.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btn3.clicked.connect(self.extButtonClicked11)
+
+        font11 = self.btn3.font()
+        font11.setBold(True)
+        self.btn3.setFont(font11)
+
+        ### 버튼 4 - Close Tab 2
+        self.btnDialog1 = QPushButton('Close', self.dialog11)
+        self.btnDialog1.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btnDialog1.clicked.connect(self.dialog_close11)
+
+        font13 = self.btnDialog1.font()
+        font13.setBold(True)
+        self.btnDialog1.setFont(font13)
+
+        ### 라벨 1 - 계정명 (A)
+        labelAccount_A = QLabel('주계정(A)을 선택하세요: ', self.dialog11)
+        labelAccount_A.setStyleSheet('color: white;')
+        labelAccount_A.setFont(QFont('Arial', 9))
+
+        font7 = labelAccount_A.font()
+        font7.setBold(True)
+        labelAccount_A.setFont(font7)
+
+        ### 라벨 2 - 계정명 (B)
+        labelAccount_B = QLabel('상대계정(B)을 선택하세요: ', self.dialog11)
+        labelAccount_B.setStyleSheet('color: white;')
+        labelAccount_B.setFont(QFont('Arial', 9))
+
+        font7 = labelAccount_B.font()
+        font7.setBold(True)
+        labelAccount_B.setFont(font7)
+
+        ### 라벨 3 - 계정코드 (A)
+        labelCode_A = QLabel('*주계정(A) 코드를 입력하세요:', self.dialog11)
+        labelCode_A.setStyleSheet('color: red;')
+        labelCode_A.setFont(QFont('Arial', 9))
+
+        font11 = labelCode_A.font()
+        font11.setBold(True)
+        labelCode_A.setFont(font11)
+
+        ### 라벨 4 - 계정코드 (B)
+        labelCode_B = QLabel('*상대계정(B) 코드를 입력하세요:', self.dialog11)
+        labelCode_B.setStyleSheet('color: red;')
+        labelCode_B.setFont(QFont('Arial', 9))
+
+        font11 = labelCode_B.font()
+        font11.setBold(True)
+        labelCode_B.setFont(font11)
+
+        ### 라벨 5 - 중요성 금액 (A)
+        labelTE_A = QLabel('중요성 금액 : ', self.dialog11)
+        labelTE_A.setStyleSheet('color: white;')
+        labelTE_A.setFont(QFont('Arial', 9))
+
+        font7 = labelTE_A.font()
+        font7.setBold(True)
+        labelTE_A.setFont(font7)
+
+        ### 라벨 6 - 중요성 금액 (B)
+        labelTE_B = QLabel('중요성 금액 : ', self.dialog11)
+        labelTE_B.setStyleSheet('color: white;')
+        labelTE_B.setFont(QFont('Arial', 9))
+
+        font11 = labelTE_B.font()
+        font11.setBold(True)
+        labelTE_B.setFont(font11)
+
+        ### Line Edit 1 - 중요성 금액 (A)
+        self.line_TE_A = QLineEdit(self.dialog11)
+        self.line_TE_A.setStyleSheet('background-color: white;')
+        self.line_TE_A.setPlaceholderText('중요성 금액을 입력하세요')
+
+        ### Line Edit 2 - 중요성 금액 (B)
+        self.line_TE_B = QLineEdit(self.dialog11)
+        self.line_TE_B.setStyleSheet('background-color: white;')
+        self.line_TE_B.setPlaceholderText('중요성 금액을 입력하세요')
+
+        ### QTree 1 - 계정명 (A)
+        self.account_tree_A = QTreeWidget(self.dialog11)
+        self.account_tree_A.setColumnCount(1)
+        self.account_tree_A.setStyleSheet("background-color: white;")
+        self.account_tree_A.setHeaderLabels(['Account Type'])
+        self.account_tree_A.setAlternatingRowColors(False)
+        self.account_tree_A.header().setVisible(True)
+
+        itemTop1_A = QTreeWidgetItem(self.account_tree_A)
+        itemTop1_A.setText(0, "1_Assets")
+        itemTop1_A.setFlags(itemTop1_A.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1_A = QTreeWidgetItem(itemTop1_A)
+        itemChild1_A.setFlags(itemChild1_A.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1_A.setText(0, '11_유동자산')
+        itemChild1_A.setCheckState(0, Qt.Unchecked)
+
+        itemChild11_A = QTreeWidgetItem(itemChild1_A)
+        itemChild11_A.setFlags(itemChild11_A.flags() | Qt.ItemIsUserCheckable)
+        itemChild11_A.setText(0, '1101_현금및현금성자산')
+        itemChild11_A.setCheckState(0, Qt.Unchecked)
+
+        itemChild12_A = QTreeWidgetItem(itemChild1_A)
+        itemChild12_A.setFlags(itemChild12_A.flags() | Qt.ItemIsUserCheckable)
+        itemChild12_A.setText(0, '1105_매출채권')
+        itemChild12_A.setCheckState(0, Qt.Unchecked)
+
+        itemChild2_A = QTreeWidgetItem(itemTop1_A)
+        itemChild2_A.setFlags(itemChild2_A.flags() | Qt.ItemIsUserCheckable)
+        itemChild2_A.setText(0, '12_비유동자산')
+        itemChild2_A.setCheckState(0, Qt.Unchecked)
+
+        itemTop2_A = QTreeWidgetItem(self.account_tree_A)
+        itemTop2_A.setText(0, '2_Liability')
+        itemTop2_A.setFlags(itemTop2_A.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3_A = QTreeWidgetItem(itemTop2_A)
+        itemChild3_A.setFlags(itemChild3_A.flags() | Qt.ItemIsUserCheckable)
+        itemChild3_A.setText(0, '21_유동부채')
+        itemChild3_A.setCheckState(0, Qt.Unchecked)
+
+        itemChild4_A = QTreeWidgetItem(itemTop2_A)
+        itemChild4_A.setFlags(itemChild4_A.flags() | Qt.ItemIsUserCheckable)
+        itemChild4_A.setText(0, '22_비유동부채')
+        itemChild4_A.setCheckState(0, Qt.Unchecked)
+
+        ### QTree 2 - 계정명 (B)
+        self.account_tree_B = QTreeWidget(self.dialog11)
+        self.account_tree_B.setColumnCount(1)
+        self.account_tree_B.setStyleSheet("background-color: white;")
+        self.account_tree_B.setHeaderLabels(['Account Type'])
+        self.account_tree_B.setAlternatingRowColors(False)
+        self.account_tree_B.header().setVisible(True)
+
+        itemTop1_B = QTreeWidgetItem(self.account_tree_B)
+        itemTop1_B.setText(0, "1_Assets")
+        itemTop1_B.setFlags(itemTop1_B.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1_B = QTreeWidgetItem(itemTop1_B)
+        itemChild1_B.setFlags(itemChild1_B.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1_B.setText(0, '11_유동자산')
+        itemChild1_B.setCheckState(0, Qt.Unchecked)
+
+        itemChild11_B = QTreeWidgetItem(itemChild1_B)
+        itemChild11_B.setFlags(itemChild11_B.flags() | Qt.ItemIsUserCheckable)
+        itemChild11_B.setText(0, '1101_현금및현금성자산')
+        itemChild11_B.setCheckState(0, Qt.Unchecked)
+
+        itemChild12_B = QTreeWidgetItem(itemChild1_B)
+        itemChild12_B.setFlags(itemChild12_B.flags() | Qt.ItemIsUserCheckable)
+        itemChild12_B.setText(0, '1105_매출채권')
+        itemChild12_B.setCheckState(0, Qt.Unchecked)
+
+        itemChild2_B = QTreeWidgetItem(itemTop1_B)
+        itemChild2_B.setFlags(itemChild2_B.flags() | Qt.ItemIsUserCheckable)
+        itemChild2_B.setText(0, '12_비유동자산')
+        itemChild2_B.setCheckState(0, Qt.Unchecked)
+
+        itemTop2_B = QTreeWidgetItem(self.account_tree_B)
+        itemTop2_B.setText(0, '2_Liability')
+        itemTop2_B.setFlags(itemTop2_B.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3_B = QTreeWidgetItem(itemTop2_B)
+        itemChild3_B.setFlags(itemChild3_B.flags() | Qt.ItemIsUserCheckable)
+        itemChild3_B.setText(0, '21_유동부채')
+        itemChild3_B.setCheckState(0, Qt.Unchecked)
+
+        itemChild4_B = QTreeWidgetItem(itemTop2_B)
+        itemChild4_B.setFlags(itemChild4_B.flags() | Qt.ItemIsUserCheckable)
+        itemChild4_B.setText(0, '22_비유동부채')
+        itemChild4_B.setCheckState(0, Qt.Unchecked)
+
+        ### TextEdit - 계정코드 Paste (A)
+        self.MyInput_A = QTextEdit(self.dialog11)
+        self.MyInput_A.setAcceptRichText(False)
+        self.MyInput_A.setStyleSheet('background-color: white;')
+        self.MyInput_A.setPlaceholderText('계정코드를 입력하세요')
+
+        ### TextEdit - 계정코드 Paste (B)
+        self.MyInput_B = QTextEdit(self.dialog11)
+        self.MyInput_B.setAcceptRichText(False)
+        self.MyInput_B.setStyleSheet('background-color: white;')
+        self.MyInput_B.setPlaceholderText('계정코드를 입력하세요')
+
+        ### Layout - 다이얼로그 UI
+        layout = QVBoxLayout()
+
+        layout1 = QVBoxLayout()
+        sublayout1 = QVBoxLayout()
+        sublayout2 = QHBoxLayout()
+
+        layout2 = QVBoxLayout()
+        sublayout3 = QVBoxLayout()
+        sublayout4 = QHBoxLayout()
+
+        ### 탭
+        my_tabs = QTabWidget()
+        tab1 = QWidget()
+        tab1.setLayout(layout1)
+        my_tabs.addTab(tab1, "Account Name")
+
+        tab2 = QWidget()
+        tab2.setLayout(layout2)
+        my_tabs.addTab(tab2, "Account Code")
+
+        layout.addWidget(my_tabs)
+
+        ### 요소 채우기 - 탭1
+        sublayout1.addWidget(labelAccount_A)
+        sublayout1.addWidget(self.account_tree_A)
+        sublayout1.addWidget(labelAccount_B)
+        sublayout1.addWidget(self.account_tree_B)
+        sublayout1.addWidget(labelTE_A)
+        sublayout1.addWidget(self.line_TE_A)
+
+        sublayout2.addStretch(2)
+        sublayout2.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
+        sublayout2.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
+
+        layout1.addLayout(sublayout1, stretch=4)
+        layout1.addLayout(sublayout2, stretch=1)
+
+        ### 요소 채우기 - 탭2
+        sublayout3.addWidget(labelCode_A)
+        sublayout3.addWidget(self.MyInput_A)
+        sublayout3.addWidget(labelCode_B)
+        sublayout3.addWidget(self.MyInput_B)
+        sublayout3.addWidget(labelTE_B)
+        sublayout3.addWidget(self.line_TE_B)
+
+        sublayout4.addStretch(2)
+        sublayout4.addWidget(self.btn3, stretch=1, alignment=Qt.AlignBottom)
+        sublayout4.addWidget(self.btnDialog1, stretch=1, alignment=Qt.AlignBottom)
+
+        layout2.addLayout(sublayout3, stretch=4)
+        layout2.addLayout(sublayout4, stretch=1)
+
+        self.dialog11.setLayout(layout)
+        self.dialog11.resize(625, 550)
+
+        self.dialog11.setWindowTitle('Scenario 11')
+        self.dialog11.setWindowModality(Qt.NonModal)
+        self.dialog11.show()
 
     def Dialog12(self):  # 수정완료
         self.dialog12 = QDialog()
@@ -1583,12 +1855,12 @@ class MyApp(QWidget):
         self.dialog12.setWindowModality(Qt.NonModal)
         self.dialog12.show()
 
-    def Dialog13(self):
+        def Dialog13(self):
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
         self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
 
-        ### 버튼 - Extract Data
+        ### 버튼 1 - Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog13)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked13)
@@ -1597,14 +1869,14 @@ class MyApp(QWidget):
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        ### 버튼 - Close
+        ### 버튼 2 - Close
         self.btnDialog = QPushButton('Close', self.dialog13)
         self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close13)
 
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
+        font9 = self.btnDialog.font()
+        font9.setBold(True)
+        self.btnDialog.setFont(font9)
 
         ### 버튼 3 - Save
         self.btnSave = QPushButton(' Save', self.dialog13)
@@ -1620,12 +1892,12 @@ class MyApp(QWidget):
         self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
         self.btnSaveProceed.clicked.connect(self.extButtonClicked13)
 
-        font14 = self.btnSaveProceed.font()
-        font14.setBold(True)
-        self.btnSaveProceed.setFont(font14)
+        font13 = self.btnSaveProceed.font()
+        font13.setBold(True)
+        self.btnSaveProceed.setFont(font13)
 
         ### 라벨 1 - 연속된 자릿수
-        label_Continuous = QLabel('연속된 자릿수(ex. 3333, 6666)*: ', self.dialog13)
+        label_Continuous = QLabel('* 연속된 자릿수 (ex. 3333, 6666): ', self.dialog13)
         label_Continuous.setStyleSheet("color: red;")
         label_Continuous.setFont(QFont('Arial', 9))
 
@@ -1639,7 +1911,7 @@ class MyApp(QWidget):
         self.text_continuous.setStyleSheet("background-color: white;")
 
         ### 라벨 2 - 중요성 금액
-        label_amount = QLabel('중요성금액 : ', self.dialog13)
+        label_amount = QLabel('중요성 금액 : ', self.dialog13)
         label_amount.setStyleSheet("color: white;")
         label_amount.setFont(QFont('Times font', 9))
 
@@ -1652,7 +1924,7 @@ class MyApp(QWidget):
         self.line_amount.setStyleSheet("background-color: white;")
 
         ### 라벨 3 - 계정 트리
-        label_tree = QLabel('원하는 계정명을 선택하세요', self.dialog13)
+        label_tree = QLabel('원하는 계정명을 선택하세요 : ', self.dialog13)
         label_tree.setStyleSheet("color: white;")
         label_tree.setFont(QFont('Times, font', 9))
 
@@ -1660,12 +1932,9 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D13_clickcount = 0
-
         ### TreeWidget
         self.account_tree = QTreeWidget(self.dialog13)
-        self.account_tree.setColumnCount(2)
+        self.account_tree.setColumnCount(1)
         self.account_tree.setStyleSheet("background-color: white;")
         self.account_tree.setHeaderLabels(['Account Type'])
         self.account_tree.setAlternatingRowColors(False)
@@ -1720,46 +1989,45 @@ class MyApp(QWidget):
         sublayout3 = QVBoxLayout()
         sublayout4 = QHBoxLayout()
 
+        ### 탭
+        tabs = QTabWidget()
         tab1 = QWidget()
         tab2 = QWidget()
-        tabs = QTabWidget()
 
+        tab1.setLayout(layout1)
+        tab2.setLayout(layout2)
+        tabs.addTab(tab1, "Step 1")
+        tabs.addTab(tab2, "Step 2")
+
+        main_layout.addWidget(tabs)
+
+        ### 배치 - 탭 1
         sublayout1.addWidget(label_Continuous)
         sublayout1.addWidget(self.text_continuous)
         sublayout1.addWidget(label_amount)
         sublayout1.addWidget(self.line_amount)
 
-        sublayout2.addStretch(1)
-        sublayout2.addWidget(self.btnSave, stretch=1, alignment=Qt.AlignBottom)
-        sublayout2.addWidget(self.btnSaveProceed, stretch=1, alignment=Qt.AlignBottom)
-        sublayout2.addStretch(1)
+        sublayout2.addStretch(2)
+        sublayout2.addWidget(self.btnSave)
+        sublayout2.addWidget(self.btnSaveProceed)
 
         layout1.addLayout(sublayout1, stretch=4)
         layout1.addLayout(sublayout2, stretch=1)
 
+        ### 배치 - 탭 2
         sublayout3.addWidget(label_tree)
         sublayout3.addWidget(self.account_tree)
 
-        sublayout4.addStretch(1)
-        sublayout4.addWidget(self.btn2, stretch=1, alignment=Qt.AlignBottom)
-        sublayout4.addWidget(self.btnDialog, stretch=1, alignment=Qt.AlignBottom)
-        sublayout4.addStretch(1)
+        sublayout4.addStretch(2)
+        sublayout4.addWidget(self.btn2)
+        sublayout4.addWidget(self.btnDialog)
 
         layout2.addLayout(sublayout3, stretch=4)
         layout2.addLayout(sublayout4, stretch=1)
 
-        tab1.setLayout(layout1)
-        tab2.setLayout(layout2)
-
-        tabs.addTab(tab1, "자릿수/금액")
-        tabs.addTab(tab2, "계정 선택")
-
-        main_layout.addWidget(tabs)
-
+        ### 공통 지정
         self.dialog13.setLayout(main_layout)
-
         self.dialog13.resize(500, 400)
-
         self.dialog13.setWindowTitle('Scenario13')
         self.dialog13.setWindowModality(Qt.NonModal)
         self.dialog13.show()
