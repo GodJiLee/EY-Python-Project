@@ -1216,8 +1216,179 @@ class MyApp(QWidget):
     # A,B,C조 작성 - 추후 논의
     # def Dialog11(self):
 
-    # A,B,C조 작성 - 추후 논의
-    # def Dialog12(self):
+    def Dialog12(self):
+        self.dialog12 = QDialog()
+        self.dialog12.setStyleSheet('background-color: #2E2E38')
+        self.dialog12.setWindowIcon(QIcon('./EY_logo.png'))
+
+        self.btn = QPushButton('   Extract Data', self.dialog12)
+        self.btn.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn.clicked.connect(self.extButtonClicked12)
+        font9 = self.btn.font()
+        font9.setBold(True)
+        self.btn.setFont(font9)
+
+        self.btnDialog = QPushButton("   Close", self.dialog12)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+        self.btn.resize(110, 30)
+        self.btnDialog.resize(110, 30)
+
+        self.btn2 = QPushButton('   Extract Data', self.dialog12)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2.clicked.connect(self.extButtonClicked12)
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
+
+        self.btnDialog2 = QPushButton("   Close", self.dialog12)
+        self.btnDialog2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog2.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog2.font()
+        font10.setBold(True)
+        self.btnDialog2.setFont(font10)
+        self.btn2.resize(110, 30)
+        self.btnDialog2.resize(110, 30)
+
+        # 라벨값
+        labelAccount = QLabel('Account Code* : ', self.dialog12)
+        labelAccount.setStyleSheet("color: white;")
+        font3 = labelAccount.font()
+        font3.setBold(True)
+        labelAccount.setFont(font3)
+        labelCost = QLabel('중요성 금액 : ', self.dialog12)
+        labelCost.setStyleSheet("color: white;")
+        font3 = labelCost.font()
+        font3.setBold(True)
+        labelCost.setFont(font3)
+        labelCost2 = QLabel('중요성 금액 : ', self.dialog12)
+        labelCost2.setStyleSheet("color: white;")
+        font4 = labelCost2.font()
+        font4.setBold(True)
+        labelCost2.setFont(font4)
+
+        self.D12_Code = QTextEdit(self.dialog12)
+        self.D12_Code.setAcceptRichText(False)
+        self.D12_Code.setStyleSheet("background-color: white;")
+        self.D12_Code.setPlaceholderText('계정코드를 입력하세요')
+
+        self.D12_Cost = QLineEdit(self.dialog12)
+        self.D12_Cost.setStyleSheet("background-color: white;")
+        self.D12_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D12_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        self.D12_Cost2 = QLineEdit(self.dialog12)
+        self.D12_Cost2.setStyleSheet("background-color: white;")
+        self.D12_Cost2.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D12_Cost2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        label_tree = QLabel('원하는 계정명을 선택하세요', self.dialog12)
+        label_tree.setStyleSheet("color: white;")
+        label_tree.setFont(QFont('Times, font', 9))
+        font4 = label_tree.font()
+        font4.setBold(True)
+        label_tree.setFont(font4)
+
+        # 트리 예시
+        self.account_tree = QTreeWidget(self.dialog12)
+        self.account_tree.setColumnCount(2)
+        self.account_tree.setStyleSheet("background-color: white;")
+        self.account_tree.setHeaderLabels(['Account Type'])
+        self.account_tree.setAlternatingRowColors(False)
+        self.account_tree.header().setVisible(True)
+
+        itemTop1 = QTreeWidgetItem(self.account_tree)
+        itemTop1.setText(0, "1_Assets")
+        itemTop1.setFlags(itemTop1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild1 = QTreeWidgetItem(itemTop1)
+        itemChild1.setFlags(itemChild1.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+        itemChild1.setText(0, '11_유동자산')
+        itemChild1.setCheckState(0, Qt.Unchecked)
+
+        itemChild11 = QTreeWidgetItem(itemChild1)
+        itemChild11.setFlags(itemChild11.flags() | Qt.ItemIsUserCheckable)
+        itemChild11.setText(0, '1101_현금및현금성자산')
+        itemChild11.setCheckState(0, Qt.Unchecked)
+
+        itemChild12 = QTreeWidgetItem(itemChild1)
+        itemChild12.setFlags(itemChild12.flags() | Qt.ItemIsUserCheckable)
+        itemChild12.setText(0, '1105_매출채권')
+        itemChild12.setCheckState(0, Qt.Unchecked)
+
+        itemChild2 = QTreeWidgetItem(itemTop1)
+        itemChild2.setFlags(itemChild2.flags() | Qt.ItemIsUserCheckable)
+        itemChild2.setText(0, '12_비유동자산')
+        itemChild2.setCheckState(0, Qt.Unchecked)
+
+        itemTop2 = QTreeWidgetItem(self.account_tree)
+        itemTop2.setText(0, '2_Liability')
+        itemTop2.setFlags(itemTop2.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+        itemChild3 = QTreeWidgetItem(itemTop2)
+        itemChild3.setFlags(itemChild3.flags() | Qt.ItemIsUserCheckable)
+        itemChild3.setText(0, '21_유동부채')
+        itemChild3.setCheckState(0, Qt.Unchecked)
+
+        itemChild4 = QTreeWidgetItem(itemTop2)
+        itemChild4.setFlags(itemChild4.flags() | Qt.ItemIsUserCheckable)
+        itemChild4.setText(0, '22_비유동부채')
+        itemChild4.setCheckState(0, Qt.Unchecked)
+
+        tab1 = QWidget()
+        tab2 = QWidget()
+        tabs = QTabWidget()
+
+        sublayout1 = QGridLayout()  # 계정 트리
+        sublayout1.addWidget(label_tree, 0, 0)
+        sublayout1.addWidget(self.account_tree, 1, 0)
+
+        sublayout2 = QGridLayout()  # 계정코드 입력했을 때 - 텍스트에딧 추가
+        sublayout2.addWidget(labelAccount, 0, 0)
+        sublayout2.addWidget(self.D12_Code, 0, 1)
+        sublayout2.addWidget(labelCost2, 1, 0)
+        sublayout2.addWidget(self.D12_Cost2, 1, 1)
+
+        sublayout3 = QGridLayout()  # 중요성 금액
+        sublayout3.addWidget(labelCost, 0, 0)
+        sublayout3.addWidget(self.D12_Cost, 0, 1)
+
+        sublayout4 = QHBoxLayout()
+        sublayout4.addStretch()
+        sublayout4.addStretch()
+        sublayout4.addWidget(self.btn)
+        sublayout4.addWidget(self.btnDialog)
+
+        sublayout5 = QHBoxLayout()
+        sublayout5.addStretch()
+        sublayout5.addStretch()
+        sublayout5.addWidget(self.btn2)
+        sublayout5.addWidget(self.btnDialog2)
+
+        layout1 = QVBoxLayout()
+        layout1.addLayout(sublayout1)
+        layout1.addLayout(sublayout3)
+        layout1.addLayout(sublayout4)
+
+        layout2 = QVBoxLayout()
+        layout2.addLayout(sublayout2)
+        layout2.addLayout(sublayout5)
+
+        main_layout = QVBoxLayout()
+        tab1.setLayout(layout1)
+        tab2.setLayout(layout2)
+        tabs.addTab(tab1, "Account Name")
+        tabs.addTab(tab2, "Account Code")
+        main_layout.addWidget(tabs)
+
+        self.dialog12.setLayout(main_layout)
+        self.dialog12.resize(500, 400)
+        self.dialog12.setWindowTitle('Scenario12')
+        self.dialog12.setWindowModality(Qt.NonModal)
+        self.dialog12.show()
 
     def Dialog13(self):
         self.dialog13 = QDialog()
@@ -2138,6 +2309,73 @@ class MyApp(QWidget):
 
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
+
+    def extButtonClicked12(self):
+        passwords = ''
+        users = 'guest'
+        server = ids
+        password = passwords
+
+        tempCode = self.D12_Code.text()
+        tempCost = self.D12_Cost.text()
+
+        if self.rbtn1.isChecked():
+            tempState = 'Account Name'
+
+        elif self.rbtn2.isChecked():
+            tempState = 'Account Code'
+
+        if tempCost == '':
+            tempCost = 0
+
+        if tempState == '':
+            self.alertbox_open()
+
+        else:
+            try:
+                int(tempCost)
+                db = 'master'
+                user = users
+                cnxn = pyodbc.connect(
+                    "DRIVER={SQL Server};SERVER=" + server + ";uid=" + user + ";pwd=" + password + ";DATABASE=" + db + ";trusted_connection=" + "yes")
+                cursor = cnxn.cursor()
+
+                # sql문 수정
+                sql = '''
+                               SELECT TOP 100											
+                                   JournalEntries.BusinessUnit											
+                                   , JournalEntries.JENumber											
+                                   , JournalEntries.JELineNumber											
+                                   , JournalEntries.EffectiveDate											
+                                   , JournalEntries.EntryDate											
+                                   , JournalEntries.Period											
+                                   , JournalEntries.GLAccountNumber											
+                                   , CoA.GLAccountName											
+                                   , JournalEntries.Debit											
+                                   , JournalEntries.Credit											
+                                   , CASE
+                                       WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                       END AS DebitCredit
+                                   , JournalEntries.Amount											
+                                   , JournalEntries.FunctionalCurrencyCode											
+                                   , JournalEntries.JEDescription											
+                                   , JournalEntries.JELineDescription											
+                                   , JournalEntries.Source											
+                                   , JournalEntries.PreparerID											
+                                   , JournalEntries.ApproverID											
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                               ORDER BY JENumber, JELineNumber											
+                           '''.format(field=fields)
+
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            except ValueError:
+                self.alertbox_open2('중요성 금액')
 
     def extButtonClicked13(self):
         passwords = ''
