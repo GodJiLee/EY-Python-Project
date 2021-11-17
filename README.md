@@ -1,7 +1,7 @@
 # EY-Python-Project
 
 📎 **11월 셋째 주 Commit 요일**
-### Commit은 ItsOurMain.py 파일에 ^^*
+##### Commit은 ItsOurMain.py 파일에 ^^*
 요일|팀
 ---|---
 월|C팀
