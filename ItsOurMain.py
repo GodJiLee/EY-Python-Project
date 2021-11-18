@@ -233,7 +233,7 @@ class MyApp(QWidget):
         self.alt.setText(txt + ' 값을 ' + '숫자로만 입력해주시기 바랍니다.')
         self.alt.exec_()
 
-    def alertbox_open3(self):  # 추가하기
+    def alertbox_open3(self):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('최대 라인 수 초과 오류')
@@ -561,8 +561,20 @@ class MyApp(QWidget):
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
 
+        labelSheet = QLabel('시트명* : ', self.dialog4)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D4_Sheet = QLineEdit(self.dialog4)
+        self.D4_Sheet.setStyleSheet("background-color: white;")
+        self.D4_Sheet.setPlaceholderText('시트명을 입력하세요')
+
         self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D4_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         # Extraction 내 Dictionary 를 위한 변수 설정
         self.D4_clickcount = 0
@@ -572,6 +584,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D4_N, 0, 1)
         layout1.addWidget(label_TE, 1, 0)
         layout1.addWidget(self.D4_TE, 1, 1)
+        layout1.addWidget(labelSheet, 2, 0)
+        layout1.addWidget(self.D4_Sheet, 2, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -678,16 +692,38 @@ class MyApp(QWidget):
         self.listbox_drops = ListBoxWidget()
         self.listbox_drops.setStyleSheet('background-color: white;')
 
+        ### SAP
+        labelSheet = QLabel('시트명* : ', self.dialog5)
+        labelSheet.setStyleSheet("color: white;")
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+        self.D5_Sheet = QLineEdit(self.dialog5)
+        self.D5_Sheet.setStyleSheet("background-color: white;")
+        self.D5_Sheet.setPlaceholderText('시트명을 입력하세요')
+
+        ### Non-SAP
+        labelSheet2 = QLabel('시트명* : ', self.dialog5)
+        labelSheet2.setStyleSheet("color: white;")
+        font5 = labelSheet2.font()
+        font5.setBold(True)
+        labelSheet2.setFont(font5)
+        self.D5_Sheet2 = QLineEdit(self.dialog5)
+        self.D5_Sheet2.setStyleSheet("background-color: white;")
+        self.D5_Sheet2.setPlaceholderText('시트명을 입력하세요')
+
         ### Layout 구성
         layout = QVBoxLayout()
 
         layout1 = QVBoxLayout()
         sublayout1 = QVBoxLayout()
         sublayout2 = QHBoxLayout()
+        sublayout5 = QGridLayout()
 
         layout2 = QVBoxLayout()
         sublayout3 = QVBoxLayout()
         sublayout4 = QHBoxLayout()
+        sublayout6 = QGridLayout()
 
         ### 탭
         tabs = QTabWidget()
@@ -707,7 +743,11 @@ class MyApp(QWidget):
         sublayout1.addWidget(label_Example)
         sublayout1.addWidget(self.MyInput)
 
+        sublayout5.addWidget(labelSheet, 0, 0)
+        sublayout5.addWidget(self.D5_Sheet, 0, 1)
+
         layout1.addLayout(sublayout1, stretch=4)
+        layout1.addLayout(sublayout5, stretch=4)
         layout1.addLayout(sublayout2, stretch=1)
 
         sublayout2.addStretch(2)
@@ -718,7 +758,11 @@ class MyApp(QWidget):
         sublayout3.addWidget(label_SKA1)
         sublayout3.addWidget(self.listbox_drops)
 
+        sublayout6.addWidget(labelSheet2, 0, 0)
+        sublayout6.addWidget(self.D5_Sheet2, 0, 1)
+
         layout2.addLayout(sublayout3, stretch=4)
+        layout1.addLayout(sublayout6, stretch=4)
         layout2.addLayout(sublayout4, stretch=1)
 
         sublayout4.addStretch(2)
@@ -870,7 +914,7 @@ class MyApp(QWidget):
         self.D6_Cost.setStyleSheet("background-color: white;")
         self.D6_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelSheet = QLabel('시트명 : ', self.dialog6)
+        labelSheet = QLabel('시트명* : ', self.dialog6)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -1065,7 +1109,7 @@ class MyApp(QWidget):
         self.D7_Cost.setStyleSheet("background-color: white;")
         self.D7_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelSheet = QLabel('시트명 : ', self.dialog7)
+        labelSheet = QLabel('시트명* : ', self.dialog7)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -1235,7 +1279,7 @@ class MyApp(QWidget):
         self.D8_Cost.setStyleSheet("background-color: white;")
         self.D8_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelSheet = QLabel('시트명 : ', self.dialog8)
+        labelSheet = QLabel('시트명* : ', self.dialog8)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -1335,7 +1379,7 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        labelSheet = QLabel('시트명 : ', self.dialog9)
+        labelSheet = QLabel('시트명* : ', self.dialog9)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -1452,7 +1496,7 @@ class MyApp(QWidget):
         self.D10_TE = QLineEdit(self.dialog10)
         self.D10_TE.setStyleSheet("background-color: white;")
 
-        labelSheet = QLabel('시트명 : ', self.dialog10)
+        labelSheet = QLabel('시트명* : ', self.dialog10)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -2080,7 +2124,7 @@ class MyApp(QWidget):
         itemChild4.setText(0, '22_비유동부채')
         itemChild4.setCheckState(0, Qt.Unchecked)
 
-        labelSheet = QLabel('시트명 : ', self.dialog13)
+        labelSheet = QLabel('시트명* : ', self.dialog13)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -2199,7 +2243,7 @@ class MyApp(QWidget):
         self.D14_TE = QLineEdit(self.dialog14)
         self.D14_TE.setStyleSheet("background-color: white;")
 
-        labelSheet = QLabel('시트명 : ', self.dialog14)
+        labelSheet = QLabel('시트명* : ', self.dialog14)
         labelSheet.setStyleSheet("color: white;")
 
         font5 = labelSheet.font()
@@ -2222,6 +2266,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D14_Key, 0, 1)
         layout1.addWidget(labelTE, 1, 0)
         layout1.addWidget(self.D14_TE, 1, 1)
+        layout1.addWidget(labelSheet, 2, 0)
+        layout1.addWidget(self.D14_Sheet, 2, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -2411,7 +2457,7 @@ class MyApp(QWidget):
         temp_TE = self.D4_TE.text()
         tempSheet = self.D4_Sheet.text()
 
-        if temp_N == '':
+        if temp_N == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2464,7 +2510,7 @@ class MyApp(QWidget):
             if int(year) == before_three_months.year:
                 temp_AccCode.append(df.loc[i, 'SAKNR'])
 
-        if temp_AccCode == '':
+        if temp_AccCode == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2492,7 +2538,7 @@ class MyApp(QWidget):
         temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
         temp_Code_Non_SAP = re.split(",", temp_Code_Non_SAP)
 
-        if temp_Code_Non_SAP == '':
+        if temp_Code_Non_SAP == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2523,7 +2569,7 @@ class MyApp(QWidget):
         tempCost = self.D6_Cost.text()
         tempSheet = self.D6_Sheet.text()
 
-        if tempDate == '':
+        if tempDate == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2609,7 +2655,7 @@ class MyApp(QWidget):
         if tempCost == '':
             tempCost = 0
 
-        if tempDate == '':
+        if tempDate == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2672,7 +2718,7 @@ class MyApp(QWidget):
         tempCost = self.D8_Cost.text()
         tempSheet = self.D8_Sheet.text()
 
-        if tempN == '':
+        if tempN == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2746,7 +2792,7 @@ class MyApp(QWidget):
         tempTE = self.D9_TE.text()
         tempSheet = self.D9_Sheet.text()
 
-        if tempN == '':
+        if tempN == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2824,7 +2870,7 @@ class MyApp(QWidget):
         tempTE = self.D10_TE.text()
         tempSheet = self.D10_Sheet.text()
 
-        if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '':
+        if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -2981,7 +3027,7 @@ class MyApp(QWidget):
         temp_TE_13 = self.line_amount.text()
         tempSheet = self.D13_Sheet.text()
 
-        if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '':
+        if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '' or tempSheet == '':
             self.alertbox_open()
 
         else:
@@ -3016,7 +3062,7 @@ class MyApp(QWidget):
             tempTE = 0
         try:
             TE = int(tempTE)
-            if tempKey == '':
+            if tempKey == '' or tempSheet == '':
                 self.alertbox_open()
 
             else:
