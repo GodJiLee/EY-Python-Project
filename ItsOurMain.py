@@ -395,24 +395,25 @@ class MyApp(QWidget):
         for i in range(1, 9):
             self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
 
-        ##scenario 유형 콤보박스
-        self.comboBig = QComboBox(self)
+        ### Scenario 유형 콤보박스 - 소분류 수정
+        self.comboScenario = QComboBox(self)
 
-        self.comboBig.addItem('Data 완전성', ['--시나리오 목록--', '04 : 계정 사용빈도 N번이하인 계정이 포함된 전표리스트', '05 : 당기 생성된 계정리스트 추출'])
-        self.comboBig.addItem('Data Timing',
-                              ['--시나리오 목록--', '06 : 결산일 전후 T일 입력 전표', '07 : 영업일 전기/입력 전표',
-                               '08 : 효력, 입력 일자 간 차이가 N일 이상인 전표'])
-        self.comboBig.addItem('Data 업무분장',
-                              ['--시나리오 목록--', '09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', '10 : 특정 전표 입력자(W)에 의해 생성된 전표'])
-        self.comboBig.addItem('Data 분개검토',
-                              ['--시나리오 목록--', '11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토',
-                               '12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토'])
-        self.comboBig.addItem('기타', ['--시나리오 목록--', '13 : 연속된 숫자로 끝나는 금액 검토',
-                                     '14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)'])
+        self.comboScenario.addItem('--시나리오 목록--', [''])
+        self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트', [''])
+        self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출', [''])
+        self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표', [''])
+        self.comboScenario.addItem('07 : 영업일 전기/입력 전표', [''])
+        self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
+        self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
+        self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
+        self.comboScenario.addItem('11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', [''])
+        self.comboScenario.addItem('12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토', [''])
+        self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
+        self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)', [''])
 
         ##시나리오 세부 내역/프로젝트 선택 콤보박스
         self.comboSmall = QComboBox(self)
-        self.comboSmall.addItems(self.comboBig.itemData(0))
+        self.comboSmall.addItems(self.comboScenario.itemData(0))
 
         self.ProjectCombobox = QComboBox(self)
 
@@ -420,12 +421,12 @@ class MyApp(QWidget):
         self.line_ecode = QLineEdit(self)
         self.line_ecode.setText("")
 
-        ##SQL SERVER CONNECT 버튼 생성 및 스타일 지정
-        btn_server = QPushButton('   SQL Server Connect', self)
-        font_btn_server = btn_server.font()
-        font_btn_server.setBold(True)
-        btn_server.setFont(font_btn_server)
-        btn_server.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        ##Project Connect 버튼 생성 및 스타일 지정
+        btn_connect = QPushButton('   Project Connect', self)
+        font_btn_connect = btn_connect.font()
+        font_btn_connect.setBold(True)
+        btn_connect.setFont(font_btn_connect)
+        btn_connect.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         ##Input Conditions 버튼 생성 및 스타일 지정
         btn_condition = QPushButton('   Input Conditions', self)
@@ -435,10 +436,9 @@ class MyApp(QWidget):
         btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         ##Signal 함수들
-        self.comboBig.activated[str].connect(self.ComboBig_Selected)
-        self.comboSmall.activated[str].connect(self.ComboSmall_Selected)
+        self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
-        btn_server.clicked.connect(self.connectButtonClicked)
+        btn_connect.clicked.connect(self.connectButtonClicked)
         self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
         btn_condition.clicked.connect(self.connectDialog)
 
@@ -449,24 +449,17 @@ class MyApp(QWidget):
         grid.addWidget(label3, 2, 0)
         grid.addWidget(label4, 3, 0)
         grid.addWidget(self.cb_server, 0, 1)
-        grid.addWidget(btn_server, 0, 2)
-        grid.addWidget(self.comboBig, 3, 1)
-        grid.addWidget(self.comboSmall, 4, 1)
-        grid.addWidget(btn_condition, 4, 2)
+        grid.addWidget(btn_connect, 1, 2)
+        grid.addWidget(self.comboScenario, 3, 1)
+        grid.addWidget(btn_condition, 3, 2)
         grid.addWidget(self.line_ecode, 1, 1)
         grid.addWidget(self.ProjectCombobox, 2, 1)
 
         groupbox.setLayout(grid)
         return groupbox
 
-    def ComboBig_Selected(self, text):
-        idx = self.comboBig.currentIndex()
-        self.selected_scenario_class_index = idx
-        self.comboSmall.clear()
-        self.comboSmall.addItems(self.comboBig.itemData(idx))
-
     def ComboSmall_Selected(self, text):
-        self.selected_scenario_subclass_index = self.comboSmall.currentIndex()
+        self.selected_scenario_subclass_index = self.comboScenario.currentIndex()
 
     def connectDialog(self):
         if self.cnxn is None:
