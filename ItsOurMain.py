@@ -15,10 +15,11 @@ class Calendar(QDialog):
         super(Calendar, self).__init__(parent)
         self.MyApp = MyApp
 
-        self.setGeometry(500, 500, 400, 200)
+        self.setGeometry(400, 400, 400, 200)
         self.setWindowTitle("PyQt5 QCalendar")
         self.setWindowIcon(QIcon("python.png"))
         self.setWindowModality(Qt.NonModal)
+        parent.setGeometry(820, 130, 1000, 900)
 
         vbox = QVBoxLayout()
         self.calendar = QCalendarWidget()
@@ -230,6 +231,14 @@ class MyApp(QWidget):
         self.alt.setWindowTitle('필수 입력값 타입 오류')
         self.alt.setWindowIcon(QIcon("./EY_logo.png"))
         self.alt.setText(txt + ' 값을 ' + '숫자로만 입력해주시기 바랍니다.')
+        self.alt.exec_()
+
+    def alertbox_open3(self):  # 추가하기
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('최대 라인 수 초과 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('최대 라인 수가 초과 되었습니다.')
         self.alt.exec_()
 
     def init_UI(self):
@@ -580,6 +589,9 @@ class MyApp(QWidget):
         self.dialog4.setLayout(main_layout)
         self.dialog4.setGeometry(300, 300, 500, 150)
 
+        # ? 제거
+        self.dialog4.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog4.setWindowTitle('Scenario4')
         self.dialog4.setWindowModality(Qt.NonModal)
         self.dialog4.show()
@@ -713,6 +725,9 @@ class MyApp(QWidget):
         sublayout4.addWidget(self.btn3)
         sublayout4.addWidget(self.btnDialog1)
 
+        # ? 제거
+        self.dialog5.setWindowFlags(Qt.WindowCloseButtonHint)
+
         ### 공통 지정
         self.dialog5.setLayout(layout)
         self.dialog5.resize(465, 400)
@@ -722,6 +737,7 @@ class MyApp(QWidget):
 
     def Dialog6(self):
         self.dialog6 = QDialog()
+
         self.dialog6.setStyleSheet('background-color: #2E2E38')
         self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
 
@@ -766,7 +782,7 @@ class MyApp(QWidget):
         font11.setBold(True)
         self.btnDate.setFont(font11)
 
-        labelDate2 = QLabel('T일* : ', self.dialog6)
+        labelDate2 = QLabel('T일 : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
 
         font2 = labelDate2.font()
@@ -852,12 +868,24 @@ class MyApp(QWidget):
 
         self.D6_Cost = QLineEdit(self.dialog6)
         self.D6_Cost.setStyleSheet("background-color: white;")
-        self.D6_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D6_Cost.setPlaceholderText('중요성 금액을 입력하세요')
+
+        labelSheet = QLabel('시트명 : ', self.dialog6)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D6_Sheet = QLineEdit(self.dialog6)
+        self.D6_Sheet.setStyleSheet("background-color: white;")
+        self.D6_Sheet.setPlaceholderText('시트명을 입력하세요')
 
         self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D6_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
@@ -871,6 +899,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D6_JE, 3, 1)
         layout1.addWidget(labelCost, 4, 0)
         layout1.addWidget(self.D6_Cost, 4, 1)
+        layout1.addWidget(labelSheet, 5, 0)
+        layout1.addWidget(self.D6_Sheet, 5, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -886,7 +916,9 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog6.setLayout(main_layout)
-        self.dialog6.setGeometry(300, 300, 700, 400)
+        self.dialog6.setGeometry(300, 300, 700, 500)
+
+        self.dialog6.setWindowFlags(Qt.WindowCloseButtonHint)
 
         self.dialog6.setWindowTitle("Scenario6")
         self.dialog6.setWindowModality(Qt.NonModal)
@@ -1031,11 +1063,23 @@ class MyApp(QWidget):
 
         self.D7_Cost = QLineEdit(self.dialog7)
         self.D7_Cost.setStyleSheet("background-color: white;")
-        self.D7_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D7_Cost.setPlaceholderText('중요성 금액을 입력하세요')
+
+        labelSheet = QLabel('시트명 : ', self.dialog7)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D7_Sheet = QLineEdit(self.dialog7)
+        self.D7_Sheet.setStyleSheet("background-color: white;")
+        self.D7_Sheet.setPlaceholderText('시트명을 입력하세요')
 
         self.D7_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D7_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout0 = QGridLayout()
         layout0.addWidget(self.rbtn1, 0, 0)
@@ -1051,6 +1095,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D7_JE, 2, 1)
         layout1.addWidget(labelCost, 3, 0)
         layout1.addWidget(self.D7_Cost, 3, 1)
+        layout1.addWidget(labelSheet, 4, 0)
+        layout1.addWidget(self.D7_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1068,6 +1114,10 @@ class MyApp(QWidget):
 
         self.dialog7.setLayout(main_layout)
         self.dialog7.setGeometry(300, 300, 700, 400)
+
+        # ? 제거
+        self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog7.setWindowTitle("Scenario7")
         self.dialog7.setWindowModality(Qt.NonModal)
         self.dialog7.show()
@@ -1183,11 +1233,23 @@ class MyApp(QWidget):
 
         self.D8_Cost = QLineEdit(self.dialog8)
         self.D8_Cost.setStyleSheet("background-color: white;")
-        self.D8_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D8_Cost.setPlaceholderText('중요성 금액을 입력하세요')
+
+        labelSheet = QLabel('시트명 : ', self.dialog8)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D8_Sheet = QLineEdit(self.dialog8)
+        self.D8_Sheet.setStyleSheet("background-color: white;")
+        self.D8_Sheet.setPlaceholderText('시트명을 입력하세요')
 
         self.D8_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D8_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
@@ -1198,6 +1260,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D8_JE, 2, 1)
         layout1.addWidget(labelCost, 3, 0)
         layout1.addWidget(self.D8_Cost, 3, 1)
+        layout1.addWidget(labelSheet, 4, 0)
+        layout1.addWidget(self.D8_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1214,6 +1278,9 @@ class MyApp(QWidget):
 
         self.dialog8.setLayout(main_layout)
         self.dialog8.setGeometry(300, 300, 700, 400)
+
+        # ? 제거
+        self.dialog8.setWindowFlags(Qt.WindowCloseButtonHint)
 
         self.dialog8.setWindowTitle("Scenario8")
         self.dialog8.setWindowModality(Qt.NonModal)
@@ -1268,14 +1335,28 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
+        labelSheet = QLabel('시트명 : ', self.dialog9)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D9_Sheet = QLineEdit(self.dialog9)
+        self.D9_Sheet.setStyleSheet("background-color: white;")
+        self.D9_Sheet.setPlaceholderText('시트명을 입력하세요')
+
         self.D9_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D9_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D9_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelKeyword, 0, 0)
         layout1.addWidget(self.D9_N, 0, 1)
         layout1.addWidget(labelTE, 1, 0)
         layout1.addWidget(self.D9_TE, 1, 1)
+        layout1.addWidget(labelSheet, 2, 0)
+        layout1.addWidget(self.D9_Sheet, 2, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1295,6 +1376,10 @@ class MyApp(QWidget):
 
         self.dialog9.setLayout(main_layout)
         self.dialog9.setGeometry(300, 300, 500, 150)
+
+        # ? 제거
+        self.dialog9.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog9.setWindowTitle("Scenario9")
         self.dialog9.setWindowModality(Qt.NonModal)
         self.dialog9.show()
@@ -1367,10 +1452,22 @@ class MyApp(QWidget):
         self.D10_TE = QLineEdit(self.dialog10)
         self.D10_TE.setStyleSheet("background-color: white;")
 
+        labelSheet = QLabel('시트명 : ', self.dialog10)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D10_Sheet = QLineEdit(self.dialog10)
+        self.D10_Sheet.setStyleSheet("background-color: white;")
+        self.D10_Sheet.setPlaceholderText('시트명을 입력하세요')
+
         self.D10_Search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Point.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Account.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D10_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelKeyword, 0, 0)
@@ -1381,6 +1478,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D10_Account, 2, 1)
         layout1.addWidget(labelTE, 3, 0)
         layout1.addWidget(self.D10_TE, 3, 1)
+        layout1.addWidget(labelSheet, 3, 0)
+        layout1.addWidget(self.D10_Sheet, 3, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1397,6 +1496,9 @@ class MyApp(QWidget):
 
         self.dialog10.setLayout(main_layout)
         self.dialog10.setGeometry(300, 300, 500, 200)
+
+        # ? 제거
+        self.dialog10.setWindowFlags(Qt.WindowCloseButtonHint)
 
         self.dialog10.setWindowTitle("Scenario10")
         self.dialog10.setWindowModality(Qt.NonModal)
@@ -1667,6 +1769,9 @@ class MyApp(QWidget):
         self.dialog11.setLayout(layout)
         self.dialog11.resize(625, 550)
 
+        # ? 제거
+        self.dialog11.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog11.setWindowTitle('Scenario 11')
         self.dialog11.setWindowModality(Qt.NonModal)
         self.dialog11.show()
@@ -1844,6 +1949,10 @@ class MyApp(QWidget):
 
         self.dialog12.setLayout(main_layout)
         self.dialog12.resize(500, 400)
+
+        # ? 제거
+        self.dialog12.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog12.setWindowTitle('Scenario12')
         self.dialog12.setWindowModality(Qt.NonModal)
         self.dialog12.show()
@@ -1971,6 +2080,17 @@ class MyApp(QWidget):
         itemChild4.setText(0, '22_비유동부채')
         itemChild4.setCheckState(0, Qt.Unchecked)
 
+        labelSheet = QLabel('시트명 : ', self.dialog13)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D13_Sheet = QLineEdit(self.dialog13)
+        self.D13_Sheet.setStyleSheet("background-color: white;")
+        self.D13_Sheet.setPlaceholderText('시트명을 입력하세요')
+
         ### Layout - 다이얼로그 UI
         main_layout = QVBoxLayout()
 
@@ -1981,6 +2101,7 @@ class MyApp(QWidget):
         layout2 = QVBoxLayout()
         sublayout3 = QVBoxLayout()
         sublayout4 = QHBoxLayout()
+        sublayout5 = QGridLayout()
 
         ### 탭
         tabs = QTabWidget()
@@ -2011,16 +2132,24 @@ class MyApp(QWidget):
         sublayout3.addWidget(label_tree)
         sublayout3.addWidget(self.account_tree)
 
+        sublayout5.addWidget(labelSheet, 0, 0)
+        sublayout5.addWidget(self.D13_Sheet, 0, 1)
+
         sublayout4.addStretch(2)
         sublayout4.addWidget(self.btn2)
         sublayout4.addWidget(self.btnDialog)
 
         layout2.addLayout(sublayout3, stretch=4)
+        layout2.addLayout(sublayout5, stretch=1)
         layout2.addLayout(sublayout4, stretch=1)
 
         ### 공통 지정
         self.dialog13.setLayout(main_layout)
         self.dialog13.resize(500, 400)
+
+        # ? 제거
+        self.dialog13.setWindowFlags(Qt.WindowCloseButtonHint)
+
         self.dialog13.setWindowTitle('Scenario13')
         self.dialog13.setWindowModality(Qt.NonModal)
         self.dialog13.show()
@@ -2070,11 +2199,23 @@ class MyApp(QWidget):
         self.D14_TE = QLineEdit(self.dialog14)
         self.D14_TE.setStyleSheet("background-color: white;")
 
+        labelSheet = QLabel('시트명 : ', self.dialog14)
+        labelSheet.setStyleSheet("color: white;")
+
+        font5 = labelSheet.font()
+        font5.setBold(True)
+        labelSheet.setFont(font5)
+
+        self.D14_Sheet = QLineEdit(self.dialog14)
+        self.D14_Sheet.setStyleSheet("background-color: white;")
+        self.D14_Sheet.setPlaceholderText('시트명을 입력하세요')
+
         # Extraction 내 Dictionary 를 위한 변수 설정
         self.D14_clickcount = 0
 
         self.D14_Key.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.D14_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
         layout1.addWidget(labelKeyword, 0, 0)
@@ -2097,6 +2238,9 @@ class MyApp(QWidget):
 
         self.dialog14.setLayout(main_layout)
         self.dialog14.setGeometry(300, 300, 500, 150)
+
+        # ? 제거
+        self.dialog14.setWindowFlags(Qt.WindowCloseButtonHint)
 
         self.dialog14.setWindowTitle("Scenario14")
         self.dialog14.setWindowModality(Qt.NonModal)
@@ -2265,6 +2409,7 @@ class MyApp(QWidget):
 
         temp_N = self.D4_N.text()
         temp_TE = self.D4_TE.text()
+        tempSheet = self.D4_Sheet.text()
 
         if temp_N == '':
             self.alertbox_open()
@@ -2277,16 +2422,19 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+        if len(self.dataframe) > 300000:
+            self.alertbox_open3()
 
-        self.scenario_dic[
-            '계정 사용빈도 N번이하인 계정이 포함된 전표리스트_' + str(self.D4_clickcount) + ' (N = ' + temp_N + ')'] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        self.combo_sheet.addItem(str(result[1]))
+        else:
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.scenario_dic[tempSheet] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_SAP(self):
+        tempSheet = self.D5_Sheet.text()
 
         ### ListBox 인풋값 append
         dropped_items = []
@@ -2326,15 +2474,19 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+        if len(self.dataframe) > 300000:
+            self.alertbox_open3()
 
-        self.scenario_dic['당기 생성된 계정리스트 추출_' + str(self.D5_clickcount) + ' '] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        self.combo_sheet.addItem(str(result[1]))
+        else:
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.scenario_dic[tempSheet] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_Non_SAP(self):
+        tempSheet = self.D5_Sheet.text()
 
         temp_Code_Non_SAP = self.D5_Code.text()
         temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
@@ -2350,28 +2502,33 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+        if len(self.dataframe) > 300000:
+            self.alertbox_open3()
 
-        self.scenario_dic['당기 생성된 계정리스트 추출_' + str(self.D5_clickcount) + ' '] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        self.combo_sheet.addItem(str(result[1]))
+        else:
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.scenario_dic[tempSheet] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked6(self):
         # 다이얼로그별 Clickcount 설정
         self.D6_clickcount = self.D6_clickcount + 1
 
         tempDate = self.D6_Date.text()  # 필수값
-        tempTDate = self.D6_Date2.text()  # 필수값
+        tempTDate = self.D6_Date2.text()
         tempJE = self.D6_JE.text()
         tempCost = self.D6_Cost.text()
+        tempSheet = self.D6_Sheet.text()
 
-        if tempTDate == '' or tempDate == '':
+        if tempDate == '':
             self.alertbox_open()
 
         else:
             if tempCost == '': tempCost = 0
+            if tempTDate == '': tempTDate = 0
 
             try:
                 int(tempTDate)
@@ -2409,14 +2566,15 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-
-                self.scenario_dic['결산일 전후 T일 입력 전표_' + str(self.D6_clickcount) +
-                                  ' (결산일 = ' + tempDate + ', T일 = ' + tempTDate + ')'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
             except ValueError:
                 try:
@@ -2440,6 +2598,7 @@ class MyApp(QWidget):
         tempDate = self.D7_Date.text()  # 필수값
         tempJE = self.D7_JE.text()
         tempCost = self.D7_Cost.text()
+        tempSheet = self.D7_Sheet.text()
 
         if self.rbtn1.isChecked():
             tempState = 'Effective Date'
@@ -2489,14 +2648,16 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
 
-                self.scenario_dic[
-                    '영업일 전기/입력 전표_' + str(self.D7_clickcount) + ' (영업일 전기/입력일 = ' + tempDate + ')'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
             except ValueError:
                 self.alertbox_open2('중요성 금액')
@@ -2509,6 +2670,7 @@ class MyApp(QWidget):
         tempN = self.D8_N.text()  # 필수값
         tempJE = self.D8_JE.text()
         tempCost = self.D8_Cost.text()
+        tempSheet = self.D8_Sheet.text()
 
         if tempN == '':
             self.alertbox_open()
@@ -2551,13 +2713,16 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-                self.scenario_dic[
-                    '효력, 입력 일자 간 차이가 N일 이상인 전표_' + str(self.D8_clickcount) + ' (N = ' + tempN + ')'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
+
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
             except ValueError:
                 try:
@@ -2579,6 +2744,7 @@ class MyApp(QWidget):
 
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
+        tempSheet = self.D9_Sheet.text()
 
         if tempN == '':
             self.alertbox_open()
@@ -2623,8 +2789,16 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
+
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
             except ValueError:
                 try:
@@ -2640,15 +2814,6 @@ class MyApp(QWidget):
                     except:
                         self.alertbox_open2('N값과 중요성금액')
 
-        self.scenario_dic['전표 작성 빈도수가 N회 이하 Scenario_' + str(
-            self.D9_clickcount) + ' (N = ' + tempN + ', TE = ' + tempTE + ')'] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        self.combo_sheet.addItem(str(result[1]))
-
-        model = DataFrameModel(self.scenario_dic[result[1]])
-        self.viewtable.setModel(model)
-
     def extButtonClicked10(self):
         # 다이얼로그별 Clickcount 설정
         self.D10_clickcount = self.D10_clickcount + 1
@@ -2657,6 +2822,7 @@ class MyApp(QWidget):
         tempAccount = self.D10_Account.text()
         tempPoint = self.D10_Point.text()
         tempTE = self.D10_TE.text()
+        tempSheet = self.D10_Sheet.text()
 
         if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '':
             self.alertbox_open()
@@ -2695,14 +2861,16 @@ class MyApp(QWidget):
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            if len(self.dataframe) > 300000:
+                self.alertbox_open3()
 
-            self.scenario_dic['특정 전표 입력자(W)에 의해 생성된 전표_' + str(
-                self.D10_clickcount) + '(전표 입력자(W) = ' + tempSearch + ', TE = ' + tempTE + ')'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
+            else:
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+                self.scenario_dic[tempSheet] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked11(self):
         passwords = ''
@@ -2811,6 +2979,7 @@ class MyApp(QWidget):
         temp_Continuous = self.text_continuous.text()  # 필수
         temp_Tree = self.account_tree.text()
         temp_TE_13 = self.line_amount.text()
+        tempSheet = self.D13_Sheet.text()
 
         if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '':
             self.alertbox_open()
@@ -2823,14 +2992,17 @@ class MyApp(QWidget):
             '''.format(field=self.selected_project_id)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
 
-        self.scenario_dic[
-            '연속된 숫자로 끝나는 금액 검토_' + str(self.D13_clickcount) + '연속되는 숫자 = ' + tempContinuous + ')'] = self.dataframe
-        key_list = list(self.scenario_dic.keys())
-        result = [key_list[0], key_list[-1]]
-        self.combo_sheet.addItem(str(result[1]))
+        if len(self.dataframe) > 300000:
+            self.alertbox_open3()
+
+        else:
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.scenario_dic[tempSheet] = self.dataframe
+            key_list = list(self.scenario_dic.keys())
+            result = [key_list[0], key_list[-1]]
+            self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked14(self):
         # 다이얼로그별 Clickcount 설정
@@ -2838,6 +3010,7 @@ class MyApp(QWidget):
 
         tempKey = self.D14_Key.text()  # 필수값
         tempTE = self.D14_TE.text()
+        tempSheet = self.D14_Sheet.text()
 
         if tempTE == '':
             tempTE = 0
@@ -2881,14 +3054,16 @@ class MyApp(QWidget):
                     '''.format(field=self.selected_project_id, key=tempKey, amount=tempTE)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
 
-                self.scenario_dic['전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)_' + str(
-                    self.D14_clickcount) + 'Key Word = ' + tempKey + ')'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
             return
         except:
