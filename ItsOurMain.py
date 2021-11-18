@@ -2178,13 +2178,13 @@ class MyApp(QWidget):
         right_sublayout2 = QHBoxLayout()
         right_sublayout3 = QHBoxLayout()
 
-        # ##RemoveSheet 버튼
-        # RemoveSheet_button = QPushButton('Remove Sheet')
-        # RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        # RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
-        # font_RemoveSheet = RemoveSheet_button.font()
-        # font_RemoveSheet.setBold(True)
-        # RemoveSheet_button.setFont(font_RemoveSheet)
+        ##RemoveSheet 버튼
+        RemoveSheet_button = QPushButton('Remove Sheet')
+        RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        font_RemoveSheet = RemoveSheet_button.font()
+        font_RemoveSheet.setBold(True)
+        RemoveSheet_button.setFont(font_RemoveSheet)
 
         # label
         label_sheet = QLabel("Sheet names: ", self)
@@ -2225,19 +2225,10 @@ class MyApp(QWidget):
 
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
-        # RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
+        RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
         save_path_button.clicked.connect(self.saveFileDialog)
         export_file_button.clicked.connect(self.saveFile)
         self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
-
-        ##GroupBox에 넣을 Layout들
-        layout = QHBoxLayout()
-
-        layout.addWidget(label_sheet, stretch=1)
-        layout.addWidget(self.combo_sheet, stretch=4)
-        # layout.addWidget(RemoveSheet_button, stretch=1)
-        layout.addWidget(export_file_button, stretch=1)
-        groupbox.setLayout(layout)
 
         ##layout 쌓기
         left_sublayout.addWidget(label_sheet, 0, 0)
@@ -2926,10 +2917,14 @@ class MyApp(QWidget):
             self.MessageBox_Open("저장할 Sheet가 없습니다")
             return
 
-        else:
-            fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
-                                                   self.tr("CSV(*.csv);; All Files(*.*)"))
-            self.dataframe.to_csv('' + fileName[0] + '', encoding='utf-8-sig')
+        if self.SaveRoute == '' or self.SaveRoute is None:
+            self.MessageBox_Open("저장 경로가 지정되지 않았습니다")
+            return
+
+        with pd.ExcelWriter(self.SaveRoute, engine='xlsxwriter') as writer:
+
+            for sheet_name, df in self.scenario_dic.items():
+                df.to_excel(writer, sheet_name=sheet_name, index=False, encoding='utf-8')
 
 
 if __name__ == '__main__':
