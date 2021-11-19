@@ -28,7 +28,6 @@ class Calendar(QDialog):
         self.calendar.setGridVisible(True)
 
         self.label = QLabel("")
-        self.label.setFont(QFont("Sanserif", 15))
         self.label.setStyleSheet('color:red')
 
         vbox.addWidget(self.calendar)
@@ -668,7 +667,6 @@ class MyApp(QWidget):
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
         label_AccCode.setStyleSheet('color: white;')
-        label_AccCode.setFont(QFont('Arial', 12))
 
         font1 = label_AccCode.font()
         font1.setBold(True)
@@ -677,7 +675,6 @@ class MyApp(QWidget):
         # ### 라벨 2 - SKA1 파일 드롭하기
         label_SKA1 = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
         label_SKA1.setStyleSheet('color: red;')
-        label_SKA1.setFont(QFont('Times font', 9))
 
         font12 = label_SKA1.font()
         font12.setBold(False)
@@ -694,14 +691,14 @@ class MyApp(QWidget):
         self.listbox_drops.setStyleSheet('background-color: white;')
 
         ### SAP
-        labelJE_Line = QLabel('JE Line : ', self.dialog5)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog5)
         labelJE_Line.setStyleSheet("color: white;")
         font6 = labelJE_Line.font()
         font6.setBold(True)
         labelJE_Line.setFont(font6)
         self.D5_JE_Line = QLineEdit(self.dialog5)
         self.D5_JE_Line.setStyleSheet("background-color: white;")
-        self.D5_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D5_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
         labelJE_Number = QLabel('JE Number : ', self.dialog5)
         labelJE_Number.setStyleSheet("color: white;")
         font7 = labelJE_Number.font()
@@ -721,14 +718,14 @@ class MyApp(QWidget):
         self.D5_Sheet.setPlaceholderText('시트명을 입력하세요')
 
         ### Non-SAP
-        labelJE_Line2 = QLabel('JE Line : ', self.dialog5)
+        labelJE_Line2 = QLabel('JE Line Number : ', self.dialog5)
         labelJE_Line2.setStyleSheet("color: white;")
         font6 = labelJE_Line2.font()
         font6.setBold(True)
         labelJE_Line2.setFont(font6)
         self.D5_JE_Line2 = QLineEdit(self.dialog5)
         self.D5_JE_Line2.setStyleSheet("background-color: white;")
-        self.D5_JE_Line2.setPlaceholderText('JE Line을 입력하세요')
+        self.D5_JE_Line2.setPlaceholderText('JE Line Number을 입력하세요')
         labelJE_Number2 = QLabel('JE Number : ', self.dialog5)
         labelJE_Number2.setStyleSheet("color: white;")
         font7 = labelJE_Number2.font()
@@ -956,7 +953,7 @@ class MyApp(QWidget):
         self.D6_Cost.setStyleSheet("background-color: white;")
         self.D6_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog6)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog6)
         labelJE_Line.setStyleSheet("color: white;")
 
         font6 = labelJE_Line.font()
@@ -965,7 +962,7 @@ class MyApp(QWidget):
 
         self.D6_JE_Line = QLineEdit(self.dialog6)
         self.D6_JE_Line.setStyleSheet("background-color: white;")
-        self.D6_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D6_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog6)
         labelJE_Number.setStyleSheet("color: white;")
@@ -1179,7 +1176,7 @@ class MyApp(QWidget):
         self.D7_Cost.setStyleSheet("background-color: white;")
         self.D7_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog7)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog7)
         labelJE_Line.setStyleSheet("color: white;")
 
         font7 = labelJE_Line.font()
@@ -1188,7 +1185,7 @@ class MyApp(QWidget):
 
         self.D7_JE_Line = QLineEdit(self.dialog7)
         self.D7_JE_Line.setStyleSheet("background-color: white;")
-        self.D7_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D7_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog7)
         labelJE_Number.setStyleSheet("color: white;")
@@ -1377,7 +1374,7 @@ class MyApp(QWidget):
         self.D8_Cost.setStyleSheet("background-color: white;")
         self.D8_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog8)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog8)
         labelJE_Line.setStyleSheet("color: white;")
 
         font5 = labelJE_Line.font()
@@ -1386,7 +1383,7 @@ class MyApp(QWidget):
 
         self.D8_JE_Line = QLineEdit(self.dialog8)
         self.D8_JE_Line.setStyleSheet("background-color: white;")
-        self.D8_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D8_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog8)
         labelJE_Number.setStyleSheet("color: white;")
@@ -1488,6 +1485,7 @@ class MyApp(QWidget):
 
         self.D9_N = QLineEdit(self.dialog9)
         self.D9_N.setStyleSheet("background-color: white;")
+        self.D9_N.setPlaceholderText('작성 빈도수를 입력하세요')
 
         labelTE = QLabel('TE : ', self.dialog9)
         labelTE.setStyleSheet("color: white;")
@@ -1501,11 +1499,12 @@ class MyApp(QWidget):
 
         self.D9_TE = QLineEdit(self.dialog9)
         self.D9_TE.setStyleSheet("background-color: white;")
+        self.D9_TE.setPlaceholderText('중요성 금액을 입력하세요')
 
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog9)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog9)
         labelJE_Line.setStyleSheet("color: white;")
 
         font3 = labelJE_Line.font()
@@ -1514,7 +1513,7 @@ class MyApp(QWidget):
 
         self.D9_JE_Line = QLineEdit(self.dialog9)
         self.D9_JE_Line.setStyleSheet("background-color: white;")
-        self.D9_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D9_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog9)
         labelJE_Number.setStyleSheet("color: white;")
@@ -1616,6 +1615,7 @@ class MyApp(QWidget):
 
         self.D10_Search = QLineEdit(self.dialog10)
         self.D10_Search.setStyleSheet("background-color: white;")
+        self.D10_Point.setPlaceholderText('전표입력자를 입력하세요')
 
         labelPoint = QLabel('특정시점 : ', self.dialog10)
         labelPoint.setStyleSheet("color: white;")
@@ -1626,6 +1626,7 @@ class MyApp(QWidget):
 
         self.D10_Point = QLineEdit(self.dialog10)
         self.D10_Point.setStyleSheet("background-color: white;")
+        self.D10_Point.setPlaceholderText('특정시점을 입력하세요')
 
         labelAccount = QLabel('특정계정 : ', self.dialog10)
         labelAccount.setStyleSheet("color: white;")
@@ -1636,6 +1637,7 @@ class MyApp(QWidget):
 
         self.D10_Account = QLineEdit(self.dialog10)
         self.D10_Account.setStyleSheet("background-color: white;")
+        self.D10_Account.setPlaceholderText('특정계정을 입력하세요')
 
         # Extraction 내 Dictionary 를 위한 변수 설정
         self.D10_clickcount = 0
@@ -1649,8 +1651,9 @@ class MyApp(QWidget):
 
         self.D10_TE = QLineEdit(self.dialog10)
         self.D10_TE.setStyleSheet("background-color: white;")
+        self.D10_Point.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog10)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog10)
         labelJE_Line.setStyleSheet("color: white;")
 
         font5 = labelJE_Line.font()
@@ -1659,7 +1662,7 @@ class MyApp(QWidget):
 
         self.D10_JE_Line = QLineEdit(self.dialog10)
         self.D10_JE_Line.setStyleSheet("background-color: white;")
-        self.D10_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D10_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog10)
         labelJE_Number.setStyleSheet("color: white;")
@@ -1774,7 +1777,6 @@ class MyApp(QWidget):
         ### 라벨 1 - 계정명 (A)
         labelAccount_A = QLabel('주계정(A)을 선택하세요: ', self.dialog11)
         labelAccount_A.setStyleSheet('color: white;')
-        labelAccount_A.setFont(QFont('Arial', 9))
 
         font7 = labelAccount_A.font()
         font7.setBold(True)
@@ -1783,7 +1785,6 @@ class MyApp(QWidget):
         ### 라벨 2 - 계정명 (B)
         labelAccount_B = QLabel('상대계정(B)을 선택하세요: ', self.dialog11)
         labelAccount_B.setStyleSheet('color: white;')
-        labelAccount_B.setFont(QFont('Arial', 9))
 
         font7 = labelAccount_B.font()
         font7.setBold(True)
@@ -1792,7 +1793,6 @@ class MyApp(QWidget):
         ### 라벨 3 - 계정코드 (A)
         labelCode_A = QLabel('*주계정(A) 코드를 입력하세요:', self.dialog11)
         labelCode_A.setStyleSheet('color: red;')
-        labelCode_A.setFont(QFont('Arial', 9))
 
         font11 = labelCode_A.font()
         font11.setBold(True)
@@ -1801,7 +1801,6 @@ class MyApp(QWidget):
         ### 라벨 4 - 계정코드 (B)
         labelCode_B = QLabel('*상대계정(B) 코드를 입력하세요:', self.dialog11)
         labelCode_B.setStyleSheet('color: red;')
-        labelCode_B.setFont(QFont('Arial', 9))
 
         font11 = labelCode_B.font()
         font11.setBold(True)
@@ -1810,7 +1809,6 @@ class MyApp(QWidget):
         ### 라벨 5 - 중요성 금액 (A)
         labelTE_A = QLabel('중요성 금액 : ', self.dialog11)
         labelTE_A.setStyleSheet('color: white;')
-        labelTE_A.setFont(QFont('Arial', 9))
 
         font7 = labelTE_A.font()
         font7.setBold(True)
@@ -1819,7 +1817,6 @@ class MyApp(QWidget):
         ### 라벨 6 - 중요성 금액 (B)
         labelTE_B = QLabel('중요성 금액 : ', self.dialog11)
         labelTE_B.setStyleSheet('color: white;')
-        labelTE_B.setFont(QFont('Arial', 9))
 
         font11 = labelTE_B.font()
         font11.setBold(True)
@@ -2076,7 +2073,6 @@ class MyApp(QWidget):
 
         label_tree = QLabel('원하는 계정명을 선택하세요', self.dialog12)
         label_tree.setStyleSheet("color: white;")
-        label_tree.setFont(QFont('Times, font', 9))
         font4 = label_tree.font()
         font4.setBold(True)
         label_tree.setFont(font4)
@@ -2227,7 +2223,6 @@ class MyApp(QWidget):
         ### 라벨 1 - 연속된 자릿수
         label_Continuous = QLabel('* 연속된 자릿수 (ex. 3333, 6666): ', self.dialog13)
         label_Continuous.setStyleSheet("color: red;")
-        label_Continuous.setFont(QFont('Arial', 9))
 
         font1 = label_Continuous.font()
         font1.setBold(True)
@@ -2241,7 +2236,6 @@ class MyApp(QWidget):
         ### 라벨 2 - 중요성 금액
         label_amount = QLabel('중요성 금액 : ', self.dialog13)
         label_amount.setStyleSheet("color: white;")
-        label_amount.setFont(QFont('Times font', 9))
 
         font3 = label_amount.font()
         font3.setBold(True)
@@ -2254,7 +2248,6 @@ class MyApp(QWidget):
         ### 라벨 3 - 계정 트리
         label_tree = QLabel('원하는 계정명을 선택하세요 : ', self.dialog13)
         label_tree.setStyleSheet("color: white;")
-        label_tree.setFont(QFont('Times, font', 9))
 
         font4 = label_tree.font()
         font4.setBold(True)
@@ -2306,7 +2299,7 @@ class MyApp(QWidget):
         itemChild4.setText(0, '22_비유동부채')
         itemChild4.setCheckState(0, Qt.Unchecked)
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog13)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog13)
         labelJE_Line.setStyleSheet("color: white;")
 
         font7 = labelJE_Line.font()
@@ -2315,7 +2308,7 @@ class MyApp(QWidget):
 
         self.D13_JE_Line = QLineEdit(self.dialog13)
         self.D13_JE_Line.setStyleSheet("background-color: white;")
-        self.D13_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D13_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog13)
         labelJE_Number.setStyleSheet("color: white;")
@@ -2440,6 +2433,7 @@ class MyApp(QWidget):
 
         self.D14_Key = QLineEdit(self.dialog14)
         self.D14_Key.setStyleSheet("background-color: white;")
+        self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요')
 
         labelTE = QLabel('TE : ', self.dialog14)
         labelTE.setStyleSheet("color: white;")
@@ -2450,8 +2444,9 @@ class MyApp(QWidget):
 
         self.D14_TE = QLineEdit(self.dialog14)
         self.D14_TE.setStyleSheet("background-color: white;")
+        self.D14_TE.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog14)
+        labelJE_Line = QLabel('JE Line Number : ', self.dialog14)
         labelJE_Line.setStyleSheet("color: white;")
 
         font3 = labelJE_Line.font()
@@ -2460,7 +2455,7 @@ class MyApp(QWidget):
 
         self.D14_JE_Line = QLineEdit(self.dialog14)
         self.D14_JE_Line.setStyleSheet("background-color: white;")
-        self.D14_JE_Line.setPlaceholderText('JE Line을 입력하세요')
+        self.D14_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
 
         labelJE_Number = QLabel('JE Number : ', self.dialog14)
         labelJE_Number.setStyleSheet("color: white;")
@@ -2592,7 +2587,7 @@ class MyApp(QWidget):
         for i in range(101):
             time.sleep(0.05)
             self.progressBar.setValue(i)
-            
+
     def Sheet_ComboBox_Selected(self, text):
         model = DataFrameModel(self.scenario_dic[text])
         self.viewtable.setModel(model)
@@ -2835,7 +2830,8 @@ class MyApp(QWidget):
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     # 추출 조건 추가
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
                                                           QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog9.activateWindow()
@@ -3062,6 +3058,10 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
 
             except ValueError:
                 try:
@@ -3328,7 +3328,7 @@ class MyApp(QWidget):
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
 
-            return                                                              
+            return
         except:
             QMessageBox.about(self, "Warning", "중요성금액에는 숫자를 입력해주세요.")
             return
