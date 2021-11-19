@@ -1,6 +1,8 @@
 import sys
 import re
 import datetime
+import time
+
 from dateutil.relativedelta import relativedelta
 import gc
 from PyQt5.QtWidgets import *
@@ -516,68 +518,57 @@ class MyApp(QWidget):
         self.dialog4.setStyleSheet('background-color: #2E2E38')
         self.dialog4.setWindowIcon(QIcon('./EY_logo.png'))
 
+        ### 버튼 1 - Extract Data
         self.btn2 = QPushButton('   Extract Data', self.dialog4)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2.setStyleSheet('color:white; background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked4)
+        self.btn2.clicked.connect(self.doAction)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
+        ### 버튼 2 - Close
         self.btnDialog = QPushButton('   Close', self.dialog4)
-        self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close4)
 
         font10 = self.btnDialog.font()
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
-        self.btn2.resize(110, 30)
-        self.btnDialog.resize(110, 30)
+        ### Progress Bar
+        self.progressBar = QProgressBar(self.dialog4)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setMinimum(0)
 
-        label_freq = QLabel('사용빈도(N)* :', self.dialog4)
+        ### 라벨 1 - 사용빈도
+        label_freq = QLabel('사용 빈도(N)* :', self.dialog4)
         label_freq.setStyleSheet('color: white;')
 
         font1 = label_freq.font()
         font1.setBold(True)
         label_freq.setFont(font1)
 
+        ### LineEdit 1 - 사용 빈도
         self.D4_N = QLineEdit(self.dialog4)
         self.D4_N.setStyleSheet('background-color: white;')
+        self.D4_N.setPlaceholderText('사용빈도를 입력하세요')
 
-        label_TE = QLabel('중요성금액: ', self.dialog4)
+        ### 라벨 2 - 중요성 금액
+        label_TE = QLabel('중요성 금액: ', self.dialog4)
         label_TE.setStyleSheet('color: white;')
 
         font2 = label_TE.font()
         font2.setBold(True)
         label_TE.setFont(font2)
 
+        ### LineEdit 2 - 중요성 금액
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
+        self.D4_TE.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line : ', self.dialog4)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font6 = labelJE_Line.font()
-        font6.setBold(True)
-        labelJE_Line.setFont(font6)
-
-        self.D4_JE_Line = QLineEdit(self.dialog4)
-        self.D4_JE_Line.setStyleSheet("background-color: white;")
-        self.D4_JE_Line.setPlaceholderText('JE Line을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog4)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font7 = labelJE_Number.font()
-        font7.setBold(True)
-        labelJE_Number.setFont(font7)
-
-        self.D4_JE_Number = QLineEdit(self.dialog4)
-        self.D4_JE_Number.setStyleSheet("background-color: white;")
-        self.D4_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
+        ### 라벨 3 - 시트명
         labelSheet = QLabel('시트명* : ', self.dialog4)
         labelSheet.setStyleSheet("color: white;")
 
@@ -585,6 +576,7 @@ class MyApp(QWidget):
         font5.setBold(True)
         labelSheet.setFont(font5)
 
+        ### LineEdit 3 - 시트명
         self.D4_Sheet = QLineEdit(self.dialog4)
         self.D4_Sheet.setStyleSheet("background-color: white;")
         self.D4_Sheet.setPlaceholderText('시트명을 입력하세요')
@@ -592,10 +584,8 @@ class MyApp(QWidget):
         self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D4_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D4_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
+        ### 요소 배치
         self.D4_clickcount = 0
 
         layout1 = QGridLayout()
@@ -603,16 +593,11 @@ class MyApp(QWidget):
         layout1.addWidget(self.D4_N, 0, 1)
         layout1.addWidget(label_TE, 1, 0)
         layout1.addWidget(self.D4_TE, 1, 1)
-        layout1.addWidget(labelJE_Line, 2, 0)
-        layout1.addWidget(self.D4_JE_Line, 2, 1)
-        layout1.addWidget(labelJE_Number, 3, 0)
-        layout1.addWidget(self.D4_JE_Number, 3, 1)
-        layout1.addWidget(labelSheet, 4, 0)
-        layout1.addWidget(self.D4_Sheet, 4, 1)
+        layout1.addWidget(labelSheet, 2, 0)
+        layout1.addWidget(self.D4_Sheet, 2, 1)
 
         layout2 = QHBoxLayout()
-        layout2.addStretch()
-        layout2.addStretch()
+        layout2.addWidget(self.progressBar)
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
 
@@ -624,7 +609,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog4.setLayout(main_layout)
-        self.dialog4.setGeometry(300, 300, 500, 200)
+        self.dialog4.setGeometry(300, 300, 500, 150)
 
         # ? 제거
         self.dialog4.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -689,15 +674,7 @@ class MyApp(QWidget):
         font1.setBold(True)
         label_AccCode.setFont(font1)
 
-        ### 라벨 2 - 입력 예시
-        label_Example = QLabel('※ 입력 예시: OO', self.dialog5)
-        label_Example.setStyleSheet('color: red;')
-        label_Example.setFont(QFont('Times font', 9))
-
-        font2 = label_Example.font()
-        font2.setBold(False)
-        label_Example.setFont(font2)
-
+        # ### 라벨 2 - SKA1 파일 드롭하기
         label_SKA1 = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
         label_SKA1.setStyleSheet('color: red;')
         label_SKA1.setFont(QFont('Times font', 9))
@@ -710,6 +687,7 @@ class MyApp(QWidget):
         self.MyInput = QTextEdit(self.dialog5)
         self.MyInput.setAcceptRichText(False)
         self.MyInput.setStyleSheet('background-color: white;')
+        self.MyInput.setPlaceholderText('※ 입력 예시 : OO')
 
         ### ListBox Widget
         self.listbox_drops = ListBoxWidget()
@@ -797,7 +775,6 @@ class MyApp(QWidget):
 
         ### 배치 - 탭 1
         sublayout1.addWidget(label_AccCode)
-        sublayout1.addWidget(label_Example)
         sublayout1.addWidget(self.MyInput)
 
         sublayout5.addWidget(labelJE_Line, 0, 0)
@@ -2602,6 +2579,20 @@ class MyApp(QWidget):
     ###########################
     ####추가하셔야 하는 함수들#####
     ###########################
+    def timerEvent(self, e):
+        if self.step >= 100:
+            self.timer.stop()
+            self.btn2.setText('Finished')
+            return
+
+        self.step = self.step + 1
+        self.pbar.setValue(self.step)
+
+    def doAction(self):
+        for i in range(101):
+            time.sleep(0.05)
+            self.progressBar.setValue(i)
+            
     def Sheet_ComboBox_Selected(self, text):
         model = DataFrameModel(self.scenario_dic[text])
         self.viewtable.setModel(model)
