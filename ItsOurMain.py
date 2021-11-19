@@ -367,100 +367,100 @@ class MyApp(QWidget):
 
         def Connect_ServerInfo_Group(self):
 
-        groupbox = QGroupBox('접속 정보')
-        self.setStyleSheet('QGroupBox  {color: white;}')
-        font_groupbox = groupbox.font()
-        font_groupbox.setBold(True)
-        groupbox.setFont(font_groupbox)
+            groupbox = QGroupBox('접속 정보')
+            self.setStyleSheet('QGroupBox  {color: white;}')
+            font_groupbox = groupbox.font()
+            font_groupbox.setBold(True)
+            groupbox.setFont(font_groupbox)
 
-        ##labels 생성 및 스타일 지정
-        label1 = QLabel('Server : ', self)
-        label2 = QLabel('Engagement Code : ', self)
-        label3 = QLabel('Project Name : ', self)
-        label4 = QLabel('Scenario : ', self)
+            ##labels 생성 및 스타일 지정
+            label1 = QLabel('Server : ', self)
+            label2 = QLabel('Engagement Code : ', self)
+            label3 = QLabel('Project Name : ', self)
+            label4 = QLabel('Scenario : ', self)
 
-        font1 = label1.font()
-        font1.setBold(True)
-        label1.setFont(font1)
-        font2 = label2.font()
-        font2.setBold(True)
-        label2.setFont(font2)
-        font3 = label3.font()
-        font3.setBold(True)
-        label3.setFont(font3)
-        font4 = label4.font()
-        font4.setBold(True)
-        label4.setFont(font4)
+            font1 = label1.font()
+            font1.setBold(True)
+            label1.setFont(font1)
+            font2 = label2.font()
+            font2.setBold(True)
+            label2.setFont(font2)
+            font3 = label3.font()
+            font3.setBold(True)
+            label3.setFont(font3)
+            font4 = label4.font()
+            font4.setBold(True)
+            label4.setFont(font4)
 
-        label1.setStyleSheet("color: white;")
-        label2.setStyleSheet("color: white;")
-        label3.setStyleSheet("color: white;")
-        label4.setStyleSheet("color: white;")
+            label1.setStyleSheet("color: white;")
+            label2.setStyleSheet("color: white;")
+            label3.setStyleSheet("color: white;")
+            label4.setStyleSheet("color: white;")
 
-        ##서버 선택 콤보박스
-        self.cb_server = QComboBox(self)
-        self.cb_server.addItem('--서버 목록--')
-        for i in range(1, 9):
-            self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
+            ##서버 선택 콤보박스
+            self.cb_server = QComboBox(self)
+            self.cb_server.addItem('--서버 목록--')
+            for i in range(1, 9):
+                self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
 
-        ### Scenario 유형 콤보박스 - 소분류 수정
-        self.comboScenario = QComboBox(self)
+            ### Scenario 유형 콤보박스 - 소분류 수정
+            self.comboScenario = QComboBox(self)
 
-        self.comboScenario.addItem('--시나리오 목록--', [''])
-        self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트', [''])
-        self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출', [''])
-        self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표', [''])
-        self.comboScenario.addItem('07 : 영업일 전기/입력 전표', [''])
-        self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
-        self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
-        self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
-        self.comboScenario.addItem('11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', [''])
-        self.comboScenario.addItem('12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토', [''])
-        self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
-        self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)', [''])
+            self.comboScenario.addItem('--시나리오 목록--', [''])
+            self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트', [''])
+            self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출', [''])
+            self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표', [''])
+            self.comboScenario.addItem('07 : 영업일 전기/입력 전표', [''])
+            self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
+            self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
+            self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
+            self.comboScenario.addItem('11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', [''])
+            self.comboScenario.addItem('12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토', [''])
+            self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
+            self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)', [''])
 
-        self.ProjectCombobox = QComboBox(self)
+            self.ProjectCombobox = QComboBox(self)
 
-        ##Engagement code 입력 line
-        self.line_ecode = QLineEdit(self)
-        self.line_ecode.setText("")
+            ##Engagement code 입력 line
+            self.line_ecode = QLineEdit(self)
+            self.line_ecode.setText("")
 
-        ##Project Connect 버튼 생성 및 스타일 지정
-        btn_connect = QPushButton('   Project Connect', self)
-        font_btn_connect = btn_connect.font()
-        font_btn_connect.setBold(True)
-        btn_connect.setFont(font_btn_connect)
-        btn_connect.setStyleSheet('color:white;  background-image : url(./bar.png)')
+            ##Project Connect 버튼 생성 및 스타일 지정
+            btn_connect = QPushButton('   Project Connect', self)
+            font_btn_connect = btn_connect.font()
+            font_btn_connect.setBold(True)
+            btn_connect.setFont(font_btn_connect)
+            btn_connect.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
-        ##Input Conditions 버튼 생성 및 스타일 지정
-        btn_condition = QPushButton('   Input Conditions', self)
-        font_btn_condition = btn_condition.font()
-        font_btn_condition.setBold(True)
-        btn_condition.setFont(font_btn_condition)
-        btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
+            ##Input Conditions 버튼 생성 및 스타일 지정
+            btn_condition = QPushButton('   Input Conditions', self)
+            font_btn_condition = btn_condition.font()
+            font_btn_condition.setBold(True)
+            btn_condition.setFont(font_btn_condition)
+            btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
-        ### Signal 함수들
-        self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
-        self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
-        btn_connect.clicked.connect(self.connectButtonClicked)
-        self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
-        btn_condition.clicked.connect(self.connectDialog)
+            ### Signal 함수들
+            self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
+            self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
+            btn_connect.clicked.connect(self.connectButtonClicked)
+            self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
+            btn_condition.clicked.connect(self.connectDialog)
 
-        ##layout 쌓기
-        grid = QGridLayout()
-        grid.addWidget(label1, 0, 0)
-        grid.addWidget(label2, 1, 0)
-        grid.addWidget(label3, 2, 0)
-        grid.addWidget(label4, 3, 0)
-        grid.addWidget(self.cb_server, 0, 1)
-        grid.addWidget(btn_connect, 1, 2)
-        grid.addWidget(self.comboScenario, 3, 1)
-        grid.addWidget(btn_condition, 3, 2)
-        grid.addWidget(self.line_ecode, 1, 1)
-        grid.addWidget(self.ProjectCombobox, 2, 1)
+            ##layout 쌓기
+            grid = QGridLayout()
+            grid.addWidget(label1, 0, 0)
+            grid.addWidget(label2, 1, 0)
+            grid.addWidget(label3, 2, 0)
+            grid.addWidget(label4, 3, 0)
+            grid.addWidget(self.cb_server, 0, 1)
+            grid.addWidget(btn_connect, 1, 2)
+            grid.addWidget(self.comboScenario, 3, 1)
+            grid.addWidget(btn_condition, 3, 2)
+            grid.addWidget(self.line_ecode, 1, 1)
+            grid.addWidget(self.ProjectCombobox, 2, 1)
 
-        groupbox.setLayout(grid)
-        return groupbox
+            groupbox.setLayout(grid)
+            return groupbox
 
     def ComboSmall_Selected(self, text):
         self.selected_scenario_subclass_index = self.comboScenario.currentIndex()
