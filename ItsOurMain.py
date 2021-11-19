@@ -206,7 +206,6 @@ class MyApp(QWidget):
         self.selected_scenario_subclass_index = 0
         self.scenario_dic = {}
         self.selected_scenario_group = None
-        self.SaveRoute = None
 
     def MessageBox_Open(self, text):
         self.msg = QMessageBox()
@@ -951,7 +950,6 @@ class MyApp(QWidget):
         layout2.addStretch()
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
-
         layout2.setContentsMargins(-1, 10, -1, -1)
 
         main_layout = QVBoxLayout()
@@ -2361,13 +2359,6 @@ class MyApp(QWidget):
         groupbox.setFont(font_groupbox)
         self.setStyleSheet('QGroupBox  {color: white;}')
 
-        ##GroupBox에 넣을 Layout들
-        layout = QHBoxLayout()
-        left_sublayout = QGridLayout()
-        right_sublayout1 = QVBoxLayout()
-        right_sublayout2 = QHBoxLayout()
-        right_sublayout3 = QHBoxLayout()
-
         ##RemoveSheet 버튼
         RemoveSheet_button = QPushButton('Remove Sheet')
         RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -2383,27 +2374,9 @@ class MyApp(QWidget):
         label_sheet.setFont(font_sheet)
         label_sheet.setStyleSheet('color:white;')
 
-        label_savepath = QLabel(f"Save Route: {' ' * 12}", self)
-        font_savepath = label_savepath.font()
-        font_savepath.setBold(True)
-        label_savepath.setFont(font_savepath)
-        label_savepath.setStyleSheet('color:white;')
 
         ##시나리오 Sheet를 표현할 콤보박스
         self.combo_sheet = QComboBox(self)
-
-        ##저장 경로를 표현할 LineEdit
-        self.line_savepath = QLineEdit(self)
-        self.line_savepath.setText("")
-        self.line_savepath.setDisabled(True)
-
-        ## Setting Save Route 버튼
-        save_path_button = QPushButton("Setting Save Route", self)
-        save_path_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        font_path_button = save_path_button.font()
-        font_path_button.setBold(True)
-        save_path_button.setFont(font_path_button)
-        save_path_button.setStyleSheet('color:white;background-image : url(./bar.png)')
 
         ## Save 버튼
         export_file_button = QPushButton("Save", self)
@@ -2416,26 +2389,15 @@ class MyApp(QWidget):
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
         RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
-        save_path_button.clicked.connect(self.saveFileDialog)
         export_file_button.clicked.connect(self.saveFile)
         self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
 
         ##layout 쌓기
-        left_sublayout.addWidget(label_sheet, 0, 0)
-        left_sublayout.addWidget(self.combo_sheet, 0, 1)
-        left_sublayout.addWidget(label_savepath, 1, 0)
-        left_sublayout.addWidget(self.line_savepath, 1, 1)
-
-        right_sublayout2.addWidget(RemoveSheet_button, stretch=2)
-        right_sublayout3.addWidget(save_path_button, stretch=1)
-        right_sublayout3.addWidget(export_file_button, stretch=1)
-
-        right_sublayout1.addLayout(right_sublayout2, stretch=1)
-        right_sublayout1.addLayout(right_sublayout3, stretch=1)
-
-        layout.addLayout(left_sublayout, stretch=2)
-        layout.addLayout(right_sublayout1, stretch=1)
-
+        layout = QHBoxLayout()
+        layout.addWidget(label_sheet, stretch=1)
+        layout.addWidget(self.combo_sheet, stretch=4)
+        layout.addWidget(RemoveSheet_button, stretch=1)
+        layout.addWidget(export_file_button, stretch=1)
         groupbox.setLayout(layout)
 
         return groupbox
@@ -3120,15 +3082,6 @@ class MyApp(QWidget):
     def slot_clicked_item(self, QModelIndex):
         self.stk_w.setCurrentIndex(QModelIndex.row())
 
-    def saveFileDialog(self):
-        fileName = QFileDialog.getSaveFileName(self, "Save File", '', ".xlsx")
-
-        if fileName[0]:
-            self.SaveRoute = fileName[0] + fileName[1]
-            self.line_savepath.setText(self.SaveRoute)
-        else:
-            self.MessageBox_Open("저장 경로를 선택하지 않았습니다.")
-
     def saveFile(self):
         if self.dataframe is None:
             self.MessageBox_Open("저장할 데이터가 없습니다")
@@ -3138,14 +3091,9 @@ class MyApp(QWidget):
             self.MessageBox_Open("저장할 Sheet가 없습니다")
             return
 
-        if self.SaveRoute == '' or self.SaveRoute is None:
-            self.MessageBox_Open("저장 경로가 지정되지 않았습니다")
-            return
-
-        with pd.ExcelWriter(self.SaveRoute, engine='xlsxwriter') as writer:
-
-            for sheet_name, df in self.scenario_dic.items():
-                df.to_excel(writer, sheet_name=sheet_name, index=False, encoding='utf-8')
+        else:
+            fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./", self.tr("CSV(*.csv);; All Files(*.*)"))
+            self.dataframe.to_csv(''+ fileName[0] +'', encoding='utf-8-sig')
 
 
 if __name__ == '__main__':
