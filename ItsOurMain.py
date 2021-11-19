@@ -365,7 +365,7 @@ class MyApp(QWidget):
         except:
             self.selected_project_id = None
 
-    def Connect_ServerInfo_Group(self):
+        def Connect_ServerInfo_Group(self):
 
         groupbox = QGroupBox('접속 정보')
         self.setStyleSheet('QGroupBox  {color: white;}')
@@ -419,10 +419,6 @@ class MyApp(QWidget):
         self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
         self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)', [''])
 
-        ##시나리오 세부 내역/프로젝트 선택 콤보박스
-        self.comboSmall = QComboBox(self)
-        self.comboSmall.addItems(self.comboScenario.itemData(0))
-
         self.ProjectCombobox = QComboBox(self)
 
         ##Engagement code 입력 line
@@ -443,7 +439,7 @@ class MyApp(QWidget):
         btn_condition.setFont(font_btn_condition)
         btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
-        ##Signal 함수들
+        ### Signal 함수들
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
         btn_connect.clicked.connect(self.connectButtonClicked)
