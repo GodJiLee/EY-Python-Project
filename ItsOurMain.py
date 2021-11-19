@@ -2843,6 +2843,11 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+                    # 추출 조건 추가
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                                                          QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
 
             except ValueError:
                 try:
@@ -3027,7 +3032,7 @@ class MyApp(QWidget):
 
                 # sql문 수정
                 sql = '''
-                               SELECT TOP 100                                
+                               SELECT                                
                                    JournalEntries.BusinessUnit                               
                                    , JournalEntries.JENumber                                 
                                    , JournalEntries.JELineNumber                                 
@@ -3056,8 +3061,7 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id, amount=tempTE)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
-
-                if len(self.dataframe) > 300000:
+                if len(self.dataframe) > 30000:
                     self.alertbox_open3()
 
                 else:
@@ -3333,7 +3337,7 @@ class MyApp(QWidget):
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
 
-            return
+            return                                                              
         except:
             QMessageBox.about(self, "Warning", "중요성금액에는 숫자를 입력해주세요.")
             return
