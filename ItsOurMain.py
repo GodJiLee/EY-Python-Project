@@ -1575,7 +1575,7 @@ class MyApp(QWidget):
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
-        labelKeyword = QLabel('작성빈도수 : ', self.dialog9)
+        labelKeyword = QLabel('작성빈도수* : ', self.dialog9)
         labelKeyword.setStyleSheet("color: white;")
 
         font1 = labelKeyword.font()
@@ -1755,7 +1755,7 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        labelKeyword = QLabel('전표입력자 : ', self.dialog10)
+        labelKeyword = QLabel('전표입력자* : ', self.dialog10)
         labelKeyword.setStyleSheet("color: white;")
 
         font1 = labelKeyword.font()
@@ -2424,7 +2424,7 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        labelKeyword = QLabel('Key Words : ', self.dialog14)
+        labelKeyword = QLabel('Key Words* : ', self.dialog14)
         labelKeyword.setStyleSheet("color: white;")
 
         font1 = labelKeyword.font()
@@ -3045,6 +3045,10 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                                                                              QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
 
             except ValueError:
                 try:
@@ -3110,8 +3114,22 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id, amount=tempTE)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
+
                 if len(self.dataframe) > 30000:
                     self.alertbox_open3()
+                    
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data':[]})
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                                                                              QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
 
                 else:
                     model = DataFrameModel(self.dataframe)
