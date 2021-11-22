@@ -515,7 +515,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -738,7 +738,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -985,7 +985,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -1242,7 +1242,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -1508,7 +1508,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -1731,14 +1731,13 @@ class MyApp(QWidget):
     def Dialog9(self):
         self.dialog9 = QDialog()
         groupbox = QGroupBox('접속 정보')
-
         cursor = self.cnxn.cursor()
 
         sql = '''
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -1894,11 +1893,16 @@ class MyApp(QWidget):
         layout1.addWidget(labelSheet, 3, 0)
         layout1.addWidget(self.D9_Sheet, 3, 1)
 
+        self.progressBar = QProgressBar(self.dialog9)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setMinimum(0)
+
         layout2 = QHBoxLayout()
         layout2.addStretch()
         layout2.addStretch()
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
+        layout2.addWidget(self.progressBar)
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
@@ -1961,7 +1965,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -2501,7 +2505,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -2718,7 +2722,7 @@ class MyApp(QWidget):
                  SELECT 											
                         *
                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
+
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
@@ -2982,13 +2986,12 @@ class MyApp(QWidget):
             self.timer.stop()
             self.btn2.setText('Finished')
             return
-
         self.step = self.step + 1
         self.pbar.setValue(self.step)
 
     def doAction(self):
-        for i in range(101):
-            time.sleep(0.05)
+        for i in range(100):
+            time.sleep(0.01)
             self.progressBar.setValue(i)
 
     def Sheet_ComboBox_Selected(self, text):
@@ -3472,7 +3475,8 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': []})
+                    self.dataframe = pd.DataFrame({'No Data': ["[전표번호: " + str(tempN) + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     self.scenario_dic[tempSheet] = self.dataframe
@@ -3480,18 +3484,20 @@ class MyApp(QWidget):
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
-                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)-1) + "개입니다",
                                                           QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog9.activateWindow()
 
                 else:
+                    self.doAction()
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     self.scenario_dic[tempSheet] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+                    self.progressBar.setValue(100)
 
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
                         tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
@@ -3783,8 +3789,12 @@ class MyApp(QWidget):
 
         else:
             fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
-                                                   self.tr("CSV(*.csv);; All Files(*.*)"))
-            self.dataframe.to_csv('' + fileName[0] + '', encoding='utf-8-sig')
+                                                   self.tr("xlsx(*.xlsx);; All Files(*.*)"))
+
+            with pd.ExcelWriter('' + fileName[0] + '') as writer:
+                for temp in self.scenario_dic:
+                    self.scenario_dic[''+temp+''].to_excel(writer, sheet_name= ''+temp+'', index = False, freeze_panes= (1,1))
+            self.MessageBox_Open("저장을 완료했습니다")
 
 
 if __name__ == '__main__':
