@@ -353,51 +353,7 @@ class MyApp(QWidget):
         ## 예외처리 - 에러 표시인 "프로젝트가 없습니다"가 선택되어 있는 경우
         try:
             self.selected_project_id = pd.read_sql(sql_query, self.cnxn).iloc[0, 0]
-            # 트리 작업
-            cursor = self.cnxn.cursor()
 
-            sql = '''
-                    SELECT 											
-                          *
-                    FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-       
-                '''.format(field=self.selected_project_id)
-
-            accountsname = pd.read_sql(sql, self.cnxn)
-
-            self.new_tree = Form(self)
-
-            self.new_tree.tree.clear()
-
-            for n, i in enumerate(accountsname.AccountType.unique()):
-                self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
-
-                self.new_tree.parent.setText(0, "{}".format(i))
-                self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                child_items = accountsname.AccountSubType[
-                    accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
-                for m, x in enumerate(child_items):
-                    self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
-
-                    self.new_tree.child.setText(0, "{}".format(x))
-                    self.new_tree.child.setFlags(
-                        self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                    grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
-                    for o, y in enumerate(grandchild_items):
-                        self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
-
-                        self.new_tree.grandchild.setText(0, "{}".format(y))
-                        self.new_tree.grandchild.setFlags(
-                            self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                        num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
-                        full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
-                        for z in full_name:
-                            self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
-
-                            self.new_tree.grandgrandchild.setText(0, "{}".format(z))
-                            self.new_tree.grandgrandchild.setFlags(
-                                self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                            self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
         except:
             self.selected_project_id = None
 
@@ -551,6 +507,51 @@ class MyApp(QWidget):
         self.dialog4 = QDialog()
         self.dialog4.setStyleSheet('background-color: #2E2E38')
         self.dialog4.setWindowIcon(QIcon('./EY_logo.png'))
+
+        # 트리 작업
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton('   Extract Data', self.dialog4)
@@ -730,6 +731,50 @@ class MyApp(QWidget):
         self.dialog5 = QDialog()
         self.dialog5.setStyleSheet('background-color: #2E2E38')
         self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
+
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         ### 버튼 1 - Extract Data (Non-SAP)
         self.btn2 = QPushButton(' Extract Data', self.dialog5)
@@ -931,9 +976,52 @@ class MyApp(QWidget):
 
     def Dialog6(self):
         self.dialog6 = QDialog()
-
         self.dialog6.setStyleSheet('background-color: #2E2E38')
         self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
+
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog6)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -1147,6 +1235,50 @@ class MyApp(QWidget):
         self.dialog7 = QDialog()
         self.dialog7.setStyleSheet('background-color: #2E2E38')
         self.dialog7.setWindowIcon(QIcon("./EY_logo.png"))
+
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog7)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -1370,6 +1502,50 @@ class MyApp(QWidget):
         self.dialog8.setStyleSheet('background-color: #2E2E38')
         self.dialog8.setWindowIcon(QIcon("./EY_logo.png"))
 
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+
         self.btn2 = QPushButton('   Extract Data', self.dialog8)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked8)
@@ -1556,6 +1732,50 @@ class MyApp(QWidget):
         self.dialog9 = QDialog()
         groupbox = QGroupBox('접속 정보')
 
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
 
@@ -1734,6 +1954,50 @@ class MyApp(QWidget):
         self.dialog10 = QDialog()
         self.dialog10.setStyleSheet('background-color: #2E2E38')
         self.dialog10.setWindowIcon(QIcon("./EY_logo.png"))
+
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog10)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2231,6 +2495,50 @@ class MyApp(QWidget):
         self.dialog13.setStyleSheet('background-color: #2E2E38')
         self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
 
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog13)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2403,6 +2711,50 @@ class MyApp(QWidget):
         self.dialog14 = QDialog()
         self.dialog14.setStyleSheet('background-color: #2E2E38')
         self.dialog14.setWindowIcon(QIcon("./EY_logo.png"))
+
+        cursor = self.cnxn.cursor()
+
+        sql = '''
+                 SELECT 											
+                        *
+                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+       
+            '''.format(field=self.selected_project_id)
+
+        accountsname = pd.read_sql(sql, self.cnxn)
+
+        self.new_tree = Form(self)
+
+        self.new_tree.tree.clear()
+
+        for n, i in enumerate(accountsname.AccountType.unique()):
+            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
+
+            self.new_tree.parent.setText(0, "{}".format(i))
+            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items = accountsname.AccountSubType[
+                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items):
+                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
+
+                self.new_tree.child.setText(0, "{}".format(x))
+                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
+                for o, y in enumerate(grandchild_items):
+                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
+
+                    self.new_tree.grandchild.setText(0, "{}".format(y))
+                    self.new_tree.grandchild.setFlags(
+                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
+                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
+                    for z in full_name:
+                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
+
+                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree.grandgrandchild.setFlags(
+                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog14)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -3045,8 +3397,9 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
-                                                                              QMessageBox.Yes)
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                                                          QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog9.activateWindow()
 
@@ -3117,17 +3470,18 @@ class MyApp(QWidget):
 
                 if len(self.dataframe) > 30000:
                     self.alertbox_open3()
-                    
+
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data':[]})
+                    self.dataframe = pd.DataFrame({'No Data': []})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     self.scenario_dic[tempSheet] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
-                                                                              QMessageBox.Yes)
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                                                          QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog9.activateWindow()
 
