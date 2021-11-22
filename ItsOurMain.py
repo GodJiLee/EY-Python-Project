@@ -735,16 +735,13 @@ class MyApp(QWidget):
         cursor = self.cnxn.cursor()
 
         sql = '''
-                 SELECT 											
-                        *
-                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
-            '''.format(field=self.selected_project_id)
+        SELECT *
+        FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+        '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
 
         self.new_tree = Form(self)
-
         self.new_tree.tree.clear()
 
         for n, i in enumerate(accountsname.AccountType.unique()):
@@ -818,6 +815,30 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
         self.btnDialog1.resize(110, 30)
 
+        ### 버튼 5 - Save (JE)
+        self.btnSave = QPushButton('Save', self.dialog5)
+        self.btnSave.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btnSave.clicked.connect(self.dialog_close5)
+
+        font20 = self.btnSave.font()
+        font20.setBold(True)
+        self.btnSave.setFont(font20)
+
+        self.btnSave.resize(110, 30)
+        self.btnSave.resize(110, 30)
+
+        ### 버튼 6 - Save and Proceed
+        self.btnSaveProceed = QPushButton('Save and Proceed', self.dialog5)
+        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
+        self.btnSaveProceed.clicked.connect(self.dialog_close5)
+
+        font21 = self.btnSave.font()
+        font21.setBold(True)
+        self.btnSaveProceed.setFont(font21)
+
+        self.btnSaveProceed.resize(110, 30)
+        self.btnSaveProceed.resize(110, 30)
+
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
         label_AccCode.setStyleSheet('color: white;')
@@ -846,56 +867,51 @@ class MyApp(QWidget):
 
         ### SAP
 
+        ### 라벨 3 - JE Line Number
         labelJE_Line = QLabel('JE Line Number : ', self.dialog5)
         labelJE_Line.setStyleSheet("color: white;")
         font6 = labelJE_Line.font()
         font6.setBold(True)
         labelJE_Line.setFont(font6)
+
+        ### LineEdit 0 - JE Line Number
         self.D5_JE_Line = QLineEdit(self.dialog5)
         self.D5_JE_Line.setStyleSheet("background-color: white;")
         self.D5_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
+
+        ### 라벨 4 - JE Number
         labelJE_Number = QLabel('JE Number : ', self.dialog5)
         labelJE_Number.setStyleSheet("color: white;")
         font7 = labelJE_Number.font()
         font7.setBold(True)
         labelJE_Number.setFont(font7)
+
+        ### LineEdit 1 - JE Number
         self.D5_JE_Number = QLineEdit(self.dialog5)
         self.D5_JE_Number.setStyleSheet("background-color: white;")
         self.D5_JE_Number.setPlaceholderText('JE Number를 입력하세요')
 
+        ### 라벨 5 - 시트명 (SAP)
         labelSheet = QLabel('시트명* : ', self.dialog5)
         labelSheet.setStyleSheet("color: white;")
         font5 = labelSheet.font()
         font5.setBold(True)
         labelSheet.setFont(font5)
+
+        ### LineEdit 2 - 시트명 (SAP)
         self.D5_Sheet = QLineEdit(self.dialog5)
         self.D5_Sheet.setStyleSheet("background-color: white;")
         self.D5_Sheet.setPlaceholderText('시트명을 입력하세요')
 
         ### Non-SAP
-
-        labelJE_Line2 = QLabel('JE Line Number : ', self.dialog5)
-        labelJE_Line2.setStyleSheet("color: white;")
-        font6 = labelJE_Line2.font()
-        font6.setBold(True)
-        labelJE_Line2.setFont(font6)
-        self.D5_JE_Line2 = QLineEdit(self.dialog5)
-        self.D5_JE_Line2.setStyleSheet("background-color: white;")
-        self.D5_JE_Line2.setPlaceholderText('JE Line Number을 입력하세요')
-        labelJE_Number2 = QLabel('JE Number : ', self.dialog5)
-        labelJE_Number2.setStyleSheet("color: white;")
-        font7 = labelJE_Number2.font()
-        font7.setBold(True)
-        labelJE_Number2.setFont(font7)
-        self.D5_JE_Number2 = QLineEdit(self.dialog5)
-        self.D5_JE_Number2.setStyleSheet("background-color: white;")
-        self.D5_JE_Number2.setPlaceholderText('JE Number를 입력하세요')
-
+        ### 라벨 6 - 시트명 (Non SAP)
         labelSheet2 = QLabel('시트명* : ', self.dialog5)
         labelSheet2.setStyleSheet("color: white;")
         font5 = labelSheet2.font()
         font5.setBold(True)
         labelSheet2.setFont(font5)
+
+        ### LineEdit 3 - 시트명 (Non SAP)
         self.D5_Sheet2 = QLineEdit(self.dialog5)
         self.D5_Sheet2.setStyleSheet("background-color: white;")
         self.D5_Sheet2.setPlaceholderText('시트명을 입력하세요')
@@ -913,27 +929,45 @@ class MyApp(QWidget):
         sublayout4 = QHBoxLayout()
         sublayout6 = QGridLayout()
 
+        layout3 = QVBoxLayout()
+        sublayout7 = QVBoxLayout()
+        sublayout8 = QHBoxLayout()
+        sublayout9 = QGridLayout()
+
         ### 탭
         tabs = QTabWidget()
         tab1 = QWidget()
         tab2 = QWidget()
+        tab3 = QWidget()
 
         tab1.setLayout(layout1)
         tab2.setLayout(layout2)
+        tab3.setLayout(layout3)
 
+        tabs.addTab(tab3, "JE Line Number/JE Number")
         tabs.addTab(tab1, "Non SAP")
         tabs.addTab(tab2, "SAP")
 
         layout.addWidget(tabs)
 
+        ### 배치 - 탭 0
+        sublayout7.addWidget(labelJE_Line)
+        sublayout7.addWidget(self.D5_JE_Line)
+        sublayout7.addWidget(labelJE_Number)
+        sublayout7.addWidget(self.D5_JE_Number)
+        sublayout7.addStretch(4)
+
+        layout3.addLayout(sublayout7, stretch=4)
+        layout3.addLayout(sublayout8, stretch=1)
+
+        sublayout8.addStretch(2)
+        sublayout8.addWidget(self.btnSave)
+        sublayout8.addWidget(self.btnSaveProceed)
+
         ### 배치 - 탭 1
         sublayout1.addWidget(label_AccCode)
         sublayout1.addWidget(self.MyInput)
 
-        sublayout5.addWidget(labelJE_Line, 0, 0)
-        sublayout5.addWidget(self.D5_JE_Line, 0, 1)
-        sublayout5.addWidget(labelJE_Number, 1, 0)
-        sublayout5.addWidget(self.D5_JE_Number, 1, 1)
         sublayout5.addWidget(labelSheet, 2, 0)
         sublayout5.addWidget(self.D5_Sheet, 2, 1)
 
@@ -949,10 +983,6 @@ class MyApp(QWidget):
         sublayout3.addWidget(label_SKA1)
         sublayout3.addWidget(self.listbox_drops)
 
-        sublayout6.addWidget(labelJE_Line2, 1, 0)
-        sublayout6.addWidget(self.D5_JE_Line2, 1, 1)
-        sublayout6.addWidget(labelJE_Number2, 2, 0)
-        sublayout6.addWidget(self.D5_JE_Number2, 2, 1)
         sublayout6.addWidget(labelSheet2, 3, 0)
         sublayout6.addWidget(self.D5_Sheet2, 3, 1)
 
