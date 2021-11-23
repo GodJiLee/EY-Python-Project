@@ -572,6 +572,19 @@ class MyApp(QWidget):
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog4)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog4)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         ### Progress Bar
         self.progressBar = QProgressBar(self.dialog4)
         self.progressBar.setMaximum(100)
@@ -622,57 +635,22 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog4)
-        labelJE_Line.setStyleSheet("color: white;")
-        font6 = labelJE_Line.font()
-        font6.setBold(True)
-        labelJE_Line.setFont(font6)
-        self.D4_JE_Line = QLineEdit(self.dialog4)
-        self.D4_JE_Line.setStyleSheet("background-color: white;")
-        self.D4_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-        labelJE_Number = QLabel('JE Number : ', self.dialog4)
-        labelJE_Number.setStyleSheet("color: white;")
-        font7 = labelJE_Number.font()
-        font7.setBold(True)
-        labelJE_Number.setFont(font7)
-        self.D4_JE_Number = QLineEdit(self.dialog4)
-        self.D4_JE_Number.setStyleSheet("background-color: white;")
-        self.D4_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog4)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked4)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog4)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked4)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D4_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D4_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         ### 요소 배치
-        self.D4_clickcount = 0
-
         layout1 = QGridLayout()
-        layout1.addWidget(label_freq, 0, 0)
-        layout1.addWidget(self.D4_N, 0, 1)
-        layout1.addWidget(label_TE, 1, 0)
-        layout1.addWidget(self.D4_TE, 1, 1)
-        layout1.addWidget(label_tree, 2, 0)
-        layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(labelSheet, 3, 0)
-        layout1.addWidget(self.D4_Sheet, 3, 1)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(label_freq, 1, 0)
+        layout1.addWidget(self.D4_N, 1, 1)
+        layout1.addWidget(label_TE, 2, 0)
+        layout1.addWidget(self.D4_TE, 2, 1)
+        layout1.addWidget(label_tree, 3, 0)
+        layout1.addWidget(self.new_tree, 3, 1)
+        layout1.addWidget(labelSheet, 4, 0)
+        layout1.addWidget(self.D4_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
         layout2.addWidget(self.progressBar)
@@ -681,43 +659,12 @@ class MyApp(QWidget):
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D4_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D4_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
-
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-
-        layout.addWidget(tabs)
-
-        self.dialog4.setLayout(layout)
+        self.dialog4.setLayout(main_layout)
         self.dialog4.setGeometry(300, 300, 500, 150)
 
         # ? 제거
@@ -773,6 +720,19 @@ class MyApp(QWidget):
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog5)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog5)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         ### 버튼 1 - Extract Data (Non-SAP)
         self.btn2 = QPushButton(' Extract Data', self.dialog5)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -815,30 +775,6 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
         self.btnDialog1.resize(110, 30)
 
-        ### 버튼 5 - Save (JE)
-        self.btnSave = QPushButton('Save', self.dialog5)
-        self.btnSave.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.dialog_close5)
-
-        font20 = self.btnSave.font()
-        font20.setBold(True)
-        self.btnSave.setFont(font20)
-
-        self.btnSave.resize(110, 30)
-        self.btnSave.resize(110, 30)
-
-        ### 버튼 6 - Save and Proceed
-        self.btnSaveProceed = QPushButton('Save and Proceed', self.dialog5)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.dialog_close5)
-
-        font21 = self.btnSave.font()
-        font21.setBold(True)
-        self.btnSaveProceed.setFont(font21)
-
-        self.btnSaveProceed.resize(110, 30)
-        self.btnSaveProceed.resize(110, 30)
-
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
         label_AccCode.setStyleSheet('color: white;')
@@ -866,31 +802,6 @@ class MyApp(QWidget):
         self.listbox_drops.setStyleSheet('background-color: white;')
 
         ### SAP
-
-        ### 라벨 3 - JE Line Number
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog5)
-        labelJE_Line.setStyleSheet("color: white;")
-        font6 = labelJE_Line.font()
-        font6.setBold(True)
-        labelJE_Line.setFont(font6)
-
-        ### LineEdit 0 - JE Line Number
-        self.D5_JE_Line = QLineEdit(self.dialog5)
-        self.D5_JE_Line.setStyleSheet("background-color: white;")
-        self.D5_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        ### 라벨 4 - JE Number
-        labelJE_Number = QLabel('JE Number : ', self.dialog5)
-        labelJE_Number.setStyleSheet("color: white;")
-        font7 = labelJE_Number.font()
-        font7.setBold(True)
-        labelJE_Number.setFont(font7)
-
-        ### LineEdit 1 - JE Number
-        self.D5_JE_Number = QLineEdit(self.dialog5)
-        self.D5_JE_Number.setStyleSheet("background-color: white;")
-        self.D5_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         ### 라벨 5 - 시트명 (SAP)
         labelSheet = QLabel('시트명* : ', self.dialog5)
         labelSheet.setStyleSheet("color: white;")
@@ -934,35 +845,23 @@ class MyApp(QWidget):
         sublayout8 = QHBoxLayout()
         sublayout9 = QGridLayout()
 
+        layout0 = QGridLayout()
+        layout0.addWidget(self.rbtn1, 0, 0)
+        layout0.addWidget(self.rbtn2, 0, 1)
+
         ### 탭
         tabs = QTabWidget()
         tab1 = QWidget()
         tab2 = QWidget()
-        tab3 = QWidget()
 
         tab1.setLayout(layout1)
         tab2.setLayout(layout2)
-        tab3.setLayout(layout3)
 
-        tabs.addTab(tab3, "JE Line Number/JE Number")
         tabs.addTab(tab1, "Non SAP")
         tabs.addTab(tab2, "SAP")
 
+        layout.addLayout(layout0)
         layout.addWidget(tabs)
-
-        ### 배치 - 탭 0
-        sublayout7.addWidget(labelJE_Line)
-        sublayout7.addWidget(self.D5_JE_Line)
-        sublayout7.addWidget(labelJE_Number)
-        sublayout7.addWidget(self.D5_JE_Number)
-        sublayout7.addStretch(4)
-
-        layout3.addLayout(sublayout7, stretch=4)
-        layout3.addLayout(sublayout8, stretch=1)
-
-        sublayout8.addStretch(2)
-        sublayout8.addWidget(self.btnSave)
-        sublayout8.addWidget(self.btnSaveProceed)
 
         ### 배치 - 탭 1
         sublayout1.addWidget(label_AccCode)
@@ -1009,6 +908,10 @@ class MyApp(QWidget):
         self.dialog6.setStyleSheet('background-color: #2E2E38')
         self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
 
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D6_clickcount = 0
+
+        # CoA 트리 만들기
         cursor = self.cnxn.cursor()
 
         sql = '''
@@ -1019,9 +922,7 @@ class MyApp(QWidget):
             '''.format(field=self.selected_project_id)
 
         accountsname = pd.read_sql(sql, self.cnxn)
-
         self.new_tree = Form(self)
-
         self.new_tree.tree.clear()
 
         for n, i in enumerate(accountsname.AccountType.unique()):
@@ -1053,25 +954,35 @@ class MyApp(QWidget):
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
+        # 데이터 추출 버튼
         self.btn2 = QPushButton('   Extract Data', self.dialog6)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked6)
-
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
-
         self.btnDialog = QPushButton("   Close", self.dialog6)
         self.btnDialog.setStyleSheet(
             'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close6)
-
         font10 = self.btnDialog.font()
         font10.setBold(True)
         self.btnDialog.setFont(font10)
-
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
+
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog6)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog6)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
 
         labelDate = QLabel('결산일* : ', self.dialog6)
         labelDate.setStyleSheet("color: white;")
@@ -1105,9 +1016,6 @@ class MyApp(QWidget):
         self.D6_Date2.setStyleSheet("background-color: white;")
         self.D6_Date2.setPlaceholderText('T 값을 입력하세요')
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D6_clickcount = 0
-
         label_tree = QLabel('특정 계정명 : ', self.dialog6)
         label_tree.setStyleSheet("color: white;")
         font4 = label_tree.font()
@@ -1136,28 +1044,6 @@ class MyApp(QWidget):
         self.D6_Cost.setStyleSheet("background-color: white;")
         self.D6_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog6)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font6 = labelJE_Line.font()
-        font6.setBold(True)
-        labelJE_Line.setFont(font6)
-
-        self.D6_JE_Line = QLineEdit(self.dialog6)
-        self.D6_JE_Line.setStyleSheet("background-color: white;")
-        self.D6_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog6)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font7 = labelJE_Number.font()
-        font7.setBold(True)
-        labelJE_Number.setFont(font7)
-
-        self.D6_JE_Number = QLineEdit(self.dialog6)
-        self.D6_JE_Number.setStyleSheet("background-color: white;")
-        self.D6_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         labelSheet = QLabel('시트명* : ', self.dialog6)
         labelSheet.setStyleSheet("color: white;")
 
@@ -1169,44 +1055,28 @@ class MyApp(QWidget):
         self.D6_Sheet.setStyleSheet("background-color: white;")
         self.D6_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog6)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked6)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog6)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked6)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D6_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D6_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
-        layout1.addWidget(labelDate, 0, 0)
-        layout1.addWidget(self.D6_Date, 0, 1)
-        layout1.addWidget(self.btnDate, 0, 2)
-        layout1.addWidget(labelDate2, 1, 0)
-        layout1.addWidget(self.D6_Date2, 1, 1)
-        layout1.addWidget(label_tree, 2, 0)
-        layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(labelJE, 3, 0)
-        layout1.addWidget(self.D6_JE, 3, 1)
-        layout1.addWidget(labelCost, 4, 0)
-        layout1.addWidget(self.D6_Cost, 4, 1)
-        layout1.addWidget(labelSheet, 5, 0)
-        layout1.addWidget(self.D6_Sheet, 5, 1)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(labelDate, 1, 0)
+        layout1.addWidget(self.D6_Date, 1, 1)
+        layout1.addWidget(self.btnDate, 1, 2)
+        layout1.addWidget(labelDate2, 2, 0)
+        layout1.addWidget(self.D6_Date2, 2, 1)
+        layout1.addWidget(label_tree, 3, 0)
+        layout1.addWidget(self.new_tree, 3, 1)
+        layout1.addWidget(labelJE, 4, 0)
+        layout1.addWidget(self.D6_JE, 4, 1)
+        layout1.addWidget(labelCost, 5, 0)
+        layout1.addWidget(self.D6_Cost, 5, 1)
+        layout1.addWidget(labelSheet, 6, 0)
+        layout1.addWidget(self.D6_Sheet, 6, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1216,43 +1086,12 @@ class MyApp(QWidget):
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D6_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D6_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
-
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-
-        layout.addWidget(tabs)
-
-        self.dialog6.setLayout(layout)
+        self.dialog6.setLayout(main_layout)
         self.dialog6.setGeometry(300, 300, 700, 450)
 
         self.dialog6.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -1265,6 +1104,30 @@ class MyApp(QWidget):
         self.dialog7 = QDialog()
         self.dialog7.setStyleSheet('background-color: #2E2E38')
         self.dialog7.setWindowIcon(QIcon("./EY_logo.png"))
+
+        groupbox1 = QGroupBox('')
+        groupbox1.setStyleSheet('QGroupBox  {border:0;}')
+        font_groupbox1 = groupbox1.font()
+        font_groupbox1.setBold(True)
+        groupbox1.setFont(font_groupbox1)
+
+        groupbox2 = QGroupBox('')
+        groupbox2.setStyleSheet('QGroupBox  {border:0;}')
+        font_groupbox2 = groupbox2.font()
+        font_groupbox2.setBold(True)
+        groupbox2.setFont(font_groupbox2)
+
+        groupbox3 = QGroupBox('')
+        groupbox3.setStyleSheet('QGroupBox  {border:0;}')
+        font_groupbox3 = groupbox3.font()
+        font_groupbox3.setBold(True)
+        groupbox3.setFont(font_groupbox3)
+
+        groupbox4 = QGroupBox('')
+        groupbox4.setStyleSheet('QGroupBox  {border:0;}')
+        font_groupbox4 = groupbox4.font()
+        font_groupbox4.setBold(True)
+        groupbox4.setFont(font_groupbox4)
 
         cursor = self.cnxn.cursor()
 
@@ -1330,18 +1193,27 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn3 = QRadioButton('JE Line Number', self.dialog7)
+        self.rbtn3.setStyleSheet("color: white;")
+        font11 = self.rbtn3.font()
+        font11.setBold(True)
+        self.rbtn3.setFont(font11)
+
+        self.rbtn4 = QRadioButton('JE Number', self.dialog7)
+        self.rbtn4.setStyleSheet("color: white;")
+        font12 = self.rbtn4.font()
+        font12.setBold(True)
+        self.rbtn4.setFont(font12)
+
         self.rbtn1 = QRadioButton('Effective Date', self.dialog7)
         self.rbtn1.setStyleSheet("color: white;")
-
         font1 = self.rbtn1.font()
         font1.setBold(True)
         self.rbtn1.setFont(font1)
 
-        self.rbtn1.setChecked(True)
-
         self.rbtn2 = QRadioButton('Entry Date', self.dialog7)
         self.rbtn2.setStyleSheet("color: white;")
-
         font2 = self.rbtn2.font()
         font2.setBold(True)
         self.rbtn2.setFont(font2)
@@ -1375,9 +1247,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D7_clickcount = 0
-
         labelJE = QLabel('전표입력자 : ', self.dialog7)
         labelJE.setStyleSheet("color: white;")
 
@@ -1400,28 +1269,6 @@ class MyApp(QWidget):
         self.D7_Cost.setStyleSheet("background-color: white;")
         self.D7_Cost.setPlaceholderText('중요성 금액을 입력하세요')
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog7)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font7 = labelJE_Line.font()
-        font7.setBold(True)
-        labelJE_Line.setFont(font7)
-
-        self.D7_JE_Line = QLineEdit(self.dialog7)
-        self.D7_JE_Line.setStyleSheet("background-color: white;")
-        self.D7_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog7)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font8 = labelJE_Number.font()
-        font8.setBold(True)
-        labelJE_Number.setFont(font8)
-
-        self.D7_JE_Number = QLineEdit(self.dialog7)
-        self.D7_JE_Number.setStyleSheet("background-color: white;")
-        self.D7_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         labelSheet = QLabel('시트명* : ', self.dialog7)
         labelSheet.setStyleSheet("color: white;")
 
@@ -1433,32 +1280,16 @@ class MyApp(QWidget):
         self.D7_Sheet.setStyleSheet("background-color: white;")
         self.D7_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog7)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked7)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog7)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked7)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D7_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D7_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D7_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout0 = QGridLayout()
+        self.rbtn1.setChecked(True)
         layout0.addWidget(self.rbtn1, 0, 0)
         layout0.addWidget(self.rbtn2, 0, 1)
+        groupbox1.setLayout(layout0)
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
@@ -1472,56 +1303,33 @@ class MyApp(QWidget):
         layout1.addWidget(self.D7_Cost, 3, 1)
         layout1.addWidget(labelSheet, 4, 0)
         layout1.addWidget(self.D7_Sheet, 4, 1)
+        groupbox3.setLayout(layout1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
         layout2.addStretch()
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
-
         layout2.setContentsMargins(-1, 10, -1, -1)
+        groupbox4.setLayout(layout2)
 
         layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D7_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D7_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
+        self.rbtn3.setChecked(True)
+        layout3.addWidget(self.rbtn3, 0, 0)
+        layout3.addWidget(self.rbtn4, 0, 1)
+        groupbox2.setLayout(layout3)
 
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
-        main_layout.addLayout(layout0)
-        main_layout.addLayout(layout1)
-        main_layout.addLayout(layout2)
+        main_layout.addWidget(groupbox2)
+        main_layout.addWidget(groupbox1)
+        main_layout.addWidget(groupbox3)
+        main_layout.addWidget(groupbox4)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-        layout.addWidget(tabs)
-
-        self.dialog7.setLayout(layout)
+        self.dialog7.setLayout(main_layout)
         self.dialog7.setGeometry(300, 300, 700, 400)
 
-        # ? 제거
-        self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)  # ? 제거
 
         self.dialog7.setWindowTitle("Scenario7")
         self.dialog7.setWindowModality(Qt.NonModal)
@@ -1596,6 +1404,19 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog8)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog8)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         labelDate = QLabel('N일* : ', self.dialog8)
         labelDate.setStyleSheet("color: white;")
 
@@ -1624,9 +1445,6 @@ class MyApp(QWidget):
         self.D8_JE.setStyleSheet("background-color: white;")
         self.D8_JE.setPlaceholderText('전표입력자 ID를 입력하세요')
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D8_clickcount = 0
-
         labelCost = QLabel('중요성금액 : ', self.dialog8)
         labelCost.setStyleSheet("color: white;")
 
@@ -1637,28 +1455,6 @@ class MyApp(QWidget):
         self.D8_Cost = QLineEdit(self.dialog8)
         self.D8_Cost.setStyleSheet("background-color: white;")
         self.D8_Cost.setPlaceholderText('중요성 금액을 입력하세요')
-
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog8)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font5 = labelJE_Line.font()
-        font5.setBold(True)
-        labelJE_Line.setFont(font5)
-
-        self.D8_JE_Line = QLineEdit(self.dialog8)
-        self.D8_JE_Line.setStyleSheet("background-color: white;")
-        self.D8_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog8)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font6 = labelJE_Number.font()
-        font6.setBold(True)
-        labelJE_Number.setFont(font6)
-
-        self.D8_JE_Number = QLineEdit(self.dialog8)
-        self.D8_JE_Number.setStyleSheet("background-color: white;")
-        self.D8_JE_Number.setPlaceholderText('JE Number를 입력하세요')
 
         labelSheet = QLabel('시트명* : ', self.dialog8)
         labelSheet.setStyleSheet("color: white;")
@@ -1671,39 +1467,24 @@ class MyApp(QWidget):
         self.D8_Sheet.setStyleSheet("background-color: white;")
         self.D8_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog8)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked8)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog8)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked8)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D8_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_JE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D8_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D8_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
-        layout1.addWidget(labelDate, 0, 0)
-        layout1.addWidget(self.D8_N, 0, 1)
-        layout1.addWidget(label_tree, 1, 0)
-        layout1.addWidget(self.new_tree, 1, 1)
-        layout1.addWidget(labelJE, 2, 0)
-        layout1.addWidget(self.D8_JE, 2, 1)
-        layout1.addWidget(labelCost, 3, 0)
-        layout1.addWidget(self.D8_Cost, 3, 1)
-        layout1.addWidget(labelSheet, 4, 0)
-        layout1.addWidget(self.D8_Sheet, 4, 1)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(labelDate, 1, 0)
+        layout1.addWidget(self.D8_N, 1, 1)
+        layout1.addWidget(label_tree, 2, 0)
+        layout1.addWidget(self.new_tree, 2, 1)
+        layout1.addWidget(labelJE, 3, 0)
+        layout1.addWidget(self.D8_JE, 3, 1)
+        layout1.addWidget(labelCost, 4, 0)
+        layout1.addWidget(self.D8_Cost, 4, 1)
+        layout1.addWidget(labelSheet, 5, 0)
+        layout1.addWidget(self.D8_Sheet, 5, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -1713,42 +1494,12 @@ class MyApp(QWidget):
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D8_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D8_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
-
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-        layout.addWidget(tabs)
-
-        self.dialog8.setLayout(layout)
+        self.dialog8.setLayout(main_layout)
         self.dialog8.setGeometry(300, 300, 700, 400)
 
         # ? 제거
@@ -1824,6 +1575,19 @@ class MyApp(QWidget):
         font10.setBold(True)
         self.btnDialog.setFont(font10)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog9)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog9)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         labelKeyword = QLabel('작성빈도수* : ', self.dialog9)
         labelKeyword.setStyleSheet("color: white;")
 
@@ -1837,9 +1601,6 @@ class MyApp(QWidget):
 
         labelTE = QLabel('TE : ', self.dialog9)
         labelTE.setStyleSheet("color: white;")
-
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D9_clickcount = 0
 
         font2 = labelTE.font()
         font2.setBold(True)
@@ -1858,28 +1619,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog9)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font3 = labelJE_Line.font()
-        font3.setBold(True)
-        labelJE_Line.setFont(font3)
-
-        self.D9_JE_Line = QLineEdit(self.dialog9)
-        self.D9_JE_Line.setStyleSheet("background-color: white;")
-        self.D9_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog9)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font4 = labelJE_Number.font()
-        font4.setBold(True)
-        labelJE_Number.setFont(font4)
-
-        self.D9_JE_Number = QLineEdit(self.dialog9)
-        self.D9_JE_Number.setStyleSheet("background-color: white;")
-        self.D9_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         labelSheet = QLabel('시트명* : ', self.dialog9)
         labelSheet.setStyleSheet("color: white;")
 
@@ -1891,90 +1630,36 @@ class MyApp(QWidget):
         self.D9_Sheet.setStyleSheet("background-color: white;")
         self.D9_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog9)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked9)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog9)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked9)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D9_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D9_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D9_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D9_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D9_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
-        layout1.addWidget(labelKeyword, 0, 0)
-        layout1.addWidget(self.D9_N, 0, 1)
-        layout1.addWidget(labelTE, 1, 0)
-        layout1.addWidget(self.D9_TE, 1, 1)
-        layout1.addWidget(label_tree, 2, 0)
-        layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(labelSheet, 3, 0)
-        layout1.addWidget(self.D9_Sheet, 3, 1)
-
-        self.progressBar = QProgressBar(self.dialog9)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setMinimum(0)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(labelKeyword, 1, 0)
+        layout1.addWidget(self.D9_N, 1, 1)
+        layout1.addWidget(labelTE, 2, 0)
+        layout1.addWidget(self.D9_TE, 2, 1)
+        layout1.addWidget(label_tree, 3, 0)
+        layout1.addWidget(self.new_tree, 3, 1)
+        layout1.addWidget(labelSheet, 4, 0)
+        layout1.addWidget(self.D9_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
         layout2.addStretch()
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
-        layout2.addWidget(self.progressBar)
 
         layout2.setContentsMargins(-1, 10, -1, -1)
-
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D9_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D9_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
 
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-        layout.addWidget(tabs)
-
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D9_clickcount = 0
-
-        self.dialog9.setLayout(layout)
+        self.dialog9.setLayout(main_layout)
         self.dialog9.setGeometry(300, 300, 500, 150)
 
         # ? 제거
@@ -2053,6 +1738,19 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog10)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog10)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         labelKeyword = QLabel('전표입력자* : ', self.dialog10)
         labelKeyword.setStyleSheet("color: white;")
 
@@ -2081,9 +1779,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D10_clickcount = 0
-
         labelTE = QLabel('TE : ', self.dialog10)
         labelTE.setStyleSheet("color: white;")
 
@@ -2094,28 +1789,6 @@ class MyApp(QWidget):
         self.D10_TE = QLineEdit(self.dialog10)
         self.D10_TE.setStyleSheet("background-color: white;")
         self.D10_TE.setPlaceholderText('중요성 금액을 입력하세요')
-
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog10)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font5 = labelJE_Line.font()
-        font5.setBold(True)
-        labelJE_Line.setFont(font5)
-
-        self.D10_JE_Line = QLineEdit(self.dialog10)
-        self.D10_JE_Line.setStyleSheet("background-color: white;")
-        self.D10_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog10)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font6 = labelJE_Number.font()
-        font6.setBold(True)
-        labelJE_Number.setFont(font6)
-
-        self.D10_JE_Number = QLineEdit(self.dialog10)
-        self.D10_JE_Number.setStyleSheet("background-color: white;")
-        self.D10_JE_Number.setPlaceholderText('JE Number를 입력하세요')
 
         labelSheet = QLabel('시트명* : ', self.dialog10)
         labelSheet.setStyleSheet("color: white;")
@@ -2128,40 +1801,24 @@ class MyApp(QWidget):
         self.D10_Sheet.setStyleSheet("background-color: white;")
         self.D10_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog10)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked10)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog10)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked10)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         self.D10_Search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Point.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D10_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D10_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
-        layout1.addWidget(labelKeyword, 0, 0)
-        layout1.addWidget(self.D10_Search, 0, 1)
-        layout1.addWidget(labelPoint, 1, 0)
-        layout1.addWidget(self.D10_Point, 1, 1)
-        layout1.addWidget(label_tree, 2, 0)
-        layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(labelTE, 3, 0)
-        layout1.addWidget(self.D10_TE, 3, 1)
-        layout1.addWidget(labelSheet, 4, 0)
-        layout1.addWidget(self.D10_Sheet, 4, 1)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(labelKeyword, 1, 0)
+        layout1.addWidget(self.D10_Search, 1, 1)
+        layout1.addWidget(labelPoint, 2, 0)
+        layout1.addWidget(self.D10_Point, 2, 1)
+        layout1.addWidget(label_tree, 3, 0)
+        layout1.addWidget(self.new_tree, 3, 1)
+        layout1.addWidget(labelTE, 4, 0)
+        layout1.addWidget(self.D10_TE, 4, 1)
+        layout1.addWidget(labelSheet, 5, 0)
+        layout1.addWidget(self.D10_Sheet, 5, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -2171,42 +1828,12 @@ class MyApp(QWidget):
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D10_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D10_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
-
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-        layout.addWidget(tabs)
-
-        self.dialog10.setLayout(layout)
+        self.dialog10.setLayout(main_layout)
         self.dialog10.setGeometry(300, 300, 500, 200)
 
         # ? 제거
@@ -2573,6 +2200,19 @@ class MyApp(QWidget):
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog13)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog13)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog13)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2641,28 +2281,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog13)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font7 = labelJE_Line.font()
-        font7.setBold(True)
-        labelJE_Line.setFont(font7)
-
-        self.D13_JE_Line = QLineEdit(self.dialog13)
-        self.D13_JE_Line.setStyleSheet("background-color: white;")
-        self.D13_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog13)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font8 = labelJE_Number.font()
-        font8.setBold(True)
-        labelJE_Number.setFont(font8)
-
-        self.D13_JE_Number = QLineEdit(self.dialog13)
-        self.D13_JE_Number.setStyleSheet("background-color: white;")
-        self.D13_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         labelSheet = QLabel('시트명* : ', self.dialog13)
         labelSheet.setStyleSheet("color: white;")
 
@@ -2686,6 +2304,10 @@ class MyApp(QWidget):
         sublayout4 = QHBoxLayout()
         sublayout5 = QGridLayout()
 
+        layout0 = QGridLayout()
+        layout0.addWidget(self.rbtn1, 0, 0)
+        layout0.addWidget(self.rbtn2, 0, 1)
+
         ### 탭
         tabs = QTabWidget()
         tab1 = QWidget()
@@ -2696,6 +2318,7 @@ class MyApp(QWidget):
         tabs.addTab(tab1, "Step 1")
         tabs.addTab(tab2, "Step 2")
 
+        main_layout.addLayout(layout0)
         main_layout.addWidget(tabs)
 
         ### 배치 - 탭 1
@@ -2715,12 +2338,8 @@ class MyApp(QWidget):
         sublayout3.addWidget(label_tree)
         sublayout3.addWidget(self.new_tree)
 
-        sublayout5.addWidget(labelJE_Line, 0, 0)
-        sublayout5.addWidget(self.D13_JE_Line, 0, 1)
-        sublayout5.addWidget(labelJE_Number, 1, 0)
-        sublayout5.addWidget(self.D13_JE_Number, 1, 1)
-        sublayout5.addWidget(labelSheet, 2, 0)
-        sublayout5.addWidget(self.D13_Sheet, 2, 1)
+        sublayout5.addWidget(labelSheet, 0, 0)
+        sublayout5.addWidget(self.D13_Sheet, 0, 1)
 
         sublayout4.addStretch(2)
         sublayout4.addWidget(self.btn2)
@@ -2810,6 +2429,19 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
+        # JE Line Number / JE Number 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line Number', self.dialog14)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE Number', self.dialog14)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
         labelKeyword = QLabel('Key Words* : ', self.dialog14)
         labelKeyword.setStyleSheet("color: white;")
 
@@ -2838,28 +2470,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        labelJE_Line = QLabel('JE Line Number : ', self.dialog14)
-        labelJE_Line.setStyleSheet("color: white;")
-
-        font3 = labelJE_Line.font()
-        font3.setBold(True)
-        labelJE_Line.setFont(font3)
-
-        self.D14_JE_Line = QLineEdit(self.dialog14)
-        self.D14_JE_Line.setStyleSheet("background-color: white;")
-        self.D14_JE_Line.setPlaceholderText('JE Line Number을 입력하세요')
-
-        labelJE_Number = QLabel('JE Number : ', self.dialog14)
-        labelJE_Number.setStyleSheet("color: white;")
-
-        font4 = labelJE_Number.font()
-        font4.setBold(True)
-        labelJE_Number.setFont(font4)
-
-        self.D14_JE_Number = QLineEdit(self.dialog14)
-        self.D14_JE_Number.setStyleSheet("background-color: white;")
-        self.D14_JE_Number.setPlaceholderText('JE Number를 입력하세요')
-
         labelSheet = QLabel('시트명* : ', self.dialog14)
         labelSheet.setStyleSheet("color: white;")
 
@@ -2871,40 +2481,21 @@ class MyApp(QWidget):
         self.D14_Sheet.setStyleSheet("background-color: white;")
         self.D14_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### save 버튼
-        self.btnSave = QPushButton(' Save', self.dialog14)
-        self.btnSave.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.btnSave.clicked.connect(self.extButtonClicked14)
-        font13 = self.btnSave.font()
-        font13.setBold(True)
-        self.btnSave.setFont(font13)
-
-        ### 버튼 4 - Save and Process
-        self.btnSaveProceed = QPushButton(' Save and Proceed', self.dialog14)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.extButtonClicked14)
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
-        # Extraction 내 Dictionary 를 위한 변수 설정
-        self.D14_clickcount = 0
-
         self.D14_Key.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D14_JE_Line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-        self.D14_JE_Number.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         layout1 = QGridLayout()
-        layout1.addWidget(labelKeyword, 0, 0)
-        layout1.addWidget(self.D14_Key, 0, 1)
-        layout1.addWidget(labelTE, 1, 0)
-        layout1.addWidget(self.D14_TE, 1, 1)
-        layout1.addWidget(label_tree, 2, 0)
-        layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(labelSheet, 3, 0)
-        layout1.addWidget(self.D14_Sheet, 3, 1)
+        layout1.addWidget(self.rbtn1, 0, 0)
+        layout1.addWidget(self.rbtn2, 0, 1)
+        layout1.addWidget(labelKeyword, 1, 0)
+        layout1.addWidget(self.D14_Key, 1, 1)
+        layout1.addWidget(labelTE, 2, 0)
+        layout1.addWidget(self.D14_TE, 2, 1)
+        layout1.addWidget(label_tree, 3, 0)
+        layout1.addWidget(self.new_tree, 3, 1)
+        layout1.addWidget(labelSheet, 4, 0)
+        layout1.addWidget(self.D14_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
         layout2.addStretch()
@@ -2914,43 +2505,12 @@ class MyApp(QWidget):
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
-        layout3 = QGridLayout()
-        layout3.addWidget(labelJE_Line, 0, 0)
-        layout3.addWidget(self.D14_JE_Line, 0, 1)
-        layout3.addWidget(labelJE_Number, 1, 0)
-        layout3.addWidget(self.D14_JE_Number, 1, 1)
-
-        layout4 = QHBoxLayout()
-        layout4.addStretch()
-        layout4.addStretch()
-        layout4.addWidget(self.btnSave)
-        layout4.addWidget(self.btnSaveProceed)
-
-        layout5 = QVBoxLayout()
-        layout5.addStretch()
-        layout5.addLayout(layout3)
-        layout5.addStretch()
-        layout5.addLayout(layout4)
-
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout2)
 
-        ### 탭
-        layout = QVBoxLayout()
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
-        tab1.setLayout(main_layout)
-        tab2.setLayout(layout5)
-
-        tabs.addTab(tab2, "JE Line Number / JE Number")
-        tabs.addTab(tab1, "Main")
-
-        layout.addWidget(tabs)
-
-        self.dialog14.setLayout(layout)
+        self.dialog14.setLayout(main_layout)
         self.dialog14.setGeometry(300, 300, 500, 150)
 
         # ? 제거
