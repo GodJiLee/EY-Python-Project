@@ -3012,7 +3012,6 @@ class MyApp(QWidget):
 
     def extButtonClicked9(self):
         # 다이얼로그별 Clickcount 설정
-        self.D9_clickcount = self.D9_clickcount + 1
 
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
