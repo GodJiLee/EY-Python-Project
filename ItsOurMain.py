@@ -3011,7 +3011,6 @@ class MyApp(QWidget):
                         self.alertbox_open2('N값과 중요성금액')
 
     def extButtonClicked9(self):
-        # 다이얼로그별 Clickcount 설정
 
         tempN = self.D9_N.text()  # 필수값
         tempTE = self.D9_TE.text()
@@ -3079,14 +3078,12 @@ class MyApp(QWidget):
                         self.dialog9.activateWindow()
 
                 else:
-                    self.doAction()
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     self.scenario_dic[tempSheet] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
-                    self.progressBar.setValue(100)
 
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
                         tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
