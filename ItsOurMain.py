@@ -2,7 +2,8 @@ import sys
 import re
 import datetime
 import time
-
+from datetime import date
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 import gc
 from PyQt5.QtWidgets import *
@@ -21,8 +22,6 @@ class Calendar(QDialog):
         self.setWindowTitle("PyQt5 QCalendar")
         self.setWindowIcon(QIcon("python.png"))
         self.setWindowModality(Qt.NonModal)
-
-        # parent.setGeometry(820, 130, 1000, 900)
 
         vbox = QVBoxLayout()
         self.calendar = QCalendarWidget()
@@ -238,6 +237,22 @@ class MyApp(QWidget):
         self.alt.setWindowTitle('입력값 타입 오류')
         self.alt.setWindowIcon(QIcon("./EY_logo.png"))
         self.alt.setText(txt + '값을 8자리의 숫자로 입력해주시길 바랍니다.')
+        self.alt.exec_()
+
+    def alertbox_open5(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('시트명 중복')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('이미 해당 시트명이 존재합니다.')
+        self.alt.exec_()
+
+    def alertbox_open6(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('계정 선택 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('계정이 선택되어 있지 않습니다.')
         self.alt.exec_()
 
     def init_UI(self):
@@ -560,7 +575,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton('   Extract Data', self.dialog4)
@@ -727,7 +743,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         # JE Line Number / JE Number 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line Number', self.dialog5)
@@ -961,7 +978,9 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         # 데이터 추출 버튼
         self.btn2 = QPushButton('   Extract Data', self.dialog6)
@@ -1180,7 +1199,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog7)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -1391,7 +1411,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog8)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -1563,7 +1584,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
@@ -1725,7 +1747,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog10)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2220,7 +2243,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         # JE Line Number / JE Number 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line Number', self.dialog13)
@@ -2429,7 +2453,8 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setText(0, "{}".format(z))
                         self.new_tree.grandgrandchild.setFlags(
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
+                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
+        self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog14)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2697,6 +2722,9 @@ class MyApp(QWidget):
         if temp_N == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -2750,6 +2778,9 @@ class MyApp(QWidget):
         if temp_AccCode == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -2778,6 +2809,9 @@ class MyApp(QWidget):
         if temp_Code_Non_SAP == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -2797,10 +2831,8 @@ class MyApp(QWidget):
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked6(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D6_clickcount = self.D6_clickcount + 1
-
-        tempDate = self.D6_Date.text()  # 필수값
+        tempDate = self.D6_Date.text()
+        realDate = date.fromisoformat(tempDate)
         tempTDate = self.D6_Date2.text()
         tempJE = self.D6_JE.text()
         tempCost = self.D6_Cost.text()
@@ -2809,18 +2841,37 @@ class MyApp(QWidget):
         if tempDate == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()
+
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             if tempCost == '': tempCost = 0
             if tempTDate == '': tempTDate = 0
 
+            checked_account6 = checked_account
+
             try:
                 int(tempTDate)
                 int(tempCost)
+
+                first_origin = realDate - timedelta(days=int(tempTDate))
+                second_origin = realDate + timedelta(days=int(tempTDate))
+
+                first_mid = str(first_origin).split('-')
+                second_mid = str(second_origin).split('-')
+
+                first = "'" + first_mid[0] + first_mid[1] + first_mid[2] + "'"
+                second = "'" + second_mid[0] + second_mid[1] + second_mid[2] + "'"
+
                 cursor = self.cnxn.cursor()
 
-                # sql문 수정
-                sql = '''
-                               SELECT TOP 100											
+                if self.rbtn1.isChecked():
+                    sql = '''
+
+                               SELECT											
                                    JournalEntries.BusinessUnit											
                                    , JournalEntries.JENumber											
                                    , JournalEntries.JELineNumber											
@@ -2831,23 +2882,64 @@ class MyApp(QWidget):
                                    , CoA.GLAccountName											
                                    , JournalEntries.Debit											
                                    , JournalEntries.Credit											
-                                   , CASE
-                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                        END AS DebitCredit
                                    , JournalEntries.Amount											
                                    , JournalEntries.FunctionalCurrencyCode											
                                    , JournalEntries.JEDescription											
                                    , JournalEntries.JELineDescription											
-                                   , JournalEntries.Source											
                                    , JournalEntries.PreparerID											
                                    , JournalEntries.ApproverID											
                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                                ORDER BY JENumber, JELineNumber											
-                            '''.format(field=self.selected_project_id)
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+                                       AND (JournalEntries.EntryDate BETWEEN {first_date} AND {second_date})
+                                       AND ABS(JournalEntries.Amount) > {TE}
+                                       AND JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                       {Account}
+                               ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+
+                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=tempCost,
+                                       first_date=str(first), second_date=str(second), tempPrepare=tempJE)
+
+                elif self.rbtn2.isChecked():
+                    sql = '''
+
+                               SELECT											
+                                   JournalEntries.BusinessUnit											
+                                   , JournalEntries.JENumber											
+                                   , JournalEntries.JELineNumber											
+                                   , JournalEntries.EffectiveDate											
+                                   , JournalEntries.EntryDate											
+                                   , JournalEntries.Period											
+                                   , JournalEntries.GLAccountNumber											
+                                   , CoA.GLAccountName											
+                                   , JournalEntries.Debit											
+                                   , JournalEntries.Credit											
+                                   , JournalEntries.Amount											
+                                   , JournalEntries.FunctionalCurrencyCode											
+                                   , JournalEntries.JEDescription											
+                                   , JournalEntries.JELineDescription											
+                                   , JournalEntries.PreparerID											
+                                   , JournalEntries.ApproverID											
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN		
+                                (
+                                    SELECT DISTINCT JENumber
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
+                                    WHERE (JournalEntries.EntryDate BETWEEN {first_date} AND {second_date})
+                                            {Account}
+                                            AND JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                            AND ABS(JournalEntries.Amount) > {TE}
+                                )
+                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
+
+                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=tempCost,
+                                       first_date=str(first), second_date=str(second), tempPrepare=tempJE)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                if tempJE == '':
+                    tempJE = '모두'
 
                 if len(self.dataframe) > 300000:
                     self.alertbox_open3()
@@ -2858,12 +2950,12 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
-                    # 추출 조건 추가
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
-                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
-                                                          QMessageBox.Yes)
-                    # if buttonReply == QMessageBox.Yes:
-                    # self.dialog9.activateWindow()
+
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[결산일: " + str(tempDate) + " T일: " + str(
+                        tempTDate) + " 중요성금액: " + str(
+                        tempCost) + " 전표입력자: " + tempJE + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog6.activateWindow()
 
             except ValueError:
                 try:
@@ -2880,20 +2972,21 @@ class MyApp(QWidget):
                         self.alertbox_open2('T값과 중요성금액')
 
     def extButtonClicked7(self):
+        tempDate = self.D7_Date.text()
+        realDate_first = date.fromisoformat(tempDate)
 
-        # 다이얼로그별 Clickcount 설정
-        self.D7_clickcount = self.D7_clickcount + 1
+        realDate_mid = str(realDate_first).split('-')
+        realDate = "'" + realDate_mid[0] + realDate_mid[1] + realDate_mid[2] + "'"
 
-        tempDate = self.D7_Date.text()  # 필수값
         tempJE = self.D7_JE.text()
         tempCost = self.D7_Cost.text()
         tempSheet = self.D7_Sheet.text()
 
-        if self.rbtn1.isChecked():
-            tempState = 'Effective Date'
+        if self.rbtn1.isChecked():  # Effective Date 일 때
+            tempState = 'AND JournalEntries.EffectiveDate IN (' + realDate + ')'
 
-        elif self.rbtn2.isChecked():
-            tempState = 'Entry Date'
+        elif self.rbtn2.isChecked():  # Entry Date 일 때
+            tempState = 'AND JournalEntries.EntryDate IN (' + realDate + ')'
 
         if tempCost == '':
             tempCost = 0
@@ -2901,14 +2994,22 @@ class MyApp(QWidget):
         if tempDate == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()
+
+        elif self.combo_sheet.findText(tempSheet) != -1:
+            self.alertbox_open5()
+
         else:
             try:
                 int(tempCost)
+                checked_account7 = checked_account
+
                 cursor = self.cnxn.cursor()
 
-                # sql문 수정
-                sql = '''
-                               SELECT TOP 100											
+                if self.rbtn3.isChecked():
+                    sql = '''
+                               SELECT 											
                                    JournalEntries.BusinessUnit											
                                    , JournalEntries.JENumber											
                                    , JournalEntries.JELineNumber											
@@ -2919,9 +3020,6 @@ class MyApp(QWidget):
                                    , CoA.GLAccountName											
                                    , JournalEntries.Debit											
                                    , JournalEntries.Credit											
-                                   , CASE
-                                       WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                       END AS DebitCredit
                                    , JournalEntries.Amount											
                                    , JournalEntries.FunctionalCurrencyCode											
                                    , JournalEntries.JEDescription											
@@ -2932,8 +3030,49 @@ class MyApp(QWidget):
                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                               ORDER BY JENumber, JELineNumber											
-                           '''.format(field=self.selected_project_id)
+                                    {Date}
+                                    {Account}
+                                    AND JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                    AND ABS(JournalEntries.Amount) > {TE}
+                               ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+
+                           '''.format(field=self.selected_project_id, TE=tempCost, Date=tempState, tempPrepare=tempJE,
+                                      Account=checked_account7)
+
+                elif self.rbtn4.isChecked():
+                    sql = '''
+                               SELECT 											
+                                   JournalEntries.BusinessUnit											
+                                   , JournalEntries.JENumber											
+                                   , JournalEntries.JELineNumber											
+                                   , JournalEntries.EffectiveDate											
+                                   , JournalEntries.EntryDate											
+                                   , JournalEntries.Period											
+                                   , JournalEntries.GLAccountNumber											
+                                   , CoA.GLAccountName											
+                                   , JournalEntries.Debit											
+                                   , JournalEntries.Credit											
+                                   , JournalEntries.Amount											
+                                   , JournalEntries.FunctionalCurrencyCode											
+                                   , JournalEntries.JEDescription											
+                                   , JournalEntries.JELineDescription											
+                                   , JournalEntries.Source											
+                                   , JournalEntries.PreparerID											
+                                   , JournalEntries.ApproverID											
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (		
+                                   SELECT DISTINCT JENumber
+                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                   WHERE JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                        {Account}
+                                        {Date}
+                                        AND ABS(JournalEntries.Amount) > {TE})
+                               ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+
+
+                           '''.format(field=self.selected_project_id, TE=tempCost, Date=tempState, tempPrepare=tempJE,
+                                      Account=checked_account7)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -2948,57 +3087,113 @@ class MyApp(QWidget):
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
 
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[Effective Date / Entry Date: " + str(
+                        tempDate) + " 중요성금액: " + str(
+                        tempCost) + " 전표입력자: " + tempJE + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog6.activateWindow()
+
             except ValueError:
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked8(self):
-
-        # 다이얼로그별 Clickcount 설정
-        self.D8_clickcount = self.D8_clickcount + 1
-
-        tempN = self.D8_N.text()  # 필수값
+        tempN = self.D8_N.text()
         tempJE = self.D8_JE.text()
         tempCost = self.D8_Cost.text()
         tempSheet = self.D8_Sheet.text()
 
+        realNDate = int(tempN)
+
         if tempN == '' or tempSheet == '':
             self.alertbox_open()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()
+
+        elif self.combo_sheet.findText(tempSheet) != -1:
+            self.alertbox_open5()
 
         else:
             if tempCost == '': tempCost = 0
             try:
                 int(tempN)
                 int(tempCost)
+
+                checked_account8 = checked_account
+
                 cursor = self.cnxn.cursor()
 
-                # sql문 수정
-                sql = '''
-                               SELECT TOP 100											
-                                   JournalEntries.BusinessUnit											
-                                   , JournalEntries.JENumber											
-                                   , JournalEntries.JELineNumber											
-                                   , JournalEntries.EffectiveDate											
-                                   , JournalEntries.EntryDate											
-                                   , JournalEntries.Period											
-                                   , JournalEntries.GLAccountNumber											
-                                   , CoA.GLAccountName											
-                                   , JournalEntries.Debit											
-                                   , JournalEntries.Credit											
-                                   , CASE
-                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                        END AS DebitCredit
-                                   , JournalEntries.Amount											
-                                   , JournalEntries.FunctionalCurrencyCode											
-                                   , JournalEntries.JEDescription											
-                                   , JournalEntries.JELineDescription											
-                                   , JournalEntries.Source											
-                                   , JournalEntries.PreparerID											
-                                   , JournalEntries.ApproverID											
-                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                               ORDER BY JENumber, JELineNumber											
-                            '''.format(field=self.selected_project_id)
+                if self.rbtn1.isChecked():
+
+                    sql = '''
+                                    SELECT 
+                                       JournalEntries.FileId	
+                                        , JournalEntries.BusinessUnit	
+                                        , JournalEntries.JENumber	
+                                        , JournalEntries.JELineNumber	
+                                        , JournalEntries.EffectiveDate	
+                                        , JournalEntries.EntryDate	
+                                        , JournalEntries.Period	
+                                        , JournalEntries.GLAccountNumber	
+                                        , CoA.GLAccountName	
+                                        , JournalEntries.Debit	
+                                        , JournalEntries.Credit	
+                                        , JournalEntries.Amount	
+                                        , JournalEntries.FunctionalCurrencyCode	
+                                        , JournalEntries.JEDescription	
+                                        , JournalEntries.JELineDescription	
+                                        , JournalEntries.PreparerID	
+                                        , JournalEntries.ApproverID	
+
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+
+                                        AND DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate) >= {realNDate}
+                                        AND JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                        AND ABS(JournalEntries.Amount) > {TE}
+                                        {Account}
+                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                '''.format(field=self.selected_project_id, realNDate=realNDate, TE=tempCost,
+                                           tempPrepare=tempJE, Account=checked_account8)
+
+                elif self.rbtn2.isChecked():
+
+                    sql = '''
+                                    SELECT 
+                                       JournalEntries.FileId	
+                                        , JournalEntries.BusinessUnit	
+                                        , JournalEntries.JENumber	
+                                        , JournalEntries.JELineNumber	
+                                        , JournalEntries.EffectiveDate	
+                                        , JournalEntries.EntryDate	
+                                        , JournalEntries.Period	
+                                        , JournalEntries.GLAccountNumber	
+                                        , CoA.GLAccountName	
+                                        , JournalEntries.Debit	
+                                        , JournalEntries.Credit	
+                                        , JournalEntries.Amount	
+                                        , JournalEntries.FunctionalCurrencyCode	
+                                        , JournalEntries.JEDescription	
+                                        , JournalEntries.JELineDescription	
+                                        , JournalEntries.PreparerID	
+                                        , JournalEntries.ApproverID	
+
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
+                                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN 
+
+                                        (
+                                        SELECT DISTINCT JENumber
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
+                                        WHERE DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate) >= {realNDate}
+                                            AND JournalEntries.PreparerID LIKE '%{tempPrepare}%'
+                                            AND ABS(JournalEntries.Amount) > {TE}
+                                            {Account}
+                                        )
+                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                    '''.format(field=self.selected_project_id, realNDate=realNDate, TE=tempCost,
+                                               tempPrepare=tempJE, Account=checked_account8)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -3012,11 +3207,11 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표번호: " + str(tempN) + " 중요성금액: " + str(
-                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[N일: " + str(tempN) + " 중요성금액: " + str(
+                        tempCost) + " 전표입력자: " + str(tempJE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
                                                           QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
-                        self.dialog9.activateWindow()
+                        self.dialog8.activateWindow()
 
             except ValueError:
                 try:
@@ -3040,6 +3235,9 @@ class MyApp(QWidget):
 
             if tempN == '' or tempSheet == '':
                 self.alertbox_open()
+
+            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+                self.alertbox_open5()
 
             else:
                 if tempTE == '': tempTE = 0
@@ -3233,6 +3431,9 @@ class MyApp(QWidget):
         if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -3390,6 +3591,9 @@ class MyApp(QWidget):
         if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '' or tempSheet == '':
             self.alertbox_open()
 
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -3418,6 +3622,10 @@ class MyApp(QWidget):
 
             if tempTE == '' or tempSheet == '':
                 self.alertbox_open()
+
+            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+                self.alertbox_open5()
+
             else:
                 if tempTE == '': tempTE = 0
                 try:
