@@ -801,15 +801,8 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
         self.btnDialog1.resize(110, 30)
 
-        ### 라벨1 - 계정코드 입력
-        label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
-        label_AccCode.setStyleSheet('color: white;')
-
-        font1 = label_AccCode.font()
-        font1.setBold(True)
-        label_AccCode.setFont(font1)
-
-        # ### 라벨 2 - SKA1 파일 드롭하기
+        ### SAP
+        ### 라벨 1 - SKA1 파일 드롭하기
         label_SKA1 = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
         label_SKA1.setStyleSheet('color: red;')
 
@@ -817,41 +810,74 @@ class MyApp(QWidget):
         font12.setBold(False)
         label_SKA1.setFont(font12)
 
-        ### TextEdit - 계정코드 Paste
-        self.MyInput = QTextEdit(self.dialog5)
-        self.MyInput.setAcceptRichText(False)
-        self.MyInput.setStyleSheet('background-color: white;')
-        self.MyInput.setPlaceholderText('※ 입력 예시 : OO')
+        ### 라벨 2 - YEAR (SAP)
+        label_year = QLabel('연도* : ')
+        label_year.setStyleSheet('color: white;')
 
-        ### ListBox Widget
-        self.listbox_drops = ListBoxWidget()
-        self.listbox_drops.setStyleSheet('background-color: white;')
+        font13 = label_year.font()
+        font13.setBold(True)
+        label_year.setFont(font13)
 
-        ### SAP
-        ### 라벨 5 - 시트명 (SAP)
+        ### 라벨 3 - 시트명 (SAP)
         labelSheet = QLabel('시트명* : ', self.dialog5)
         labelSheet.setStyleSheet("color: white;")
         font5 = labelSheet.font()
         font5.setBold(True)
         labelSheet.setFont(font5)
 
-        ### LineEdit 2 - 시트명 (SAP)
+        ### ListBox Widget 1 - SKA1
+        self.listbox_drops = ListBoxWidget()
+        self.listbox_drops.setStyleSheet('background-color: white;')
+
+        ### LineEdit 1 - 시트명 (SAP)
         self.D5_Sheet = QLineEdit(self.dialog5)
         self.D5_Sheet.setStyleSheet("background-color: white;")
         self.D5_Sheet.setPlaceholderText('시트명을 입력하세요')
 
+        ### LineEdit 2 - YEAR (SAP)
+        self.D5_Year = QLineEdit(self.dialog5)
+        self.D5_Year.setStyleSheet('background-color: white;')
+        self.D5_Year.setPlaceholderText('연도를 입력하세요')
+
         ### Non-SAP
-        ### 라벨 6 - 시트명 (Non SAP)
+        ### 라벨1 - 계정코드 입력
+        label_AccCode = QLabel('Enter your Account Code : ', self.dialog5)
+        label_AccCode.setStyleSheet('color: white;')
+
+        font1 = label_AccCode.font()
+        font1.setBold(True)
+        label_AccCode.setFont(font1)
+
+        ### 라벨 2 - YEAR (Non SAP)
+        label_year2 = QLabel('연도* : ')
+        label_year2.setStyleSheet('color: white;')
+
+        font14 = label_year2.font()
+        font14.setBold(True)
+        label_year2.setFont(font14)
+
+        ### 라벨 3 - 시트명 (Non SAP)
         labelSheet2 = QLabel('시트명* : ', self.dialog5)
         labelSheet2.setStyleSheet("color: white;")
         font5 = labelSheet2.font()
         font5.setBold(True)
         labelSheet2.setFont(font5)
 
-        ### LineEdit 3 - 시트명 (Non SAP)
+        ### TextEdit 1 - 계정코드 Paste
+        self.MyInput = QTextEdit(self.dialog5)
+        self.MyInput.setAcceptRichText(False)
+        self.MyInput.setStyleSheet('background-color: white;')
+        self.MyInput.setPlaceholderText('※ 입력 예시 : OO')
+
+        ### LineEdit 1 - 시트명 (Non SAP)
         self.D5_Sheet2 = QLineEdit(self.dialog5)
         self.D5_Sheet2.setStyleSheet("background-color: white;")
         self.D5_Sheet2.setPlaceholderText('시트명을 입력하세요')
+
+        ### LineEdit 2 - YEAR (Non SAP)
+        self.D5_Year2 = QLineEdit(self.dialog5)
+        self.D5_Year2.setStyleSheet('background-color: white;')
+        self.D5_Year2.setPlaceholderText('연도를 입력하세요')
 
         ### Layout 구성
         layout = QVBoxLayout()
@@ -890,6 +916,8 @@ class MyApp(QWidget):
         layout.addWidget(tabs)
 
         ### 배치 - 탭 1
+        sublayout1.addWidget(label_year)
+        sublayout1.addWidget(self.D5_Year)
         sublayout1.addWidget(label_AccCode)
         sublayout1.addWidget(self.MyInput)
 
@@ -905,6 +933,8 @@ class MyApp(QWidget):
         sublayout2.addWidget(self.btnDialog)
 
         ### 배치 - 탭 2
+        sublayout3.addWidget(label_year2)
+        sublayout3.addWidget(self.D5_Year2)
         sublayout3.addWidget(label_SKA1)
         sublayout3.addWidget(self.listbox_drops)
 
@@ -2745,8 +2775,11 @@ class MyApp(QWidget):
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_SAP(self):
-        tempSheet = self.D5_Sheet.text()
+        tempSheet_SAP = self.D5_Sheet.text()
+        tempYear_SAP = self.D5_Year.text()
+        tempSKA1 = self.listbox_drops.text()
 
+        ### 예외처리
         ### ListBox 인풋값 append
         dropped_items = []
         for i in range(self.listbox_drops.count()):
@@ -2768,17 +2801,17 @@ class MyApp(QWidget):
             df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
             year = df.loc[i, 'ERDAT'][0:4]
 
-            ### 당기 시점 지정
-            now = datetime.datetime.now()
-            before_three_months = now - relativedelta(month=3)
-
-            if int(year) == before_three_months.year:
+            # ### 당기 시점 지정
+            # now = datetime.datetime.now()
+            # before_three_months = now - relativedelta(month=3)
+            #
+            if int(year) == tempYear_SAP:
                 temp_AccCode.append(df.loc[i, 'SAKNR'])
 
-        if temp_AccCode == '' or tempSheet == '':
+        if tempYear_SAP == '' or tempSheet_SAP == '' or tempSKA1 == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet_SAP) != -1: #시트명 중복 확인
             self.alertbox_open5()
 
         else:
@@ -2794,41 +2827,46 @@ class MyApp(QWidget):
         else:
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
-            self.scenario_dic[tempSheet] = self.dataframe
+            self.scenario_dic[tempSheet_SAP] = self.dataframe
             key_list = list(self.scenario_dic.keys())
             result = [key_list[0], key_list[-1]]
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_Non_SAP(self):
-        tempSheet = self.D5_Sheet.text()
+        tempSheet_NonSAP = self.D5_Sheet2
+        tempYear_NonSAP = self.D5_Year2.text()
+        tempCode = self.MyInput.text()
 
         temp_Code_Non_SAP = self.D5_Code.text()
         temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
         temp_Code_Non_SAP = re.split(",", temp_Code_Non_SAP)
 
-        if temp_Code_Non_SAP == '' or tempSheet == '':
+        ### 예외처리 1 - 필수값 입력 누락
+        if tempCode == '' or tempSheet_NonSAP == '' or tempYear_NonSAP == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        ### 예외처리 2 - 시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet_NonSAP) != -1:
             self.alertbox_open5()
 
         else:
-            cursor = self.cnxn.cursor()
+            try:
+                int(tempYear_NonSAP)
+            except:
+                cursor = self.cnxn.cursor()
+                sql_query = """""".format(field=self.selected_project_id)
+                self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-            sql_query = """""".format(field=self.selected_project_id)
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
 
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
-
-        if len(self.dataframe) > 300000:
-            self.alertbox_open3()
-
-        else:
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-            self.scenario_dic[tempSheet] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
+                else:
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet_NonSAP] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked6(self):
         tempDate = self.D6_Date.text()
