@@ -426,7 +426,7 @@ class MyApp(QWidget):
         self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트', [''])
         self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출', [''])
         self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표', [''])
-        self.comboScenario.addItem('07 : 비영업일 전기/입력 전표', [''])
+        self.comboScenario.addItem('07 : 영업일 전기/입력 전표', [''])
         self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
         self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
         self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
@@ -801,8 +801,15 @@ class MyApp(QWidget):
         self.btnDialog.resize(110, 30)
         self.btnDialog1.resize(110, 30)
 
-        ### SAP
-        ### 라벨 1 - SKA1 파일 드롭하기
+        ### 라벨1 - 계정코드 입력
+        label_AccCode = QLabel('Enter your Account Code: ', self.dialog5)
+        label_AccCode.setStyleSheet('color: white;')
+
+        font1 = label_AccCode.font()
+        font1.setBold(True)
+        label_AccCode.setFont(font1)
+
+        # ### 라벨 2 - SKA1 파일 드롭하기
         label_SKA1 = QLabel('※ SKA1 파일을 Drop 하십시오', self.dialog5)
         label_SKA1.setStyleSheet('color: red;')
 
@@ -810,74 +817,41 @@ class MyApp(QWidget):
         font12.setBold(False)
         label_SKA1.setFont(font12)
 
-        ### 라벨 2 - YEAR (SAP)
-        label_year = QLabel('연도* : ')
-        label_year.setStyleSheet('color: white;')
+        ### TextEdit - 계정코드 Paste
+        self.MyInput = QTextEdit(self.dialog5)
+        self.MyInput.setAcceptRichText(False)
+        self.MyInput.setStyleSheet('background-color: white;')
+        self.MyInput.setPlaceholderText('※ 입력 예시 : OO')
 
-        font13 = label_year.font()
-        font13.setBold(True)
-        label_year.setFont(font13)
+        ### ListBox Widget
+        self.listbox_drops = ListBoxWidget()
+        self.listbox_drops.setStyleSheet('background-color: white;')
 
-        ### 라벨 3 - 시트명 (SAP)
+        ### SAP
+        ### 라벨 5 - 시트명 (SAP)
         labelSheet = QLabel('시트명* : ', self.dialog5)
         labelSheet.setStyleSheet("color: white;")
         font5 = labelSheet.font()
         font5.setBold(True)
         labelSheet.setFont(font5)
 
-        ### ListBox Widget 1 - SKA1
-        self.listbox_drops = ListBoxWidget()
-        self.listbox_drops.setStyleSheet('background-color: white;')
-
-        ### LineEdit 1 - 시트명 (SAP)
+        ### LineEdit 2 - 시트명 (SAP)
         self.D5_Sheet = QLineEdit(self.dialog5)
         self.D5_Sheet.setStyleSheet("background-color: white;")
         self.D5_Sheet.setPlaceholderText('시트명을 입력하세요')
 
-        ### LineEdit 2 - YEAR (SAP)
-        self.D5_Year = QLineEdit(self.dialog5)
-        self.D5_Year.setStyleSheet('background-color: white;')
-        self.D5_Year.setPlaceholderText('연도를 입력하세요')
-
         ### Non-SAP
-        ### 라벨1 - 계정코드 입력
-        label_AccCode = QLabel('Enter your Account Code : ', self.dialog5)
-        label_AccCode.setStyleSheet('color: white;')
-
-        font1 = label_AccCode.font()
-        font1.setBold(True)
-        label_AccCode.setFont(font1)
-
-        ### 라벨 2 - YEAR (Non SAP)
-        label_year2 = QLabel('연도* : ')
-        label_year2.setStyleSheet('color: white;')
-
-        font14 = label_year2.font()
-        font14.setBold(True)
-        label_year2.setFont(font14)
-
-        ### 라벨 3 - 시트명 (Non SAP)
+        ### 라벨 6 - 시트명 (Non SAP)
         labelSheet2 = QLabel('시트명* : ', self.dialog5)
         labelSheet2.setStyleSheet("color: white;")
         font5 = labelSheet2.font()
         font5.setBold(True)
         labelSheet2.setFont(font5)
 
-        ### TextEdit 1 - 계정코드 Paste
-        self.MyInput = QTextEdit(self.dialog5)
-        self.MyInput.setAcceptRichText(False)
-        self.MyInput.setStyleSheet('background-color: white;')
-        self.MyInput.setPlaceholderText('※ 입력 예시 : OO')
-
-        ### LineEdit 1 - 시트명 (Non SAP)
+        ### LineEdit 3 - 시트명 (Non SAP)
         self.D5_Sheet2 = QLineEdit(self.dialog5)
         self.D5_Sheet2.setStyleSheet("background-color: white;")
         self.D5_Sheet2.setPlaceholderText('시트명을 입력하세요')
-
-        ### LineEdit 2 - YEAR (Non SAP)
-        self.D5_Year2 = QLineEdit(self.dialog5)
-        self.D5_Year2.setStyleSheet('background-color: white;')
-        self.D5_Year2.setPlaceholderText('연도를 입력하세요')
 
         ### Layout 구성
         layout = QVBoxLayout()
@@ -916,8 +890,6 @@ class MyApp(QWidget):
         layout.addWidget(tabs)
 
         ### 배치 - 탭 1
-        sublayout1.addWidget(label_year)
-        sublayout1.addWidget(self.D5_Year)
         sublayout1.addWidget(label_AccCode)
         sublayout1.addWidget(self.MyInput)
 
@@ -933,8 +905,6 @@ class MyApp(QWidget):
         sublayout2.addWidget(self.btnDialog)
 
         ### 배치 - 탭 2
-        sublayout3.addWidget(label_year2)
-        sublayout3.addWidget(self.D5_Year2)
         sublayout3.addWidget(label_SKA1)
         sublayout3.addWidget(self.listbox_drops)
 
@@ -2097,51 +2067,6 @@ class MyApp(QWidget):
         self.dialog12.setStyleSheet('background-color: #2E2E38')
         self.dialog12.setWindowIcon(QIcon('./EY_logo.png'))
 
-        cursor = self.cnxn.cursor()
-
-        sql = '''
-                         SELECT 											
-                                *
-                         FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
-                    '''.format(field=self.selected_project_id)
-
-        accountsname = pd.read_sql(sql, self.cnxn)
-
-        self.new_tree = Form(self)
-
-        self.new_tree.tree.clear()
-
-        for n, i in enumerate(accountsname.AccountType.unique()):
-            self.new_tree.parent = QTreeWidgetItem(self.new_tree.tree)
-
-            self.new_tree.parent.setText(0, "{}".format(i))
-            self.new_tree.parent.setFlags(self.new_tree.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            child_items = accountsname.AccountSubType[
-                accountsname.AccountType == accountsname.AccountType.unique()[n]].unique()
-            for m, x in enumerate(child_items):
-                self.new_tree.child = QTreeWidgetItem(self.new_tree.parent)
-
-                self.new_tree.child.setText(0, "{}".format(x))
-                self.new_tree.child.setFlags(self.new_tree.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                grandchild_items = accountsname.AccountClass[accountsname.AccountSubType == child_items[m]].unique()
-                for o, y in enumerate(grandchild_items):
-                    self.new_tree.grandchild = QTreeWidgetItem(self.new_tree.child)
-
-                    self.new_tree.grandchild.setText(0, "{}".format(y))
-                    self.new_tree.grandchild.setFlags(
-                        self.new_tree.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                    num_name = accountsname[accountsname.AccountClass == grandchild_items[o]].iloc[:, 2:4]
-                    full_name = num_name["GLAccountNumber"].map(str) + ' ' + num_name["GLAccountName"]
-                    for z in full_name:
-                        self.new_tree.grandgrandchild = QTreeWidgetItem(self.new_tree.grandchild)
-
-                        self.new_tree.grandgrandchild.setText(0, "{}".format(z))
-                        self.new_tree.grandgrandchild.setFlags(
-                            self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
-        self.new_tree.get_selected_leaves()
-
         self.btn = QPushButton('   Extract Data', self.dialog12)
         self.btn.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn.clicked.connect(self.extButtonClicked12)
@@ -2158,57 +2083,111 @@ class MyApp(QWidget):
         self.btn.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        # JE Line Number / JE Number 라디오 버튼
-        self.rbtn1 = QRadioButton('JE Line Number', self.dialog12)
-        self.rbtn1.setStyleSheet("color: white;")
-        font11 = self.rbtn1.font()
-        font11.setBold(True)
-        self.rbtn1.setFont(font11)
-        self.rbtn1.setChecked(True)
-        self.rbtn2 = QRadioButton('JE Number', self.dialog12)
-        self.rbtn2.setStyleSheet("color: white;")
-        font12 = self.rbtn2.font()
-        font12.setBold(True)
-        self.rbtn2.setFont(font12)
+        self.btn2 = QPushButton('   Extract Data', self.dialog12)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2.clicked.connect(self.extButtonClicked12)
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
 
-        labelAccount = QLabel('특정 계정명/계정 코드* : ', self.dialog12)
+        self.btnDialog2 = QPushButton("   Close", self.dialog12)
+        self.btnDialog2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog2.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog2.font()
+        font10.setBold(True)
+        self.btnDialog2.setFont(font10)
+        self.btn2.resize(110, 30)
+        self.btnDialog2.resize(110, 30)
+
+        # Extraction 내 Dictionary 를 위한 변수 설정
+        self.D12_clickcount = 0
+
+        # 라벨값
+        labelAccount = QLabel('Account Code* : ', self.dialog12)
         labelAccount.setStyleSheet("color: white;")
         font3 = labelAccount.font()
         font3.setBold(True)
         labelAccount.setFont(font3)
-
         labelCost = QLabel('중요성 금액 : ', self.dialog12)
         labelCost.setStyleSheet("color: white;")
         font3 = labelCost.font()
         font3.setBold(True)
         labelCost.setFont(font3)
+        labelCost2 = QLabel('중요성 금액 : ', self.dialog12)
+        labelCost2.setStyleSheet("color: white;")
+        font4 = labelCost2.font()
+        font4.setBold(True)
+        labelCost2.setFont(font4)
+
+        self.D12_Code = QTextEdit(self.dialog12)
+        self.D12_Code.setAcceptRichText(False)
+        self.D12_Code.setStyleSheet("background-color: white;")
+        self.D12_Code.setPlaceholderText('계정코드를 입력하세요')
 
         self.D12_Cost = QLineEdit(self.dialog12)
         self.D12_Cost.setStyleSheet("background-color: white;")
         self.D12_Cost.setPlaceholderText('100,000,000원 이상 입력하세요')
         self.D12_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
-        sublayout1 = QGridLayout()
-        sublayout1.addWidget(self.rbtn1, 0, 0)
-        sublayout1.addWidget(self.rbtn2, 0, 1)
-        sublayout1.addWidget(labelAccount, 1, 0)
-        sublayout1.addWidget(self.new_tree, 1, 1)
-        sublayout1.addWidget(labelCost, 2, 0)
-        sublayout1.addWidget(self.D12_Cost, 2, 1)
+        self.D12_Cost2 = QLineEdit(self.dialog12)
+        self.D12_Cost2.setStyleSheet("background-color: white;")
+        self.D12_Cost2.setPlaceholderText('100,000,000원 이상 입력하세요')
+        self.D12_Cost2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
-        sublayout2 = QHBoxLayout()
-        sublayout2.addStretch()
-        sublayout2.addStretch()
-        sublayout2.addWidget(self.btn)
-        sublayout2.addWidget(self.btnDialog)
+        label_tree = QLabel('원하는 계정명을 선택하세요', self.dialog12)
+        label_tree.setStyleSheet("color: white;")
+        font4 = label_tree.font()
+        font4.setBold(True)
+        label_tree.setFont(font4)
+
+        tab1 = QWidget()
+        tab2 = QWidget()
+        tabs = QTabWidget()
+
+        sublayout1 = QGridLayout()  # 계정 트리
+        sublayout1.addWidget(label_tree, 0, 0)
+        sublayout1.addWidget(self.account_tree, 1, 0)
+
+        sublayout2 = QGridLayout()  # 계정코드 입력했을 때 - 텍스트에딧 추가
+        sublayout2.addWidget(labelAccount, 0, 0)
+        sublayout2.addWidget(self.D12_Code, 0, 1)
+        sublayout2.addWidget(labelCost2, 1, 0)
+        sublayout2.addWidget(self.D12_Cost2, 1, 1)
+
+        sublayout3 = QGridLayout()  # 중요성 금액
+        sublayout3.addWidget(labelCost, 0, 0)
+        sublayout3.addWidget(self.D12_Cost, 0, 1)
+
+        sublayout4 = QHBoxLayout()
+        sublayout4.addStretch()
+        sublayout4.addStretch()
+        sublayout4.addWidget(self.btn)
+        sublayout4.addWidget(self.btnDialog)
+
+        sublayout5 = QHBoxLayout()
+        sublayout5.addStretch()
+        sublayout5.addStretch()
+        sublayout5.addWidget(self.btn2)
+        sublayout5.addWidget(self.btnDialog2)
+
+        layout1 = QVBoxLayout()
+        layout1.addLayout(sublayout1)
+        layout1.addLayout(sublayout3)
+        layout1.addLayout(sublayout4)
+
+        layout2 = QVBoxLayout()
+        layout2.addLayout(sublayout2)
+        layout2.addLayout(sublayout5)
 
         main_layout = QVBoxLayout()
-        main_layout.addLayout(sublayout1)
-        main_layout.addStretch()
-        main_layout.addLayout(sublayout2)
+        tab1.setLayout(layout1)
+        tab2.setLayout(layout2)
+        tabs.addTab(tab1, "Account Name")
+        tabs.addTab(tab2, "Account Code")
+        main_layout.addWidget(tabs)
 
         self.dialog12.setLayout(main_layout)
-        self.dialog12.resize(500, 300)
+        self.dialog12.resize(500, 400)
 
         # ? 제거
         self.dialog12.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -2766,11 +2745,8 @@ class MyApp(QWidget):
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_SAP(self):
-        tempSheet_SAP = self.D5_Sheet.text()
-        tempYear_SAP = self.D5_Year.text()
-        tempSKA1 = self.listbox_drops.text()
+        tempSheet = self.D5_Sheet.text()
 
-        ### 예외처리
         ### ListBox 인풋값 append
         dropped_items = []
         for i in range(self.listbox_drops.count()):
@@ -2792,17 +2768,17 @@ class MyApp(QWidget):
             df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
             year = df.loc[i, 'ERDAT'][0:4]
 
-            # ### 당기 시점 지정
-            # now = datetime.datetime.now()
-            # before_three_months = now - relativedelta(month=3)
-            #
-            if int(year) == tempYear_SAP:
+            ### 당기 시점 지정
+            now = datetime.datetime.now()
+            before_three_months = now - relativedelta(month=3)
+
+            if int(year) == before_three_months.year:
                 temp_AccCode.append(df.loc[i, 'SAKNR'])
 
-        if tempYear_SAP == '' or tempSheet_SAP == '' or tempSKA1 == '':
+        if temp_AccCode == '' or tempSheet == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet_SAP) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
 
         else:
@@ -2818,33 +2794,25 @@ class MyApp(QWidget):
         else:
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
-            self.scenario_dic[tempSheet_SAP] = self.dataframe
+            self.scenario_dic[tempSheet] = self.dataframe
             key_list = list(self.scenario_dic.keys())
             result = [key_list[0], key_list[-1]]
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked5_Non_SAP(self):
-        tempSheet_NonSAP = self.D5_Sheet2
-        tempYear_NonSAP = self.D5_Year2.text()
-        tempCode = self.MyInput.text()
+        tempSheet = self.D5_Sheet.text()
 
         temp_Code_Non_SAP = self.D5_Code.text()
         temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
         temp_Code_Non_SAP = re.split(",", temp_Code_Non_SAP)
 
-        ### 예외처리 1 - 필수값 입력 누락
-        if tempCode == '' or tempSheet_NonSAP == '' or tempYear_NonSAP == '':
+        if temp_Code_Non_SAP == '' or tempSheet == '':
             self.alertbox_open()
 
-        ### 예외처리 2 - 시트명 중복 확인
-        elif self.combo_sheet.findText(tempSheet_NonSAP) != -1:
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
 
         else:
-            try:
-                int(tempYear_NonSAP)
-
-                f
             cursor = self.cnxn.cursor()
 
             sql_query = """""".format(field=self.selected_project_id)
@@ -2857,7 +2825,7 @@ class MyApp(QWidget):
         else:
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
-            self.scenario_dic[tempSheet_NonSAP] = self.dataframe
+            self.scenario_dic[tempSheet] = self.dataframe
             key_list = list(self.scenario_dic.keys())
             result = [key_list[0], key_list[-1]]
             self.combo_sheet.addItem(str(result[1]))
@@ -2874,9 +2842,9 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: # 시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
 
         else:
@@ -3265,10 +3233,12 @@ class MyApp(QWidget):
             tempTE = self.D9_TE.text()
             tempSheet = self.D9_Sheet.text()
 
+
             if tempN == '' or tempSheet == '':
                 self.alertbox_open()
 
-            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+            # 시트명 중복 확인
+            elif self.combo_sheet.findText(tempSheet+"_Journals") != -1 or self.combo_sheet.findText(tempSheet+"_Result") != -1 or self.combo_sheet.findText(tempSheet+"_Reference") != -1:
                 self.alertbox_open5()
 
             else:
@@ -3422,7 +3392,7 @@ class MyApp(QWidget):
                             self.viewtable.setModel(model)
 
                         elif self.rbtn2.isChecked():
-                            self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                            self.scenario_dic[tempSheet] = self.dataframe
                             key_list = list(self.scenario_dic.keys())
                             result = [key_list[0], key_list[-1]]
                             self.combo_sheet.addItem(str(result[1]))
@@ -3451,65 +3421,172 @@ class MyApp(QWidget):
                             self.alertbox_open2('작성빈도수와 중요성금액')
 
     def extButtonClicked10(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D10_clickcount = self.D10_clickcount + 1
 
         tempSearch = self.D10_Search.text()  # 필수값
-        tempAccount = self.D10_Account.text()
-        tempPoint = self.D10_Point.text()
+        basePoint1 = self.D10_Point1.text()
+        tempPoint1 = self.D10_Point1.text()[0:4] + '-' + self.D10_Point1.text()[4:6] + '-' + self.D10_Point1.text()[6:8]
+        basePoint2 = self.D10_Point2.text()
+        tempPoint2 = self.D10_Point2.text()[0:4] + '-' + self.D10_Point2.text()[4:6] + '-' + self.D10_Point2.text()[6:8]
         tempTE = self.D10_TE.text()
         tempSheet = self.D10_Sheet.text()
 
-        if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '' or tempSheet == '':
+        if tempSearch == '' or tempSheet == '':
             self.alertbox_open()
-
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet + "_Journals") != -1 or self.combo_sheet.findText(
+                tempSheet + "_Result") != -1 or self.combo_sheet.findText(tempSheet + "_Reference") != -1:
             self.alertbox_open5()
 
         else:
-            cursor = self.cnxn.cursor()
+            if tempTE == '': tempTE = 0
+            try:
+                int(basePoint1)
+                int(basePoint2)
+                int(tempTE)
 
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=self.selected_project_id)
+                cursor = self.cnxn.cursor()
 
-            self.dataframe = pd.read_sql(sql, self.cnxn)
+                # sql문 수정
+                if self.rbtn1.isChecked():
 
-            if len(self.dataframe) > 300000:
-                self.alertbox_open3()
+                    sql = '''
 
-            else:
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-                self.scenario_dic[tempSheet] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                             SELECT			
+        	                       JournalEntries.BusinessUnit		
+        	                       , JournalEntries.JENumber		
+        	                       , JournalEntries.JELineNumber		
+        	                       , JournalEntries.EffectiveDate		
+        	                       , JournalEntries.EntryDate
+        	                       , JournalEntries.Period		
+        	                       , JournalEntries.GLAccountNumber		
+        	                       , CoA.GLAccountName		
+        	                       , JournalEntries.Debit		
+        	                       , JournalEntries.Credit		
+        	                       , JournalEntries.Amount		
+        	                       , JournalEntries.FunctionalCurrencyCode		
+        	                       , JournalEntries.JEDescription		
+        	                       , JournalEntries.JELineDescription		
+        	                       , JournalEntries.PreparerID		
+        	                       , JournalEntries.ApproverID		
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
+        	                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
+                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 			
+        		                       AND JournalEntries.PreparerID LIKE N'%{Search}%'	
+        		                       AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'			        	
+        		                       AND ABS(JournalEntries.Amount) > {TE} {Account}	
+                           ORDER BY JENumber,JELineNumber			
+
+                        '''.format(field=self.selected_project_id, TE=tempTE, Search=tempSearch,
+                                   Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+
+                elif self.rbtn2.isChecked():
+
+                    sql = '''
+
+                               SELECT 			
+        	                                JournalEntries.BusinessUnit		
+        	                                , JournalEntries.JENumber		
+        	                                , JournalEntries.JELineNumber		
+        	                                , JournalEntries.EffectiveDate		
+        	                                , JournalEntries.EntryDate
+        	                                , JournalEntries.Period		
+        	                                , JournalEntries.GLAccountNumber		
+        	                                , CoA.GLAccountName		
+        	                                , JournalEntries.Debit		
+        	                                , JournalEntries.Credit		
+        	                                , JournalEntries.Amount		
+        	                                , JournalEntries.FunctionalCurrencyCode		
+        	                                , JournalEntries.JEDescription		
+        	                                , JournalEntries.JELineDescription		
+        	                                , JournalEntries.PreparerID		
+        	                                , JournalEntries.ApproverID		
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
+        	                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
+                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 			
+        	                                JournalEntries.JENumber IN 		
+        		                                (	
+        		                                SELECT DISTINCT JENumber	
+        		                                FROM  [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
+        		                                WHERE JournalEntries.PreparerID LIKE N'%{Search}%'	
+        			                                AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'
+        			                                AND ABS(JournalEntries.Amount) > {TE}
+        		                                ) {Account}	
+                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
+
+                        '''.format(field=self.selected_project_id, TE=tempTE, Search=tempSearch,
+                                   Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
+
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[전표입력자: " + str(tempSearch) + " 시작시점: " + str(
+                        tempPoint1) + " 종료시점: " + str(tempPoint2) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표입력자: " + str(tempSearch) + " 시작시점: " + str(
+                    tempPoint1) + " 종료시점: " + str(tempPoint2) + " 중요성금액: " + str(tempTE) + "]\n 라인수 " + str(len(self.dataframe)-1) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog10.activateWindow()
+
+
+                else:
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[전표입력자: " + str(tempSearch) + " 시작시점: " + str(
+                        tempPoint1) + " 종료시점: " + str(tempPoint2) + " 중요성금액: " + str(tempTE) + "]\n 라인수 " + str(len(self.dataframe)) + "개입니다",QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog10.activateWindow()
+
+            except ValueError:
+                try:
+                    int(basePoint1)
+                    try:
+                        int(basePoint2)
+                        try:
+                            int(tempTE)
+                        except:
+                            self.alertbox_open2('중요성금액')
+                    except:
+                        try:
+                            int(tempTE)
+                            self.alertbox_open4('종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                        except:
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                except:
+                    try:
+                        int(basePoint2)
+                        try:
+                            int(tempTE)
+                            self.alertbox_open4('시작시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                        except:
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 시작시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                    except:
+                        try:
+                            int(tempTE)
+                            self.alertbox_open4('시작시점과 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                        except:
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 시작시점과 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
 
     def extButtonClicked11(self):
         passwords = ''
@@ -3623,7 +3700,7 @@ class MyApp(QWidget):
         if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '' or tempSheet == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
 
         else:
@@ -3648,27 +3725,28 @@ class MyApp(QWidget):
 
     def extButtonClicked14(self):
 
-            tempKey = self.D14_Key.text()  # 필수값
-            tempTE = self.D14_TE.text()
-            tempSheet = self.D14_Sheet.text()
+        tempKey = self.D14_Key.text()  # 필수값
+        tempTE = self.D14_TE.text()
+        tempSheet = self.D14_Sheet.text()
 
-            if tempTE == '' or tempSheet == '':
-                self.alertbox_open()
+        if tempTE == '' or tempSheet == '':
+            self.alertbox_open()
 
-            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
-                self.alertbox_open5()
+        elif self.combo_sheet.findText(tempSheet + "_Journals") != -1 or self.combo_sheet.findText(
+                tempSheet + "_Result") != -1 or self.combo_sheet.findText(tempSheet + "_Reference") != -1:
+            self.alertbox_open5()
 
-            else:
-                if tempTE == '': tempTE = 0
-                try:
-                    int(tempTE)
+        else:
+            if tempTE == '': tempTE = 0
+            try:
+                int(tempTE)
 
-                    cursor = self.cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
-                    # sql 문 수정
-                    if self.rbtn1.isChecked():
+                # sql 문 수정
+                if self.rbtn1.isChecked():
 
-                        sql = '''
+                    sql = '''
                            SELECT 		
     	                        JournalEntries.BusinessUnit	
     	                        , JournalEntries.JENumber	
@@ -3695,9 +3773,9 @@ class MyApp(QWidget):
 
                         '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
 
-                    elif self.rbtn2.isChecked():
+                elif self.rbtn2.isChecked():
 
-                        sql = '''
+                    sql = '''
                            SELECT 			
                                 JournalEntries.BusinessUnit		
                                 , JournalEntries.JENumber		
@@ -3726,48 +3804,57 @@ class MyApp(QWidget):
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
                         '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
 
-                    self.dataframe = pd.read_sql(sql, self.cnxn)
-                    if len(self.dataframe) > 300000:
-                        self.alertbox_open3()
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+                if len(self.dataframe) > 300000:
+                    self.alertbox_open3()
 
-                    elif len(self.dataframe) == 0:
-                        self.dataframe = pd.DataFrame(
-                            {'No Data': ["[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
+                            tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+                    self.scenario_dic[tempSheet] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
+                    buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                          "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
+                                                              tempTE) + "] 라인수 " + str(
+                                                              len(self.dataframe) - 1) + "개입니다",
+                                                          QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog14.activateWindow()
+
+                else:
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
+
+                    elif self.rbtn2.isChecked():
                         self.scenario_dic[tempSheet] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe) - 1) + "개입니다",
-                                                              QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog14.activateWindow()
-
-                    else:
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
-                        self.scenario_dic[tempSheet] = self.dataframe
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1]]
-                        self.combo_sheet.addItem(str(result[1]))
 
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe)) + "개입니다", QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog14.activateWindow()
+                    buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                          "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
+                                                              tempTE) + "] 라인수 " + str(
+                                                              len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog14.activateWindow()
 
-                except ValueError:
-                    try:
-                        int(tempTE)
-                    except:
-                        self.alertbox_open2('중요성금액')
+            except ValueError:
+                try:
+                    int(tempTE)
+                except:
+                    self.alertbox_open2('중요성금액')
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
@@ -3788,7 +3875,8 @@ class MyApp(QWidget):
 
             with pd.ExcelWriter('' + fileName[0] + '') as writer:
                 for temp in self.scenario_dic:
-                    self.scenario_dic[''+temp+''].to_excel(writer, sheet_name= ''+temp+'', index = False, freeze_panes= (1,0))
+                    self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
+                                                               freeze_panes=(1, 0))
             self.MessageBox_Open("저장을 완료했습니다")
 
 
