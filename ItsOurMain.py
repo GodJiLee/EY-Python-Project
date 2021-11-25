@@ -2733,9 +2733,6 @@ class MyApp(QWidget):
         self.dialog7.activateWindow()
 
     def extButtonClicked4(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D4_clickcount = self.D4_clickcount + 1
-
         temp_N = self.D4_N.text()
         temp_TE = self.D4_TE.text()
         tempSheet = self.D4_Sheet.text()
@@ -2745,6 +2742,9 @@ class MyApp(QWidget):
 
         elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -2804,6 +2804,9 @@ class MyApp(QWidget):
         elif self.combo_sheet.findText(tempSheet_SAP + '_Result') != -1 or self.combo_sheet.findText(tempSheet_SAP + '_Journals') != -1:
             self.alertbox_open5()
 
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
+
         else:
             cursor = self.cnxn.cursor()
 
@@ -2834,6 +2837,9 @@ class MyApp(QWidget):
         ### 예외처리 1 - 필수값 입력 누락
         if tempCode == '' or tempSheet_NonSAP == '' or tempYear_NonSAP == '':
             self.alertbox_open()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
 
         ### 예외처리 2 - 시트명 중복 확인
         elif self.combo_sheet.findText(tempSheet_NonSAP + '_Result') != -1 or self.combo_sheet.findText(tempSheet_NonSAP + '_Journals') != -1:
@@ -3269,6 +3275,9 @@ class MyApp(QWidget):
             elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
                 self.alertbox_open5()
 
+            elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.alertbox_open6()  # 계정 선택 오류
+
             else:
                 if tempTE == '': tempTE = 0
                 try:
@@ -3449,9 +3458,6 @@ class MyApp(QWidget):
                             self.alertbox_open2('작성빈도수와 중요성금액')
 
     def extButtonClicked10(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D10_clickcount = self.D10_clickcount + 1
-
         tempSearch = self.D10_Search.text()  # 필수값
         tempAccount = self.D10_Account.text()
         tempPoint = self.D10_Point.text()
@@ -3463,6 +3469,9 @@ class MyApp(QWidget):
 
         elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -3542,11 +3551,9 @@ class MyApp(QWidget):
         self.viewtable.setModel(model)
 
     def extButtonClicked12(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D12_clickcount = self.D12_clickcount + 1
-
         tempCode = self.D12_Code.text()
         tempCost = self.D12_Cost.text()
+        tempSheet = self.D12_Sheet.text()
 
         if self.rbtn1.isChecked():
             tempState = 'Account Name'
@@ -3559,6 +3566,12 @@ class MyApp(QWidget):
 
         if tempState == '':
             self.alertbox_open()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
+
+        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+            self.alertbox_open5()
 
         else:
             try:
@@ -3610,8 +3623,6 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked13(self):
-        # 다이얼로그별 Clickcount 설정
-        self.D13_clickcount = self.D13_clickcount + 1
 
         temp_Continuous = self.text_continuous.text()  # 필수
         temp_Tree = self.account_tree.text()
@@ -3623,6 +3634,9 @@ class MyApp(QWidget):
 
         elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
             self.alertbox_open5()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6() # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -3655,6 +3669,9 @@ class MyApp(QWidget):
 
             elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
                 self.alertbox_open5()
+
+            elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.alertbox_open6()  # 계정 선택 오류
 
             else:
                 if tempTE == '': tempTE = 0
