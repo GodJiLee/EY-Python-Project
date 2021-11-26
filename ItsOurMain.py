@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+import os
 import sys
 import re
 import datetime
@@ -11,6 +17,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import pyodbc
 import pandas as pd
+import openpyxl
 
 
 class Calendar(QDialog):
@@ -205,6 +212,14 @@ class MyApp(QWidget):
         self.msg.setText(text)
         self.msg.exec_()
 
+    def MessageBox_Open2(self, text):
+        self.msg = QMessageBox()
+        self.msg.setIcon(QMessageBox.Information)
+        self.msg.setWindowTitle("Project Connected")
+        self.msg.setWindowIcon(QIcon("./EY_logo.png"))
+        self.msg.setText(text)
+        self.msg.exec_()
+
     def alertbox_open(self):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
@@ -326,6 +341,7 @@ class MyApp(QWidget):
 
         try:
             selected_project_names = pd.read_sql(sql_query, self.cnxn)
+            self.MessageBox_Open2("프로젝트가 연결되었습니다.")
 
         except:
             self.MessageBox_Open("Engagement Code를 입력하세요.")
@@ -2740,11 +2756,11 @@ class MyApp(QWidget):
         if temp_N == '' or tempSheet == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -2754,7 +2770,7 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        if len(self.dataframe) > 300000:
+        if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
         else:
@@ -2778,7 +2794,7 @@ class MyApp(QWidget):
         for i in range(self.dropped_items.count()):
             dropped_items[i] = re.sub(r'\'', '/', dropped_items[i])
 
-        df = pd.DataFrame() ### dataframe으로 저장
+        df = pd.DataFrame()  ### dataframe으로 저장
         for i in range(len(dropped_items)):
             df = df.append(pd.read_csv(dropped_items[i], sep='|'))
 
@@ -2801,11 +2817,12 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         ### 예외처리 3 - 시트명 중복 확인
-        elif self.combo_sheet.findText(tempSheet_SAP + '_Result') != -1 or self.combo_sheet.findText(tempSheet_SAP + '_Journals') != -1:
+        elif self.combo_sheet.findText(tempSheet_SAP + '_Result') != -1 or self.combo_sheet.findText(
+                tempSheet_SAP + '_Journals') != -1:
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -2814,7 +2831,7 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        if len(self.dataframe) > 300000:
+        if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
         else:
@@ -2839,10 +2856,11 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
         ### 예외처리 2 - 시트명 중복 확인
-        elif self.combo_sheet.findText(tempSheet_NonSAP + '_Result') != -1 or self.combo_sheet.findText(tempSheet_NonSAP + '_Journals') != -1:
+        elif self.combo_sheet.findText(tempSheet_NonSAP + '_Result') != -1 or self.combo_sheet.findText(
+                tempSheet_NonSAP + '_Journals') != -1:
             self.alertbox_open5()
 
         else:
@@ -2855,7 +2873,7 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        if len(self.dataframe) > 300000:
+        if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
         else:
@@ -2878,9 +2896,13 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
-        elif self.combo_sheet.findText(tempSheet) != -1: # 시트명 중복 확인
+        # 시트명 중복 확인    
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         else:
@@ -2977,21 +2999,123 @@ class MyApp(QWidget):
                 if tempJE == '':
                     tempJE = '모두'
 
-                if len(self.dataframe) > 300000:
+                if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
-                else:
+
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data': ["[결산일: " + str(tempDate) + "," + "T일: " + str(tempTDate)
+                                                               + "," + "전표입력자: " + str(tempJE)
+                                                               + "," + "중요성금액: " + str(tempCost)
+                                                               + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
-                    self.scenario_dic[tempSheet] = self.dataframe
-                    key_list = list(self.scenario_dic.keys())
-                    result = [key_list[0], key_list[-1]]
-                    self.combo_sheet.addItem(str(result[1]))
 
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[결산일: " + str(tempDate) + " T일: " + str(
-                        tempTDate) + " 중요성금액: " + str(
-                        tempCost) + " 전표입력자: " + tempJE + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
                     if buttonReply == QMessageBox.Yes:
                         self.dialog6.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog6.activateWindow()
+
 
             except ValueError:
                 try:
@@ -3033,7 +3157,11 @@ class MyApp(QWidget):
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
             self.alertbox_open6()
 
-        elif self.combo_sheet.findText(tempSheet) != -1:
+        # 시트명 중복 확인    
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         else:
@@ -3112,22 +3240,118 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                if len(self.dataframe) > 300000:
+                if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
-                else:
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(tempState) + ","
+                                                               + "," + "전표입력자: " + str(tempJE)
+                                                               + "," + "중요성금액: " + str(tempCost)
+                                                               + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
-                    self.scenario_dic[tempSheet] = self.dataframe
-                    key_list = list(self.scenario_dic.keys())
-                    result = [key_list[0], key_list[-1]]
-                    self.combo_sheet.addItem(str(result[1]))
 
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[Effective Date / Entry Date: " + str(
-                        tempDate) + " 중요성금액: " + str(
-                        tempCost) + " 전표입력자: " + tempJE + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
-                        self.dialog6.activateWindow()
+                        self.dialog7.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
+                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog7.activateWindow()
 
             except ValueError:
                 self.alertbox_open2('중요성 금액')
@@ -3146,8 +3370,13 @@ class MyApp(QWidget):
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
             self.alertbox_open6()
 
-        elif self.combo_sheet.findText(tempSheet) != -1:
+        # 시트명 중복 확인    
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
             self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
 
         else:
             if tempCost == '': tempCost = 0
@@ -3233,19 +3462,117 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                if len(self.dataframe) > 300000:
+                if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
-                else:
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(realNDate) + ","
+                                     + "," + "전표입력자: " + str(tempJE)
+                                     + "," + "중요성금액: " + str(tempCost)
+                                     + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
-                    self.scenario_dic[tempSheet] = self.dataframe
-                    key_list = list(self.scenario_dic.keys())
-                    result = [key_list[0], key_list[-1]]
-                    self.combo_sheet.addItem(str(result[1]))
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[N일: " + str(tempN) + " 중요성금액: " + str(
-                        tempCost) + " 전표입력자: " + str(tempJE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다",
-                                                          QMessageBox.Yes)
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog8.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
+                                                                  + str(realNDate) + "인 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + ")" + ", " + "전표입력자(" + str(tempJE)
+                                                                  + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog8.activateWindow()
 
@@ -3265,31 +3592,37 @@ class MyApp(QWidget):
 
     def extButtonClicked9(self):
 
-            tempN = self.D9_N.text()  # 필수값
-            tempTE = self.D9_TE.text()
-            tempSheet = self.D9_Sheet.text()
+        tempN = self.D9_N.text()  # 필수값
+        tempTE = self.D9_TE.text()
+        tempSheet = self.D9_Sheet.text()
 
-            if tempN == '' or tempSheet == '':
-                self.alertbox_open()
+        if tempN == '' or tempSheet == '':
+            self.alertbox_open()
 
-            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
-                self.alertbox_open5()
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+                tempSheet + '_Reference') != -1):
+            self.alertbox_open5()
 
-            elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.alertbox_open6()  # 계정 선택 오류
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
 
-            else:
-                if tempTE == '': tempTE = 0
-                try:
-                    int(tempN)
-                    int(tempTE)
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()  # 계정 선택 오류
 
-                    cursor = self.cnxn.cursor()
+        else:
+            if tempTE == '': tempTE = 0
+            try:
+                int(tempN)
+                int(tempTE)
 
-                    # sql문 수정
-                    if self.rbtn1.isChecked():
+                cursor = self.cnxn.cursor()
 
-                        sql = '''
+                # sql문 수정
+                if self.rbtn1.isChecked():
+
+                    sql = '''
                                    SELECT				
     	                                  JournalEntries.BusinessUnit			
     	                                  , JournalEntries.JENumber			
@@ -3320,7 +3653,7 @@ class MyApp(QWidget):
 
                                 '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
 
-                        sql_refer = '''
+                    sql_refer = '''
                                    SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries				
                                    WHERE JournalEntries.PreparerID IN				
@@ -3334,12 +3667,12 @@ class MyApp(QWidget):
 
                                 '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
 
-                        self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+                    self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
 
-                    elif self.rbtn2.isChecked():
+                elif self.rbtn2.isChecked():
 
-                        sql = '''
+                    sql = '''
                                    SELECT 				
     	                               JournalEntries.BusinessUnit			
     	                               , JournalEntries.JENumber			
@@ -3381,71 +3714,304 @@ class MyApp(QWidget):
 
                                 '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
 
-                    self.dataframe = pd.read_sql(sql, self.cnxn)
+                self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                    if len(self.dataframe) > 30000:
-                        self.alertbox_open3()
+                if len(self.dataframe) > 1048576:
+                    self.alertbox_open3()
 
-                    elif len(self.dataframe) == 0:
-                        self.dataframe = pd.DataFrame({'No Data': ["[전표작성 빈도수: " + str(tempN) + "," + " 중요성금액: " + str(
-                            tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data': ["[전표작성 빈도수: " + str(tempN) + "," + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    model = DataFrameModel(self.dataframe)
+                    model_refer = DataFrameModel(self.dataframe_refer)
+                    self.viewtable.setModel(model)
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1], key_list[-2]]
+                        self.combo_sheet.addItem(str(result[2]))
+                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                              + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                              + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                              + str(tempTE) + ")을 적용하였습니다.추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                              , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1], key_list[-2]]
+                        self.combo_sheet.addItem(str(result[2]))
+                        self.combo_sheet.addItem(str(result[1]))
                         model = DataFrameModel(self.dataframe)
                         model_refer = DataFrameModel(self.dataframe_refer)
                         self.viewtable.setModel(model)
 
-                        if self.rbtn1.isChecked():
-                            self.scenario_dic[tempSheet + "_Result"] = self.dataframe
-                            self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
-                            key_list = list(self.scenario_dic.keys())
-                            result = [key_list[0], key_list[-1], key_list[-2]]
-                            self.combo_sheet.addItem(str(result[2]))
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(
+                                tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
 
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
 
-                        elif self.rbtn2.isChecked():
-                            self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
-                            key_list = list(self.scenario_dic.keys())
-                            result = [key_list[0], key_list[-1]]
-                            self.combo_sheet.addItem(str(result[1]))
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
+                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(
+                                tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog9.activateWindow()
 
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표작성 빈도수: " + str(tempN) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe) - 1) + "개입니다",
-                                                              QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog9.activateWindow()
-
-                    else:
-
-                        if self.rbtn1.isChecked():
-                            self.scenario_dic[tempSheet + "_Result"] = self.dataframe
-                            self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
-                            key_list = list(self.scenario_dic.keys())
-                            result = [key_list[0], key_list[-1], key_list[-2]]
-                            self.combo_sheet.addItem(str(result[2]))
-                            self.combo_sheet.addItem(str(result[1]))
-                            model = DataFrameModel(self.dataframe)
-                            model_refer = DataFrameModel(self.dataframe_refer)
-                            self.viewtable.setModel(model)
-
-                        elif self.rbtn2.isChecked():
-                            self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
-                            key_list = list(self.scenario_dic.keys())
-                            result = [key_list[0], key_list[-1]]
-                            self.combo_sheet.addItem(str(result[1]))
-                            model = DataFrameModel(self.dataframe)
-                            self.viewtable.setModel(model)
-
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표작성 빈도수: " + str(tempN) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe)) + "개입니다", QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog9.activateWindow()
-
-                except ValueError:
+            except ValueError:
+                try:
+                    int(tempN)
                     try:
-                        int(tempN)
+                        int(tempTE)
+                    except:
+                        self.alertbox_open2('중요성금액')
+                except:
+                    try:
+                        int(tempTE)
+                        self.alertbox_open2('작성빈도수')
+                    except:
+                        self.alertbox_open2('작성빈도수와 중요성금액')
+
+    def extButtonClicked10(self):
+        tempSearch = self.D10_Search.text()  # 필수값
+        tempTE = self.D10_TE.text()
+        tempSheet = self.D10_Sheet.text()
+        basePoint1 = self.D10_Point1.text()
+        tempPoint1 = self.D10_Point1.text()[0:4] + '-' + self.D10_Point1.text()[4:6] + '-' + self.D10_Point1.text()[6:8]
+        basePoint2 = self.D10_Point2.text()
+        tempPoint2 = self.D10_Point2.text()[0:4] + '-' + self.D10_Point2.text()[4:6] + '-' + self.D10_Point2.text()[6:8]
+
+        if tempSearch == '' or tempSheet == '':
+            self.alertbox_open()
+
+        # 시트명 중복 확인    
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+                tempSheet + '_Reference') != -1):
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()  # 계정 선택 오류
+
+        else:
+            if tempTE == '': tempTE = 0
+            try:
+                int(basePoint1)
+                int(basePoint2)
+                int(tempTE)
+
+                cursor = self.cnxn.cursor()
+
+                # sql문 수정
+                if self.rbtn1.isChecked():
+
+                    sql = '''
+
+                                         SELECT			
+                    	                       JournalEntries.BusinessUnit		
+                    	                       , JournalEntries.JENumber		
+                    	                       , JournalEntries.JELineNumber		
+                    	                       , JournalEntries.EffectiveDate		
+                    	                       , JournalEntries.EntryDate
+                    	                       , JournalEntries.Period		
+                    	                       , JournalEntries.GLAccountNumber		
+                    	                       , CoA.GLAccountName		
+                    	                       , JournalEntries.Debit		
+                    	                       , JournalEntries.Credit		
+                    	                       , JournalEntries.Amount		
+                    	                       , JournalEntries.FunctionalCurrencyCode		
+                    	                       , JournalEntries.JEDescription		
+                    	                       , JournalEntries.JELineDescription		
+                    	                       , JournalEntries.PreparerID		
+                    	                       , JournalEntries.ApproverID		
+                                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
+                    	                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
+                                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 			
+                    		                       AND JournalEntries.PreparerID LIKE N'%{Search}%'	
+                    		                       AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'			        	
+                    		                       AND ABS(JournalEntries.Amount) > {TE} {Account}	
+                                       ORDER BY JENumber,JELineNumber			
+
+                                    '''.format(field=self.selected_project_id, TE=tempTE, Search=tempSearch,
+                                               Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+
+                elif self.rbtn2.isChecked():
+
+                    sql = '''
+
+                                           SELECT 			
+                    	                                JournalEntries.BusinessUnit		
+                    	                                , JournalEntries.JENumber		
+                    	                                , JournalEntries.JELineNumber		
+                    	                                , JournalEntries.EffectiveDate		
+                    	                                , JournalEntries.EntryDate
+                    	                                , JournalEntries.Period		
+                    	                                , JournalEntries.GLAccountNumber		
+                    	                                , CoA.GLAccountName		
+                    	                                , JournalEntries.Debit		
+                    	                                , JournalEntries.Credit		
+                    	                                , JournalEntries.Amount		
+                    	                                , JournalEntries.FunctionalCurrencyCode		
+                    	                                , JournalEntries.JEDescription		
+                    	                                , JournalEntries.JELineDescription		
+                    	                                , JournalEntries.PreparerID		
+                    	                                , JournalEntries.ApproverID		
+                                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
+                    	                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
+                                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 			
+                    	                                JournalEntries.JENumber IN 		
+                    		                                (	
+                    		                                SELECT DISTINCT JENumber	
+                    		                                FROM  [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
+                    		                                WHERE JournalEntries.PreparerID LIKE N'%{Search}%'	
+                    			                                AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'
+                    			                                AND ABS(JournalEntries.Amount) > {TE}
+                    		                                ) {Account}	
+                                       ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
+
+                                    '''.format(field=self.selected_project_id, TE=tempTE, Search=tempSearch,
+                                               Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                if len(self.dataframe) > 1048576:
+                    self.alertbox_open3()
+
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[전표입력자: " + str(tempSearch) + " 시작시점: " + str(
+                            tempPoint1) + " 종료시점: " + str(tempPoint2) + " 중요성금액: " + str(tempTE) + "] 라인수 " + str(
+                            len(self.dataframe)) + "개입니다"]})
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+
+                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                              + "]인 전표가 "
+                                                              + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                              + str(tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
+                                                              , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                              + "]인 전표가 "
+                                                              + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                              + str(tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                              , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog10.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                                  + "]인 전표가 "
+                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                                  + "]인 전표가 "
+                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet  + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                                  + "]인 전표가 "
+                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(tempSearch)
+                                                                  + "]인 전표가 "
+                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog10.activateWindow()
+
+            except ValueError:
+                try:
+                    int(basePoint1)
+                    try:
+                        int(basePoint2)
                         try:
                             int(tempTE)
                         except:
@@ -3453,70 +4019,23 @@ class MyApp(QWidget):
                     except:
                         try:
                             int(tempTE)
-                            self.alertbox_open2('작성빈도수')
+                            self.alertbox_open4('종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
                         except:
-                            self.alertbox_open2('작성빈도수와 중요성금액')
-
-    def extButtonClicked10(self):
-        tempSearch = self.D10_Search.text()  # 필수값
-        tempAccount = self.D10_Account.text()
-        tempPoint = self.D10_Point.text()
-        tempTE = self.D10_TE.text()
-        tempSheet = self.D10_Sheet.text()
-
-        if tempSearch == '' or tempAccount == '' or tempPoint == '' or tempTE == '' or tempSheet == '':
-            self.alertbox_open()
-
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
-            self.alertbox_open5()
-
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
-
-        else:
-            cursor = self.cnxn.cursor()
-
-            # sql문 수정
-            sql = '''
-                   SELECT TOP 100											
-                       JournalEntries.BusinessUnit											
-                       , JournalEntries.JENumber											
-                       , JournalEntries.JELineNumber											
-                       , JournalEntries.EffectiveDate											
-                       , JournalEntries.EntryDate											
-                       , JournalEntries.Period											
-                       , JournalEntries.GLAccountNumber											
-                       , CoA.GLAccountName											
-                       , JournalEntries.Debit											
-                       , JournalEntries.Credit											
-                       , CASE
-                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                            END AS DebitCredit
-                       , JournalEntries.Amount											
-                       , JournalEntries.FunctionalCurrencyCode											
-                       , JournalEntries.JEDescription											
-                       , JournalEntries.JELineDescription											
-                       , JournalEntries.Source											
-                       , JournalEntries.PreparerID											
-                       , JournalEntries.ApproverID											
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                   ORDER BY JENumber, JELineNumber											
-                '''.format(field=self.selected_project_id)
-
-            self.dataframe = pd.read_sql(sql, self.cnxn)
-
-            if len(self.dataframe) > 300000:
-                self.alertbox_open3()
-
-            else:
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-                self.scenario_dic[tempSheet] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                except:
+                    try:
+                        int(basePoint2)
+                        try:
+                            int(tempTE)
+                            self.alertbox_open4('시작시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                        except:
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 시작시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                    except:
+                        try:
+                            int(tempTE)
+                            self.alertbox_open4('시작시점과 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
+                        except:
+                            self.alertbox_open4('중요성금액을 숫자로만 입력하고, 시작시점과 종료시점 값을 8자리의 숫자로 입력해주시길 바랍니다.')
 
     def extButtonClicked11(self):
         passwords = ''
@@ -3568,9 +4087,9 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
 
         else:
@@ -3632,11 +4151,11 @@ class MyApp(QWidget):
         if temp_Continuous == '' or temp_TE_13 == '' or temp_Tree == '' or tempSheet == '':
             self.alertbox_open()
 
-        elif self.combo_sheet.findText(tempSheet) != -1: #시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6() # 계정 선택 오류
+            self.alertbox_open6()  # 계정 선택 오류
 
         else:
             cursor = self.cnxn.cursor()
@@ -3647,7 +4166,7 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-        if len(self.dataframe) > 300000:
+        if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
         else:
@@ -3659,31 +4178,35 @@ class MyApp(QWidget):
             self.combo_sheet.addItem(str(result[1]))
 
     def extButtonClicked14(self):
+        baseKey = self.D14_Key.text().split(',')
+        tempKey = str('%'.join(baseKey))
+        tempTE = self.D14_TE.text()
+        tempSheet = self.D14_Sheet.text()
 
-            tempKey = self.D14_Key.text()  # 필수값
-            tempTE = self.D14_TE.text()
-            tempSheet = self.D14_Sheet.text()
+        if tempTE == '' or tempSheet == '':
+            self.alertbox_open()
 
-            if tempTE == '' or tempSheet == '':
-                self.alertbox_open()
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+            self.alertbox_open5()
 
-            elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
-                self.alertbox_open5()
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
 
-            elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.alertbox_open6()  # 계정 선택 오류
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open6()  # 계정 선택 오류
 
-            else:
-                if tempTE == '': tempTE = 0
-                try:
-                    int(tempTE)
+        else:
+            if tempTE == '': tempTE = 0
+            try:
+                int(tempTE)
 
-                    cursor = self.cnxn.cursor()
+                cursor = self.cnxn.cursor()
 
-                    # sql 문 수정
-                    if self.rbtn1.isChecked():
+                # sql 문 수정
+                if self.rbtn1.isChecked():
 
-                        sql = '''
+                    sql = '''
                            SELECT 		
     	                        JournalEntries.BusinessUnit	
     	                        , JournalEntries.JENumber	
@@ -3710,9 +4233,9 @@ class MyApp(QWidget):
 
                         '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
 
-                    elif self.rbtn2.isChecked():
+                elif self.rbtn2.isChecked():
 
-                        sql = '''
+                    sql = '''
                            SELECT 			
                                 JournalEntries.BusinessUnit		
                                 , JournalEntries.JENumber		
@@ -3741,48 +4264,120 @@ class MyApp(QWidget):
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
                         '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
 
-                    self.dataframe = pd.read_sql(sql, self.cnxn)
-                    if len(self.dataframe) > 300000:
-                        self.alertbox_open3()
+                self.dataframe = pd.read_sql(sql, self.cnxn)
 
-                    elif len(self.dataframe) == 0:
-                        self.dataframe = pd.DataFrame(
-                            {'No Data': ["[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
-                        model = DataFrameModel(self.dataframe)
-                        self.viewtable.setModel(model)
-                        self.scenario_dic[tempSheet] = self.dataframe
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1]]
-                        self.combo_sheet.addItem(str(result[1]))
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe) - 1) + "개입니다",
-                                                              QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog14.activateWindow()
+                if len(self.dataframe) > 1048576:
+                    self.alertbox_open3()
 
-                    else:
-                        model = DataFrameModel(self.dataframe)
-                        self.viewtable.setModel(model)
-                        self.scenario_dic[tempSheet] = self.dataframe
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data': ["[전표 적요 특정단어: " + str(baseKey) + "," + " 중요성금액: " + str(
+                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    model = DataFrameModel(self.dataframe)
+                    self.viewtable.setModel(model)
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
-                        buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                              "[전표 적요 특정단어: " + str(tempKey) + "," + " 중요성금액: " + str(
-                                                                  tempTE) + "] 라인수 " + str(
-                                                                  len(self.dataframe)) + "개입니다", QMessageBox.Yes)
-                        if buttonReply == QMessageBox.Yes:
-                            self.dialog14.activateWindow()
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey)  + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                            if buttonReply == QMessageBox.Yes:
+                                self.dialog14.activateWindow()
 
-                except ValueError:
-                    try:
-                        int(tempTE)
-                    except:
-                        self.alertbox_open2('중요성금액')
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey)  + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                            if buttonReply == QMessageBox.Yes:
+                                self.dialog14.activateWindow()
+
+
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey)  + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog14.activateWindow()
+
+                else:
+
+                    if self.rbtn1.isChecked():
+                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey)  + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                                  , QMessageBox.Yes)
+                    elif self.rbtn2.isChecked():
+                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        key_list = list(self.scenario_dic.keys())
+                        result = [key_list[0], key_list[-1]]
+                        self.combo_sheet.addItem(str(result[1]))
+                        model = DataFrameModel(self.dataframe)
+                        self.viewtable.setModel(model)
+                        if len(self.dataframe) - 1 <= 500:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
+                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+                        else:
+                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 " +
+                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(len(self.dataframe) - 1)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                                  , QMessageBox.Yes)
+
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog14.activateWindow()
+
+            except ValueError:
+                try:
+                    int(tempTE)
+                except:
+                    self.alertbox_open2('중요성금액')
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
@@ -3800,14 +4395,41 @@ class MyApp(QWidget):
         else:
             fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
                                                    self.tr("xlsx(*.xlsx);; All Files(*.*)"))
+            path = fileName[0]
+            if os.path.isfile(path):
+                changecount = 0
+                addcount = 0
+                wb = openpyxl.load_workbook(path)
+                ws_names = wb.get_sheet_names()
+                for temp in list(self.scenario_dic.keys()):
+                    if temp in ws_names:
+                        changecount += 1
+                        wb.remove(wb['' + temp + ''])
+                    else:
+                        print(temp)
+                        addcount += 1
+                wb.save(path)
+                with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
+                    for temp in self.scenario_dic:
+                        self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
+                                                                   freeze_panes=(1, 0))
+                self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
 
-            with pd.ExcelWriter('' + fileName[0] + '') as writer:
-                for temp in self.scenario_dic:
-                    self.scenario_dic[''+temp+''].to_excel(writer, sheet_name= ''+temp+'', index = False, freeze_panes= (1,0))
-            self.MessageBox_Open("저장을 완료했습니다")
+            else:
+                with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
+                    for temp in self.scenario_dic:
+                        self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
+                                                                   freeze_panes=(1, 0))
+                self.MessageBox_Open("저장을 완료했습니다")
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MyApp()
     sys.exit(app.exec_())
+
+# In[ ]:
+
+
+
+
