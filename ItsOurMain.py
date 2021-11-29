@@ -3296,10 +3296,10 @@ class MyApp(QWidget):
             self.alertbox_open6()
 
         # 시트명 중복 확인    
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn3.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn4.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         else:
@@ -3389,7 +3389,7 @@ class MyApp(QWidget):
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
-                    if self.rbtn1.isChecked():
+                    if self.rbtn3.isChecked():
                         self.scenario_dic[tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
@@ -3412,7 +3412,7 @@ class MyApp(QWidget):
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Yes)
 
-                    elif self.rbtn2.isChecked():
+                    elif self.rbtn4.isChecked():
                         self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
@@ -3439,7 +3439,7 @@ class MyApp(QWidget):
 
                 else:
 
-                    if self.rbtn1.isChecked():
+                    if self.rbtn3.isChecked():
                         self.scenario_dic[tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
@@ -3464,7 +3464,7 @@ class MyApp(QWidget):
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Yes)
 
-                    elif self.rbtn2.isChecked():
+                    elif self.rbtn4.isChecked():
                         self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
