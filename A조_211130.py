@@ -2366,15 +2366,6 @@ class MyApp(QWidget):
         font9.setBold(True)
         self.btnDialog.setFont(font9)
 
-        ### 버튼 3 - Save and Process
-        self.btnSaveProceed = QPushButton('   Save and Proceed', self.dialog13)
-        self.btnSaveProceed.setStyleSheet('color: white; background-image: url(./bar.png)')
-        self.btnSaveProceed.clicked.connect(self.tab2)
-
-        font13 = self.btnSaveProceed.font()
-        font13.setBold(True)
-        self.btnSaveProceed.setFont(font13)
-
         ### 라벨 1 - 연속된 자릿수
         label_Continuous = QLabel('연속된 자릿수* : ', self.dialog13)
         label_Continuous.setStyleSheet("color: white;")
@@ -2426,7 +2417,6 @@ class MyApp(QWidget):
 
         layout1 = QVBoxLayout()
         sublayout1 = QVBoxLayout()
-        sublayout2 = QHBoxLayout()
 
         layout2 = QVBoxLayout()
         sublayout3 = QVBoxLayout()
@@ -2456,11 +2446,7 @@ class MyApp(QWidget):
         sublayout1.addWidget(label_amount)
         sublayout1.addWidget(self.line_amount)
 
-        sublayout2.addStretch(2)
-        sublayout2.addWidget(self.btnSaveProceed)
-
         layout1.addLayout(sublayout1, stretch=4)
-        layout1.addLayout(sublayout2, stretch=1)
 
         ### 배치 - 탭 2
         sublayout3.addWidget(label_tree)
@@ -2477,10 +2463,11 @@ class MyApp(QWidget):
         layout2.addLayout(sublayout5, stretch=1)
         layout2.addLayout(sublayout4, stretch=1)
 
-        ### 탭 페이지 지정
-        page = tabs.findChild()
-        index = tabs.indexOf(page)
-        tabs.setCurrentWidget(tabs.findChild())
+
+        # ### 탭 페이지 지정
+        # page = tabs.findChild()
+        # index = tabs.indexOf(page)
+        # tabs.setCurrentWidget(tabs.findChild())
 
         ### 공통 지정
         self.dialog13.setLayout(main_layout)
