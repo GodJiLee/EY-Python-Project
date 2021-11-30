@@ -4403,7 +4403,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()  # 계정 선택 오류
+            self.alertbox_open()  # 계정 선택 오류
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
             checked_preparer6 = ''  # 전표입력자 선택 안함
@@ -4729,7 +4729,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()
+            self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
             checked_preparer7 = ''  # 전표입력자 선택 안함
@@ -4968,7 +4968,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()
+            self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
             checked_preparer8 = ''  # 전표입력자 선택 안함
