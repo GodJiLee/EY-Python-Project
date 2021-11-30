@@ -438,7 +438,6 @@ class MyApp(QWidget):
 
         try:
             selected_project_names = pd.read_sql(sql_query, self.cnxn)
-            self.MessageBox_Open2("프로젝트가 연결되었습니다.")
 
         except:
             self.MessageBox_Open("Engagement Code를 입력하세요.")
@@ -452,6 +451,9 @@ class MyApp(QWidget):
             self.ProjectCombobox.clear()
             self.ProjectCombobox.addItem("프로젝트가 없습니다.")
             return
+        else:
+            self.MessageBox_Open2("프로젝트가 연결되었습니다.")
+
 
         ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
         del self.selected_project_id, self.dataframe, self.scenario_dic
@@ -547,8 +549,7 @@ class MyApp(QWidget):
         self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
         self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
         self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
-        self.comboScenario.addItem('11 : 특정한 주계정(A)과 특정한 상대계정(B)이 아닌 전표리스트 검토', [''])
-        self.comboScenario.addItem('12 : 특정 계정(A)이 감소할 때 상대계정 리스트 검토', [''])
+        self.comboScenario.addItem('11-12 : 특정 계정(A) 상대계정 리스트 검토', [''])
         self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
         self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (TE금액 제시 가능)', [''])
 
@@ -633,15 +634,12 @@ class MyApp(QWidget):
             self.Dialog10()
 
         elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 8:
-            self.Dialog11()
-
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 9:
             self.Dialog12()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 10:
+        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 9:
             self.Dialog13()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 11:
+        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 10:
             self.Dialog14()
 
     def Dialog4(self):
@@ -2574,12 +2572,14 @@ class MyApp(QWidget):
         labelPoint2.setFont(font2_2)
 
         self.D10_Point1 = QLineEdit(self.dialog10)
+        self.D10_Point1.setMaxLength(8)
         self.D10_Point1.setStyleSheet("background-color: white;")
-        self.D10_Point1.setPlaceholderText('시작시점을 입력하세요')
+        self.D10_Point1.setPlaceholderText('시작시점 8자리를 입력하세요 (ex.20210101)')
 
         self.D10_Point2 = QLineEdit(self.dialog10)
+        self.D10_Point2.setMaxLength(8)
         self.D10_Point2.setStyleSheet("background-color: white;")
-        self.D10_Point2.setPlaceholderText('종료시점을 입력하세요')
+        self.D10_Point2.setPlaceholderText('종료시점 8자리를 입력하세요 (ex.20211231)')
 
         label_tree = QLabel('특정 계정명 : ', self.dialog10)
         label_tree.setStyleSheet("color: white;")
@@ -3053,16 +3053,23 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog2.resize(110, 30)
 
-        labelCursor = QLabel('Cursor 조건 : ', self.dialog12)
+        labelCursor = QLabel('Cursor 조건* : ', self.dialog12)
         labelCursor.setStyleSheet("color: white;")
         font3 = labelCursor.font()
         font3.setBold(True)
         labelCursor.setFont(font3)
 
-        self.cursorCondition = QTextEdit(self.dialog12)
+        self.cursorCondition = QLineEdit(self.dialog12)
         self.cursorCondition.setStyleSheet("background-color: white;")
-        self.cursorCondition.setPlaceholderText('커서문 조건을 입력하세요')
-        self.cursorCondition.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        self.cursorCondition.setPlaceholderText('Cursor 파일')
+        # self.cursorCondition.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        self.cursorFile = QPushButton('File Open')
+        self.cursorFile.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.cursorFile.clicked.connect(self.CursorFileOpen)
+        font10 = self.cursorFile.font()
+        font10.setBold(True)
+        self.cursorFile.setFont(font10)
 
         labelSheetc = QLabel('시나리오 번호* : ', self.dialog12)
         labelSheetc.setStyleSheet("color: white;")
@@ -3072,7 +3079,7 @@ class MyApp(QWidget):
         self.D12_Sheetc = QLineEdit(self.dialog12)
         self.D12_Sheetc.setStyleSheet("background-color: white;")
         self.D12_Sheetc.setPlaceholderText('※ 입력 예시 : F01')
-        self.D12_Sheetc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+        # self.D12_Sheetc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         self.checkC3 = QCheckBox('Credit', self.dialog12)
         self.checkD3 = QCheckBox('Debit', self.dialog12)
@@ -3093,6 +3100,7 @@ class MyApp(QWidget):
         sublayout5 = QGridLayout()
         sublayout5.addWidget(labelCursor, 0, 0)
         sublayout5.addWidget(self.cursorCondition, 0, 1)
+        sublayout5.addWidget(self.cursorFile, 0, 2)
         sublayout5.addWidget(labelSheetc, 1, 0)
         sublayout5.addWidget(self.D12_Sheetc, 1, 1)
 
@@ -3132,6 +3140,11 @@ class MyApp(QWidget):
         self.dialog12.setWindowTitle('Scenario')
         self.dialog12.setWindowModality(Qt.NonModal)
         self.dialog12.show()
+
+    def CursorFileOpen(self):
+        fname = QFileDialog.getOpenFileName(self)
+        self.cursorCondition.setText(fname[0])
+        self.dialog12.activateWindow()
 
     def Dialog13(self):
         self.dialog13 = QDialog()
@@ -3581,8 +3594,6 @@ class MyApp(QWidget):
     def dialog_close10(self):
         self.dialog10.close()
 
-    def dialog_close11(self):
-        self.dialog11.close()
 
     def dialog_close12(self):
         self.dialog12.close()
@@ -3634,9 +3645,19 @@ class MyApp(QWidget):
         self.selected_scenario_group = text
 
     def RemoveSheetButton_Clicked(self):
-        temp = self.combo_sheet.findText(self.selected_scenario_group)
-        self.combo_sheet.removeItem(temp)
-        del self.scenario_dic[self.selected_scenario_group]
+        if not self.scenario_dic:
+            self.MessageBox_Open("삭제할 Sheet가 없습니다")
+        else:
+            del self.scenario_dic[self.combo_sheet.currentText()]
+            temp = self.combo_sheet.findText(self.combo_sheet.currentText())
+            self.combo_sheet.removeItem(temp)
+            if not self.scenario_dic:
+                self.dataframe = pd.DataFrame({'No Sheet': []})
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            else:
+                model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
+                self.viewtable.setModel(model)
 
     def Save_Buttons_Group(self):
         ##GroupBox
@@ -5233,7 +5254,7 @@ class MyApp(QWidget):
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()  # 계정 선택 오류
+            self.alertbox_open()  # 계정 선택 오류
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -5491,7 +5512,7 @@ class MyApp(QWidget):
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()  # 계정 선택 오류
+            self.alertbox_open()  # 계정 선택 오류
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -6006,7 +6027,248 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClickedC(self):
-        sql = ''
+        tempSheet = self.D12_Sheetc.text()
+        cursorpath = self.cursorCondition.text()
+        cursorList = pd.DataFrame(columns=['idx', 'number'])
+        wb = pd.read_excel(cursorpath)
+        index = wb[wb.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
+        cursorindex = []
+        for i in range(len(index)):
+            cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
+                               "'" + index.iloc[i, 1] + "'" + ',' +
+                               "'" + str(index.iloc[i, 2]) + "'" + ',' +
+                               "'" + index.iloc[i, 3] + "'")
+
+        if tempSheet == '' or cursorpath == '':
+            self.alertbox_open()
+
+        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+            self.alertbox_open5()
+
+        else:
+            try:
+                for tempcursor in cursorindex:
+                    cursor = self.cnxn.cursor()
+
+                    # sql문 수정
+                    sql = '''
+                            SET NOCOUNT ON
+                            --****************************************************Filter Table***************************************************							
+                            CREATE TABLE #filter							
+                            (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))							
+                            INSERT INTO #filter							
+                            VALUES							
+                            ({cursor})							
+
+                            --****************************************************Insert ProjectID***************************************************							
+                            SELECT JENumber,							
+                                JELineNumber,						
+                                EffectiveDate,						
+                                EntryDate,						
+                                Period,						
+                                GLAccountNumber,						
+                                Debit,						
+                                Credit,						
+                                Amount,						
+                                FunctionalCurrencyCode,						
+                                JEDescription,						
+                                JELineDescription,						
+                                PreparerID,						
+                                ApproverID  INTO #JEData						
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE							
+
+                            SELECT * INTO #COAData							
+                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
+
+
+                            --****************************************************Result Table***************************************************							
+                            CREATE TABLE #result							
+                            (JENumber NVARCHAR(100),							
+                            JELineNumber BIGINT,							
+                            EffectiveDate DATE,							
+                            EntryDate DATE,							
+                            Period NVARCHAR(25),							
+                            GLAccountNumber NVARCHAR(100),							
+                            Debit NUMERIC(21,6),							
+                            Credit NUMERIC(21,6),							
+                            Amount NUMERIC(21,6),							
+                            FunctionalCurrencyCode NVARCHAR(50),							
+                            JEDescription NVARCHAR(200),							
+                            JELineDescription NVARCHAR(200),							
+                            PreparerID NVARCHAR(100),							
+                            ApproverID NVARCHAR(100)							
+                            )							
+
+                            --****************************************************Cursor Start***************************************************							
+                            DECLARE cur CURSOR FOR 							
+                            SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
+
+                            DECLARE @GLAccountNumber VARCHAR(100)							
+                            DECLARE @Debit_Credit VARCHAR(100)							
+                            DECLARE @AL_GLAccountNumber VARCHAR(100)							
+                            DECLARE @AL_Debit_Credit VARCHAR(100)							
+
+                            OPEN cur							
+                            Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+
+                            WHILE(@@FETCH_STATUS <> -1)							
+                            BEGIN;							
+                            IF (@Debit_Credit = 'Debit')							
+                                IF (@AL_Debit_Credit='Debit') /* Debit/Debit */						
+                                    INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 					
+                                    FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                                    SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 					
+                                    JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1					
+                                    WHERE JE1.JENumber IN (					
+                                        SELECT DISTINCT(JE1_1.JENumber)				
+                                        FROM #JEData JE1_1				
+                                        WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0				
+                                        ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0				
+                                ELSE /* Debit/Credit */						
+                                    INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                                    FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                                    SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 					
+                                    JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2					
+                                    WHERE JE2.JENumber IN (					
+                                        SELECT DISTINCT(JE2_1.JENumber)				
+                                        FROM #JEData JE2_1				
+                                        WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0				
+                                        ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0				
+                            ELSE							
+                                IF (@AL_Debit_Credit='Debit') /* Credit/Debit */						
+                                    INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                                    FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                                    SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 					
+                                    JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3					
+                                    WHERE JE3.JENumber IN (					
+                                        SELECT DISTINCT(JE3_1.JENumber)				
+                                        FROM #JEData JE3_1				
+                                        WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0				
+                                        ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0				
+                                ELSE /* Credit/Credit */						
+                                    INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                                    FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                                    SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 					
+                                    JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4					
+                                    WHERE JE4.JENumber IN (					
+                                        SELECT DISTINCT(JE4_1.JENumber)				
+                                        FROM #JEData JE4_1				
+                                        WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0				
+                                        ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0				
+                            Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                            END;							
+                            Close cur;							
+                            Deallocate cur							
+
+                            --****************************************************Filtered Result_1***************************************************							
+                            SELECT JENumber,							
+                                JELineNumber,						
+                                EffectiveDate,						
+                                EntryDate,						
+                                Period,						
+                                #result.GLAccountNumber,						
+                                COA.GLAccountName,						
+                                Debit,						
+                                Credit,						
+                                Amount,						
+                                FunctionalCurrencyCode,						
+                                JEDescription,						
+                                JELineDescription,						
+                                PreparerID,						
+                                ApproverID						
+                            FROM #result 							
+                            LEFT JOIN #COAData COA							
+                            ON #result.GLAccountNumber = COA.GLAccountNumber							
+
+                            --****************************************************Filtered Result_2***************************************************							
+
+
+                            SELECT JENumber,							
+                                JELineNumber,						
+                                EffectiveDate,						
+                                EntryDate,						
+                                Period,						
+                                JE.GLAccountNumber,						
+                                COA.GLAccountName,						
+                                Debit,						
+                                Credit,						
+                                Amount,						
+                                FunctionalCurrencyCode,						
+                                JEDescription,						
+                                JELineDescription,						
+                                PreparerID,						
+                                ApproverID						
+                            FROM #JEData JE							
+                            LEFT JOIN #COAData COA							
+                            ON JE.GLAccountNumber = COA.GLAccountNumber							
+                            WHERE JENumber IN(SELECT DISTINCT JENumber FROM #result) AND (JE.GLAccountNumber IN (SELECT DISTINCT(GLAccountNumber) FROM #filter)							
+                            OR JE.GLAccountNumber IN (SELECT DISTINCT(AL_GLAccountNumber) FROM #filter))							
+                            ORDER BY JENumber, JELineNumber							
+
+                            --****************************************************Filtered 전표추출***************************************************							
+
+                            SELECT JENumber,							
+                                JELineNumber,						
+                                EffectiveDate,						
+                                EntryDate,						
+                                Period,						
+                                #JEData.GLAccountNumber,						
+                                #COAData.GLAccountName,						
+                                Debit,						
+                                Credit,						
+                                Amount,						
+                                FunctionalCurrencyCode,						
+                                JEDescription,						
+                                JELineDescription,						
+                                PreparerID,						
+                                ApproverID						
+                            FROM #JEData,#COAData							
+                            WHERE #JEData.GLAccountNumber = #COAData.GLAccountNumber AND JENumber IN 							
+                                (						
+                                select distinct JENumber						
+                                from #result,#COAData						
+                                where #result.GLAccountNumber = #COAData.GLAccountNumber						
+                                )						
+                            ORDER BY JENumber,JELineNumber							
+
+                               '''.format(field=self.selected_project_id, cursor=tempcursor)
+
+                self.dataframe = pd.read_sql(sql, self.cnxn)
+                model = DataFrameModel(self.dataframe)
+
+                if len(self.dataframe) > 1048576:
+                    self.alertbox_open3()
+
+                elif len(self.dataframe) == 0:
+                    self.dataframe = pd.DataFrame({'No Data': ['No Cursor']})
+                    self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
+                    self.viewtable.setModel(model)
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                                                          + str(len(self.dataframe) - 1)
+                                                          + "건 추출되었습니다."
+                                                          , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog12.activateWindow()
+
+
+                else:
+                    self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                    key_list = list(self.scenario_dic.keys())
+                    result = [key_list[0], key_list[-1]]
+                    self.combo_sheet.addItem(str(result[1]))
+                    self.viewtable.setModel(model)
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                                                          + str(len(self.dataframe))
+                                                          + "건 추출되었습니다."
+                                                          , QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
+                        self.dialog12.activateWindow()
+
+            except ValueError:
+                self.alertbox_open2('중요성 금액')
 
     def extButtonClicked13(self):
 
@@ -6030,7 +6292,7 @@ class MyApp(QWidget):
 
         ### 예외처리 3 - 계정 선택 오류
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()
+            self.alertbox_open()
 
         ### 쿼리 연동
         else:
@@ -6286,7 +6548,7 @@ class MyApp(QWidget):
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open6()  # 계정 선택 오류
+            self.alertbox_open()  # 계정 선택 오류
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -6511,13 +6773,13 @@ class MyApp(QWidget):
                 changecount = 0
                 addcount = 0
                 wb = openpyxl.load_workbook(path)
+                wb.create_sheet('Scenario Updated>>>')
                 ws_names = wb.get_sheet_names()
                 for temp in list(self.scenario_dic.keys()):
                     if temp in ws_names:
                         changecount += 1
                         wb.remove(wb['' + temp + ''])
                     else:
-                        print(temp)
                         addcount += 1
                 wb.save(path)
                 with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
