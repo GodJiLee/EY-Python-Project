@@ -4902,7 +4902,7 @@ class MyApp(QWidget):
 
                 else:
 
-                    if self.rbtn1.isChecked():
+                    if self.rbtn3.isChecked():
                         self.scenario_dic[tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
@@ -4927,7 +4927,7 @@ class MyApp(QWidget):
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Yes)
 
-                    elif self.rbtn2.isChecked():
+                    elif self.rbtn4.isChecked():
                         self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
