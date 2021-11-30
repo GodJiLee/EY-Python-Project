@@ -2378,7 +2378,7 @@ class MyApp(QWidget):
         self.text_continuous = QTextEdit(self.dialog13)
         self.text_continuous.setAcceptRichText(False)
         self.text_continuous.setStyleSheet("background-color: white;")
-        self.text_continuous.setPlaceholderText('연속된 자릿수를 입력하세요')
+        self.text_continuous.setPlaceholderText('연속된 자릿수를 입력하세요 (입력 예시: 3333, 666666)')
 
         ### 라벨 2 - 중요성 금액
         label_amount = QLabel('중요성 금액 : ', self.dialog13)
@@ -2445,6 +2445,7 @@ class MyApp(QWidget):
         sublayout1.addWidget(self.text_continuous)
         sublayout1.addWidget(label_amount)
         sublayout1.addWidget(self.line_amount)
+        sublayout1.addStretch(2)
 
         layout1.addLayout(sublayout1, stretch=4)
 
