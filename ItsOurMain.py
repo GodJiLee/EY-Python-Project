@@ -45,7 +45,28 @@ class Form(QGroupBox):
         super(Form, self).__init__(parent)
 
         grid = QGridLayout()
+        qh = QHBoxLayout()
+
         self.setLayout(grid)
+
+        self.btnSelect = QPushButton("Select")
+        self.btnSelect.resize(65, 22)
+        self.btnSelect.clicked.connect(self.select_all)
+        self.btnSelect.clicked.connect(self.get_selected_leaves)
+        self.btnSelect.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnSelect.font()
+        font11.setBold(True)
+        self.btnSelect.setFont(font11)
+
+        self.btnUnselect = QPushButton("Unselect")
+        self.btnUnselect.resize(65, 22)
+        self.btnUnselect.clicked.connect(self.unselect_all)
+        self.btnUnselect.clicked.connect(self.get_selected_leaves)
+        self.btnUnselect.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnUnselect.font()
+        font11.setBold(True)
+        self.btnUnselect.setFont(font11)
+
         self.setStyleSheet('QGroupBox  {color: white; background-color: white}')
 
         self.tree = QTreeWidget(self)
@@ -54,7 +75,12 @@ class Form(QGroupBox):
         headerItem = QTreeWidgetItem()
         item = QTreeWidgetItem()
 
-        grid.addWidget(self.tree, 0, 0)
+        qh.addWidget(self.btnSelect)
+        qh.addWidget(self.btnUnselect)
+
+        grid.addLayout(qh, 0, 0)
+        grid.addWidget(self.tree, 1, 0)
+
         self.tree.setHeaderHidden(True)
         self.tree.itemClicked.connect(self.get_selected_leaves)
 
@@ -124,6 +150,8 @@ class Preparer(QGroupBox):
         super(Preparer, self).__init__(parent)
 
         grid = QGridLayout()
+        qh = QHBoxLayout()
+
         self.setLayout(grid)
         self.setStyleSheet('QGroupBox  {color: white; background-color: white}')
 
@@ -133,7 +161,29 @@ class Preparer(QGroupBox):
         headerItem = QTreeWidgetItem()
         item = QTreeWidgetItem()
 
-        grid.addWidget(self.prep, 0, 0)
+        self.btnSelectp = QPushButton("Select")
+        self.btnSelectp.resize(65, 22)
+        self.btnSelectp.clicked.connect(self.select_all)
+        self.btnSelectp.clicked.connect(self.get_selected_leaves)
+        self.btnSelectp.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnSelectp.font()
+        font11.setBold(True)
+        self.btnSelectp.setFont(font11)
+
+        self.btnUnselectp = QPushButton("Unselect")
+        self.btnUnselectp.resize(65, 22)
+        self.btnUnselectp.clicked.connect(self.unselect_all)
+        self.btnUnselectp.clicked.connect(self.get_selected_leaves)
+        self.btnUnselectp.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnUnselectp.font()
+        font11.setBold(True)
+        self.btnUnselectp.setFont(font11)
+
+        qh.addWidget(self.btnSelectp)
+        qh.addWidget(self.btnUnselectp)
+
+        grid.addLayout(qh, 0, 0)
+        grid.addWidget(self.prep, 1, 0)
         self.prep.setHeaderHidden(True)
         self.prep.itemClicked.connect(self.get_selected_leaves)
 
@@ -367,6 +417,14 @@ class MyApp(QWidget):
         self.alt.setText('차변과 대변 중 하나만 선택해주시기 바랍니다.')
         self.alt.exec_()
 
+    def alertbox_open9(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('전표입력자 선택 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('전표입력자가 선택되어 있지 않습니다.')
+        self.alt.exec_()
+
     def init_UI(self):
 
         image = QImage('./dark_gray.png')
@@ -453,7 +511,6 @@ class MyApp(QWidget):
             return
         else:
             self.MessageBox_Open2("프로젝트가 연결되었습니다.")
-
 
         ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
         del self.selected_project_id, self.dataframe, self.scenario_dic
@@ -773,24 +830,6 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        # 계정 트리 모두 선택 / 선택 해제
-        self.btnSelect = QPushButton("Select", self.dialog4)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog4)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
-
         # 차변/대변 체크박스로 구현
         labelDC = QLabel('차변/대변* : ', self.dialog4)
         labelDC.setStyleSheet("color: white;")
@@ -816,8 +855,6 @@ class MyApp(QWidget):
         layout1.addWidget(self.D4_TE, 2, 1)
         layout1.addWidget(label_tree, 3, 0)
         layout1.addWidget(self.new_tree, 3, 1)
-        layout1.addWidget(self.btnSelect, 3, 2)
-        layout1.addWidget(self.btnUnselect, 3, 3)
         layout1.addWidget(labelSheet, 4, 0)
         layout1.addWidget(self.D4_Sheet, 4, 1)
 
@@ -984,24 +1021,6 @@ class MyApp(QWidget):
         self.D5_Sheet2.setStyleSheet("background-color: white;")
         self.D5_Sheet2.setPlaceholderText('※ 입력 예시 : F01')
 
-        # 계정 트리 모두 선택 / 선택 해제
-        self.btnSelect1 = QPushButton("Select", self.dialog5)
-        self.btnSelect1.resize(65, 22)
-        self.btnSelect1.clicked.connect(self.new_tree2.select_all)
-        self.btnSelect1.clicked.connect(self.new_tree2.get_selected_leaves)
-        self.btnSelect1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect1.font()
-        font11.setBold(True)
-        self.btnSelect1.setFont(font11)
-        self.btnUnselect1 = QPushButton("Unselect", self.dialog5)
-        self.btnUnselect1.resize(65, 22)
-        self.btnUnselect1.clicked.connect(self.new_tree2.unselect_all)
-        self.btnUnselect1.clicked.connect(self.new_tree2.get_selected_leaves)
-        self.btnUnselect1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect1.font()
-        font11.setBold(True)
-        self.btnUnselect1.setFont(font11)
-
         ### SAP=============================================================================
         ### 버튼 1 - GetValues
         self.gbtn = QPushButton('Get Value', self.dialog5)
@@ -1126,24 +1145,6 @@ class MyApp(QWidget):
         self.D5_Sheet.setStyleSheet("background-color: white;")
         self.D5_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        # 계정 트리 모두 선택 / 선택 해제
-        self.btnSelect2 = QPushButton("Select", self.dialog5)
-        self.btnSelect2.resize(65, 22)
-        self.btnSelect2.clicked.connect(self.new_tree.select_all)
-        self.btnSelect2.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect2.font()
-        font11.setBold(True)
-        self.btnSelect2.setFont(font11)
-        self.btnUnselect2 = QPushButton("Unselect", self.dialog5)
-        self.btnUnselect2.resize(65, 22)
-        self.btnUnselect2.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect2.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect2.font()
-        font11.setBold(True)
-        self.btnUnselect2.setFont(font11)
-
         ### Layout 구성=====================================================================
 
         layout = QVBoxLayout()
@@ -1190,8 +1191,6 @@ class MyApp(QWidget):
         sublayout5.addWidget(self.MyInput, 1, 1)
         sublayout5.addWidget(label_tree2, 2, 0)
         sublayout5.addWidget(self.new_tree2, 2, 1)
-        sublayout5.addWidget(self.btnSelect1, 2, 2)
-        sublayout5.addWidget(self.btnUnselect1, 2, 3)
         sublayout5.addWidget(labelSheet2, 3, 0)
         sublayout5.addWidget(self.D5_Sheet2, 3, 1)
 
@@ -1211,8 +1210,6 @@ class MyApp(QWidget):
 
         sublayout6.addWidget(label_tree, 3, 0)
         sublayout6.addWidget(self.new_tree, 3, 1)
-        sublayout6.addWidget(self.btnSelect2, 3, 2)
-        sublayout6.addWidget(self.btnUnselect2, 3, 3)
 
         sublayout6.addWidget(labelSheet, 4, 0)
         sublayout6.addWidget(self.D5_Sheet, 4, 1)
@@ -1373,23 +1370,6 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        self.btnSelectp = QPushButton("Select", self.dialog6)
-        self.btnSelectp.resize(65, 22)
-        self.btnSelectp.clicked.connect(self.new_prep.select_all)
-        self.btnSelectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnSelectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelectp.font()
-        font11.setBold(True)
-        self.btnSelectp.setFont(font11)
-        self.btnUnselectp = QPushButton("Unselect", self.dialog6)
-        self.btnUnselectp.resize(65, 22)
-        self.btnUnselectp.clicked.connect(self.new_prep.unselect_all)
-        self.btnUnselectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnUnselectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselectp.font()
-        font11.setBold(True)
-        self.btnUnselectp.setFont(font11)
-
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog6)
         self.rbtn1.setStyleSheet("color: white;")
@@ -1423,6 +1403,7 @@ class MyApp(QWidget):
         labelDate.setFont(font1)
 
         self.D6_Date = QLineEdit(self.dialog6)
+        self.D6_Date.setReadOnly(True)
         self.D6_Date.setStyleSheet("background-color: white;")
         self.D6_Date.setPlaceholderText('날짜를 선택하세요')
 
@@ -1435,24 +1416,6 @@ class MyApp(QWidget):
         font11 = self.btnDate.font()
         font11.setBold(True)
         self.btnDate.setFont(font11)
-
-        self.btnSelect = QPushButton("Select", self.dialog6)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-
-        self.btnUnselect = QPushButton("Unselect", self.dialog6)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
 
         labelDate2 = QLabel('T일 : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
@@ -1522,12 +1485,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D6_Date2, 2, 1)
         layout1.addWidget(label_tree, 3, 0)
         layout1.addWidget(self.new_tree, 3, 1)
-        layout1.addWidget(self.btnUnselect, 3, 2)
-        layout1.addWidget(self.btnSelect, 3, 3)
         layout1.addWidget(labelJE, 4, 0)
         layout1.addWidget(self.new_prep, 4, 1)
-        layout1.addWidget(self.btnUnselectp, 4, 2)
-        layout1.addWidget(self.btnSelectp, 4, 3)
         layout1.addWidget(labelCost, 5, 0)
         layout1.addWidget(self.D6_Cost, 5, 1)
         layout1.addWidget(labelSheet, 6, 0)
@@ -1692,40 +1651,6 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btnSelectp = QPushButton("Select", self.dialog7)
-        self.btnSelectp.resize(65, 22)
-        self.btnSelectp.clicked.connect(self.new_prep.select_all)
-        self.btnSelectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnSelectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelectp.font()
-        font11.setBold(True)
-        self.btnSelectp.setFont(font11)
-        self.btnUnselectp = QPushButton("Unselect", self.dialog7)
-        self.btnUnselectp.resize(65, 22)
-        self.btnUnselectp.clicked.connect(self.new_prep.unselect_all)
-        self.btnUnselectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnUnselectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselectp.font()
-        font11.setBold(True)
-        self.btnUnselectp.setFont(font11)
-
-        self.btnSelect = QPushButton("Select", self.dialog7)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog7)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
-
         self.btn2 = QPushButton('   Extract Data', self.dialog7)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked7)
@@ -1778,6 +1703,7 @@ class MyApp(QWidget):
         labelDate.setFont(font3)
 
         self.D7_Date = QTextEdit(self.dialog7)
+        self.D7_Date.setReadOnly(True)
         self.D7_Date.setStyleSheet("background-color: white;")
         self.D7_Date.setPlaceholderText('날짜를 추가해주세요')
 
@@ -1843,12 +1769,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.btnDate, 0, 2)
         layout1.addWidget(label_tree, 1, 0)
         layout1.addWidget(self.new_tree, 1, 1)
-        layout1.addWidget(self.btnSelect, 1, 2)
-        layout1.addWidget(self.btnUnselect, 1, 3)
         layout1.addWidget(labelJE, 2, 0)
         layout1.addWidget(self.new_prep, 2, 1)
-        layout1.addWidget(self.btnSelectp, 2, 2)
-        layout1.addWidget(self.btnUnselectp, 2, 3)
         layout1.addWidget(labelCost, 3, 0)
         layout1.addWidget(self.D7_Cost, 3, 1)
         layout1.addWidget(labelSheet, 4, 0)
@@ -1884,7 +1806,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox4)
 
         self.dialog7.setLayout(main_layout)
-        self.dialog7.setGeometry(300, 300, 900, 500)
+        self.dialog7.setGeometry(100, 300, 900, 500)
 
         self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)  # ? 제거
 
@@ -2013,40 +1935,6 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btnSelectp = QPushButton("Select", self.dialog8)
-        self.btnSelectp.resize(65, 22)
-        self.btnSelectp.clicked.connect(self.new_prep.select_all)
-        self.btnSelectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnSelectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelectp.font()
-        font11.setBold(True)
-        self.btnSelectp.setFont(font11)
-        self.btnUnselectp = QPushButton("Unselect", self.dialog8)
-        self.btnUnselectp.resize(65, 22)
-        self.btnUnselectp.clicked.connect(self.new_prep.unselect_all)
-        self.btnUnselectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnUnselectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselectp.font()
-        font11.setBold(True)
-        self.btnUnselectp.setFont(font11)
-
-        self.btnSelect = QPushButton("Select", self.dialog8)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog8)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
-
         self.btn2 = QPushButton('   Extract Data', self.dialog8)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked8)
@@ -2143,12 +2031,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.D8_N, 1, 1)
         layout1.addWidget(label_tree, 2, 0)
         layout1.addWidget(self.new_tree, 2, 1)
-        layout1.addWidget(self.btnSelect, 2, 2)
-        layout1.addWidget(self.btnUnselect, 2, 3)
         layout1.addWidget(labelJE, 3, 0)
         layout1.addWidget(self.new_prep, 3, 1)
-        layout1.addWidget(self.btnSelectp, 3, 2)
-        layout1.addWidget(self.btnUnselectp, 3, 3)
         layout1.addWidget(labelCost, 4, 0)
         layout1.addWidget(self.D8_Cost, 4, 1)
         layout1.addWidget(labelSheet, 5, 0)
@@ -2226,23 +2110,6 @@ class MyApp(QWidget):
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
-
-        self.btnSelect = QPushButton("Select", self.dialog9)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog9)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
 
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
@@ -2344,8 +2211,6 @@ class MyApp(QWidget):
         layout1.addWidget(self.D9_TE, 2, 1)
         layout1.addWidget(label_tree, 3, 0)
         layout1.addWidget(self.new_tree, 3, 1)
-        layout1.addWidget(self.btnSelect, 3, 2)
-        layout1.addWidget(self.btnUnselect, 3, 3)
         layout1.addWidget(labelSheet, 4, 0)
         layout1.addWidget(self.D9_Sheet, 4, 1)
 
@@ -2472,40 +2337,6 @@ class MyApp(QWidget):
 
         self.new_prep.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
-        self.btnSelectp = QPushButton("Select", self.dialog10)
-        self.btnSelectp.resize(65, 22)
-        self.btnSelectp.clicked.connect(self.new_prep.select_all)
-        self.btnSelectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnSelectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelectp.font()
-        font11.setBold(True)
-        self.btnSelectp.setFont(font11)
-        self.btnUnselectp = QPushButton("Unselect", self.dialog10)
-        self.btnUnselectp.resize(65, 22)
-        self.btnUnselectp.clicked.connect(self.new_prep.unselect_all)
-        self.btnUnselectp.clicked.connect(self.new_prep.get_selected_leaves)
-        self.btnUnselectp.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselectp.font()
-        font11.setBold(True)
-        self.btnUnselectp.setFont(font11)
-
-        self.btnSelect = QPushButton("Select", self.dialog10)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog10)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
-
         labelDC = QLabel('차변/대변* : ', self.dialog10)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
@@ -2624,16 +2455,12 @@ class MyApp(QWidget):
         layout1.addWidget(self.rbtn2, 0, 1)
         layout1.addWidget(labelKeyword, 1, 0)
         layout1.addWidget(self.new_prep, 1, 1)
-        layout1.addWidget(self.btnSelectp, 1, 2)
-        layout1.addWidget(self.btnUnselectp, 1, 3)
         layout1.addWidget(labelPoint1, 2, 0)
         layout1.addWidget(self.D10_Point1, 2, 1)
         layout1.addWidget(labelPoint2, 3, 0)
         layout1.addWidget(self.D10_Point2, 3, 1)
         layout1.addWidget(label_tree, 4, 0)
         layout1.addWidget(self.new_tree, 4, 1)
-        layout1.addWidget(self.btnSelect, 4, 2)
-        layout1.addWidget(self.btnUnselect, 4, 3)
         layout1.addWidget(labelTE, 5, 0)
         layout1.addWidget(self.D10_TE, 5, 1)
         layout1.addWidget(labelSheet, 6, 0)
@@ -2733,23 +2560,6 @@ class MyApp(QWidget):
         font3.setBold(True)
         labelAccount.setFont(font3)
 
-        self.btnSelect1 = QPushButton("Select", self.dialog12)
-        self.btnSelect1.resize(65, 22)
-        self.btnSelect1.clicked.connect(self.new_tree.select_all)
-        self.btnSelect1.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect1.font()
-        font11.setBold(True)
-        self.btnSelect1.setFont(font11)
-        self.btnUnselect1 = QPushButton("Unselect", self.dialog12)
-        self.btnUnselect1.resize(65, 22)
-        self.btnUnselect1.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect1.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect1.font()
-        font11.setBold(True)
-        self.btnUnselect1.setFont(font11)
-
         labelCost = QLabel('중요성 금액 : ', self.dialog12)
         labelCost.setStyleSheet("color: white;")
         font3 = labelCost.font()
@@ -2790,8 +2600,6 @@ class MyApp(QWidget):
         sublayout1 = QGridLayout()
         sublayout1.addWidget(labelAccount, 0, 0)
         sublayout1.addWidget(self.new_tree, 0, 1)
-        sublayout1.addWidget(self.btnSelect1, 0, 2)
-        sublayout1.addWidget(self.btnUnselect1, 0, 3)
         sublayout1.addWidget(labelCost, 1, 0)
         sublayout1.addWidget(self.D12_Cost, 1, 1)
         sublayout1.addWidget(labelSheet12, 2, 0)
@@ -2969,40 +2777,6 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC2.setFont(font1)
 
-        self.btnSelect2 = QPushButton("Select", self.dialog12)
-        self.btnSelect2.resize(65, 22)
-        self.btnSelect2.clicked.connect(self.new_tree.select_all)
-        self.btnSelect2.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect2.font()
-        font11.setBold(True)
-        self.btnSelect2.setFont(font11)
-        self.btnUnselect2 = QPushButton("Unselect", self.dialog12)
-        self.btnUnselect2.resize(65, 22)
-        self.btnUnselect2.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect2.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect2.font()
-        font11.setBold(True)
-        self.btnUnselect2.setFont(font11)
-
-        self.btnSelect3 = QPushButton("Select", self.dialog12)
-        self.btnSelect3.resize(65, 22)
-        self.btnSelect3.clicked.connect(self.new_tree.select_all)
-        self.btnSelect3.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect3.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect3.font()
-        font11.setBold(True)
-        self.btnSelect3.setFont(font11)
-        self.btnUnselect3 = QPushButton("Unselect", self.dialog12)
-        self.btnUnselect3.resize(65, 22)
-        self.btnUnselect3.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect3.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect3.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect3.font()
-        font11.setBold(True)
-        self.btnUnselect3.setFont(font11)
-
         sublayout02 = QHBoxLayout()
         sublayout02.addWidget(labelDC2)
         sublayout02.addWidget(self.checkC2)
@@ -3013,12 +2787,8 @@ class MyApp(QWidget):
         sublayout3.addWidget(self.rbtn4, 0, 1)
         sublayout3.addWidget(labelAccount1, 1, 0)
         sublayout3.addWidget(self.new_tree1, 1, 1)
-        sublayout3.addWidget(self.btnSelect2, 1, 2)
-        sublayout3.addWidget(self.btnUnselect2, 1, 3)
         sublayout3.addWidget(labelAccount2, 2, 0)
         sublayout3.addWidget(self.new_tree2, 2, 1)
-        sublayout3.addWidget(self.btnSelect3, 2, 2)
-        sublayout3.addWidget(self.btnUnselect3, 2, 3)
         sublayout3.addWidget(labelCost1, 3, 0)
         sublayout3.addWidget(self.D12_Cost1, 3, 1)
         sublayout3.addWidget(labelSheet11, 4, 0)
@@ -3190,23 +2960,6 @@ class MyApp(QWidget):
         font12.setBold(True)
         self.rbtn2.setFont(font12)
 
-        self.btnSelect = QPushButton("Select", self.dialog13)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog13)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
-
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton(' Extract Data', self.dialog13)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -3327,8 +3080,6 @@ class MyApp(QWidget):
         ### 배치 - 탭 2
         sublayout3.addWidget(label_tree, 0, 0)
         sublayout3.addWidget(self.new_tree, 0, 1)
-        sublayout3.addWidget(self.btnSelect, 0, 2)
-        sublayout3.addWidget(self.btnUnselect, 0, 3)
         sublayout3.addWidget(labelSheet, 1, 0)
         sublayout3.addWidget(self.D13_Sheet, 1, 1)
 
@@ -3405,23 +3156,6 @@ class MyApp(QWidget):
                             self.new_tree.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
-
-        self.btnSelect = QPushButton("Select", self.dialog14)
-        self.btnSelect.resize(65, 22)
-        self.btnSelect.clicked.connect(self.new_tree.select_all)
-        self.btnSelect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnSelect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnSelect.font()
-        font11.setBold(True)
-        self.btnSelect.setFont(font11)
-        self.btnUnselect = QPushButton("Unselect", self.dialog14)
-        self.btnUnselect.resize(65, 22)
-        self.btnUnselect.clicked.connect(self.new_tree.unselect_all)
-        self.btnUnselect.clicked.connect(self.new_tree.get_selected_leaves)
-        self.btnUnselect.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        font11 = self.btnUnselect.font()
-        font11.setBold(True)
-        self.btnUnselect.setFont(font11)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog14)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -3520,8 +3254,6 @@ class MyApp(QWidget):
         layout1.addWidget(self.D14_TE, 2, 1)
         layout1.addWidget(label_tree, 3, 0)
         layout1.addWidget(self.new_tree, 3, 1)
-        layout1.addWidget(self.btnSelect, 3, 2)
-        layout1.addWidget(self.btnUnselect, 3, 3)
         layout1.addWidget(labelSheet, 4, 0)
         layout1.addWidget(self.D14_Sheet, 4, 1)
 
@@ -3574,7 +3306,6 @@ class MyApp(QWidget):
 
     def dialog_close10(self):
         self.dialog10.close()
-
 
     def dialog_close12(self):
         self.dialog12.close()
@@ -3698,6 +3429,8 @@ class MyApp(QWidget):
         self.dialog6.activateWindow()
         self.D6_Date.setText(date.toString("yyyy-MM-dd"))
         self.dialog6.activateWindow()
+        if self.new_calendar.close():
+            self.dialog6.activateWindow()
 
     def handle_date_clicked2(self, date):
         self.dialog7.activateWindow()
@@ -3712,6 +3445,9 @@ class MyApp(QWidget):
             self.fianlDate.append(self.string_date)
 
         self.dialog7.activateWindow()
+
+        if self.new_calendar.close():
+            self.dialog7.activateWindow()
 
     def calendar6(self):
         self.dialog6.activateWindow()
@@ -3736,7 +3472,7 @@ class MyApp(QWidget):
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-                tempSheet + '_Reference') != -1):
+            tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
         ### 예외처리 3 - 시트명 중복 확인 (JE)
@@ -4189,7 +3925,7 @@ class MyApp(QWidget):
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
-                    if len(self.dataframe)<= 500:
+                    if len(self.dataframe) <= 500:
                         buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                               + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
                                                               + str(len(self.dataframe))
@@ -4381,7 +4117,7 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
-                if len(self.dataframe)<= 500:
+                if len(self.dataframe) <= 500:
                     buttonReply = QMessageBox.information(self, '라인수 추출',
                                                           '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                           + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
@@ -4412,7 +4148,7 @@ class MyApp(QWidget):
             self.alertbox_open()  # 계정 선택 오류
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            checked_preparer6 = ''  # 전표입력자 선택 안함
+            self.alertbox_open9()  # 전표입력자 선택 안함
 
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
@@ -4551,7 +4287,7 @@ class MyApp(QWidget):
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
@@ -4576,7 +4312,7 @@ class MyApp(QWidget):
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
@@ -4738,7 +4474,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            checked_preparer7 = ''  # 전표입력자 선택 안함
+            self.alertbox_open9()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4977,7 +4713,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            checked_preparer8 = ''  # 전표입력자 선택 안함
+            self.alertbox_open9()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -5133,7 +4869,7 @@ class MyApp(QWidget):
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
@@ -5162,7 +4898,7 @@ class MyApp(QWidget):
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
 
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
@@ -5187,7 +4923,7 @@ class MyApp(QWidget):
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
 
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
@@ -5474,7 +5210,6 @@ class MyApp(QWidget):
                     except:
                         self.alertbox_open2('작성빈도수와 중요성금액')
 
-
     def extButtonClicked10(self):
         tempTE = self.D10_TE.text()
         tempSheet = self.D10_Sheet.text()
@@ -5487,7 +5222,7 @@ class MyApp(QWidget):
             self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            checked_preparer10 = ''  # 전표입력자 선택 안함
+            self.alertbox_open9()
 
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and (
@@ -5888,7 +5623,7 @@ class MyApp(QWidget):
                                WHERE JENumber IN (
                                                   SELECT DISTINCT JENumber
                                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                                  WHERE ABS(Amount) > {TE} AND Year = '2021'
+                                                  WHERE ABS(Amount) > {TE} AND Year = {YEAR}
                                                   )
 
                                                  SELECT *                                                                                                       														
@@ -5982,7 +5717,7 @@ class MyApp(QWidget):
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
                            '''.format(field=self.selected_project_id, CD=tempState, Account=checked_account_12,
-                                      TE=tempCost)
+                                      TE=tempCost, YEAR=pname_year)
 
                 sql2 = '''
                                SET NOCOUNT ON;
@@ -5992,7 +5727,7 @@ class MyApp(QWidget):
                                WHERE JENumber IN (
                                                   SELECT DISTINCT JENumber
                                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                                  WHERE ABS(Amount) > {TE} AND Year = '2021'
+                                                  WHERE ABS(Amount) > {TE} AND Year = {YEAR}
                                                   )
 
                                                  SELECT *                                                                                                       														
@@ -6086,7 +5821,7 @@ class MyApp(QWidget):
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
                            '''.format(field=self.selected_project_id, CD=tempState, Account=checked_account_12,
-                                      TE=tempCost)
+                                      TE=tempCost, YEAR=pname_year)
 
                 if self.clickCount == 0:
                     self.dataframe = pd.read_sql(sql, self.cnxn)
@@ -6099,7 +5834,7 @@ class MyApp(QWidget):
 
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame({'No Data': ["[특정 계정: " + checked_name + " 중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe)-1) + "개입니다"]})
+                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
                     self.scenario_dic['' + tempSheet + ''] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
@@ -6107,7 +5842,7 @@ class MyApp(QWidget):
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[특정 계정: " + checked_name + " 중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe)-1) + "개입니다", QMessageBox.Yes)
+                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
@@ -6836,7 +6571,7 @@ class MyApp(QWidget):
                         self.combo_sheet.addItem(str(result[1]))
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
-                        if len(self.dataframe)<= 500:
+                        if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                                   + str(baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe))
