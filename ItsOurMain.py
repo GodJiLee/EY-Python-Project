@@ -2823,6 +2823,30 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog2.resize(110, 30)
 
+        # JE Line / JE 라디오 버튼
+        self.rbtn1 = QRadioButton('JE Line', self.dialog12)
+        self.rbtn1.setStyleSheet("color: white;")
+        font11 = self.rbtn1.font()
+        font11.setBold(True)
+        self.rbtn1.setFont(font11)
+        self.rbtn1.setChecked(True)
+        self.rbtn2 = QRadioButton('JE', self.dialog12)
+        self.rbtn2.setStyleSheet("color: white;")
+        font12 = self.rbtn2.font()
+        font12.setBold(True)
+        self.rbtn2.setFont(font12)
+
+        #입력된 Cursor문
+        labelCursortext = QLabel('입력된 Cursor : ', self.dialog12)
+        labelCursortext.setStyleSheet("color: white;")
+        font17 = labelCursortext.font()
+        font17.setBold(True)
+        labelCursortext.setFont(font17)
+        self.Cursortext = QTextEdit(self.dialog12)
+        self.Cursortext.setPlaceholderText('추출된 Cursor 조건이 표시됩니다')
+        self.Cursortext.setReadOnly(True)
+        self.Cursortext.setStyleSheet("background-color: white;")
+
         labelCursor = QLabel('Cursor 조건* : ', self.dialog12)
         labelCursor.setStyleSheet("color: white;")
         font3 = labelCursor.font()
@@ -2831,7 +2855,7 @@ class MyApp(QWidget):
 
         self.cursorCondition = QLineEdit(self.dialog12)
         self.cursorCondition.setStyleSheet("background-color: white;")
-        self.cursorCondition.setPlaceholderText('Cursor 파일')
+        self.cursorCondition.setPlaceholderText('Cursor 파일을 넣어주세요')
 
         self.cursorFile = QPushButton('File Open')
         self.cursorFile.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2849,21 +2873,27 @@ class MyApp(QWidget):
         self.D12_Sheetc.setStyleSheet("background-color: white;")
         self.D12_Sheetc.setPlaceholderText('※ 입력 예시 : F01')
 
+        sublayout5_1 = QHBoxLayout()
+        sublayout5_1.addWidget(self.rbtn1)
+        sublayout5_1.addWidget(self.rbtn2)
+
         sublayout5 = QGridLayout()
-        sublayout5.addWidget(labelCursor, 0, 0)
-        sublayout5.addWidget(self.cursorCondition, 0, 1)
-        sublayout5.addWidget(self.cursorFile, 0, 2)
-        sublayout5.addWidget(labelSheetc, 1, 0)
-        sublayout5.addWidget(self.D12_Sheetc, 1, 1)
+        sublayout5.addWidget(labelCursor, 1, 0)
+        sublayout5.addWidget(self.cursorCondition, 1, 1)
+        sublayout5.addWidget(self.cursorFile, 1, 2)
+        sublayout5.addWidget(labelSheetc, 2, 0)
+        sublayout5.addWidget(self.D12_Sheetc, 2, 1)
+        sublayout5.addWidget(labelCursortext, 3, 0)
+        sublayout5.addWidget(self.Cursortext, 3, 1)
 
         sublayout6 = QHBoxLayout()
-        sublayout6.addStretch()
-        sublayout6.addStretch()
+        sublayout6.addStretch(2)
         sublayout6.addWidget(self.btn2)
         sublayout6.addWidget(self.btnDialog2)
 
         main_layout2 = QVBoxLayout()
         main_layout2.addStretch()
+        main_layout2.addLayout(sublayout5_1)
         main_layout2.addLayout(sublayout5)
         main_layout2.addStretch()
         main_layout2.addLayout(sublayout6)
@@ -5863,19 +5893,21 @@ class MyApp(QWidget):
     def extButtonClickedC(self):
         tempSheet = self.D12_Sheetc.text()
         cursorpath = self.cursorCondition.text()
-        tempcount = 0
 
         if tempSheet == '' or cursorpath == '':
             self.alertbox_open()
-
         elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
+        elif os.path.isfile(cursorpath) == False:
+            self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다")
 
         else:
             try:
                 wb = pd.read_excel(cursorpath)
                 index = wb[wb.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
                 cursorindex = []
+                dflist = []
+                cursortext = ''
                 for i in range(len(index)):
                     cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
                                        "'" + index.iloc[i, 1] + "'" + ',' +
@@ -5884,15 +5916,11 @@ class MyApp(QWidget):
 
                 for tempcursor in cursorindex:
                     cursor = self.cnxn.cursor()
-                    if tempcount == 0:
-                        clicktemp = ''
-                    else:
-                        clicktemp = 'DROP TABLE #filter, #JEData,#result,#COAData'
-                    tempcount += 1
+                    cursortext = cursortext + tempcursor +'\n'
 
                     # sql문 수정
                     sql = '''
-                            {dropfilter}
+                            
                             SET NOCOUNT ON
                             --****************************************************Filter Table***************************************************							
                             CREATE TABLE #filter							
@@ -6019,13 +6047,16 @@ class MyApp(QWidget):
                                 ApproverID						
                             FROM #result 							
                             LEFT JOIN #COAData COA							
-                            ON #result.GLAccountNumber = COA.GLAccountNumber				
+                            ON #result.GLAccountNumber = COA.GLAccountNumber
+                            
+                            DROP TABLE #filter, #JEData,#result,#COAData				
 
-                               '''.format(field=self.selected_project_id, cursor=tempcursor, dropfilter=clicktemp)
+                               '''.format(field=self.selected_project_id, cursor=tempcursor)
                     readlist = pd.read_sql(sql, self.cnxn)
-                    self.dataframe = pd.concat([self.dataframe, readlist])
-                self.dataframe = self.dataframe.drop_duplicates()
-                model = DataFrameModel(self.dataframe)
+                    dflist.append(readlist)
+
+                self.Cursortext.setText(cursortext)
+                self.dataframe = pd.concat(dflist, ignore_index=True)
 
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
@@ -6036,6 +6067,7 @@ class MyApp(QWidget):
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+                    model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                           + str(len(self.dataframe) - 1)
@@ -6044,12 +6076,12 @@ class MyApp(QWidget):
                     if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
-
                 else:
                     self.scenario_dic['' + tempSheet + ''] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
+                    model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                           + str(len(self.dataframe))
