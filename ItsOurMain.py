@@ -3,6 +3,7 @@ import sys
 import re
 import datetime
 import time
+from io import StringIO
 from datetime import date
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -139,11 +140,113 @@ class Form(QGroupBox):
         checked_name = checked_name[1:]
 
         global checked_account
+        global checked_account_11
         global checked_account_12
 
         checked_account = 'AND JournalEntries.GLAccountNumber IN (' + checked_name + ')'
+        checked_account_11 = checked_name
         checked_account_12 = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
 
+class Form1(QGroupBox):
+    def __init__(self, parent):
+        super(Form1, self).__init__(parent)
+
+        grid = QGridLayout()
+        qh = QHBoxLayout()
+
+        self.setLayout(grid)
+
+        self.btnSelect = QPushButton("Select")
+        self.btnSelect.resize(65, 22)
+        self.btnSelect.clicked.connect(self.select_all)
+        self.btnSelect.clicked.connect(self.get_selected_leaves_1)
+        self.btnSelect.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnSelect.font()
+        font11.setBold(True)
+        self.btnSelect.setFont(font11)
+
+        self.btnUnselect = QPushButton("Unselect")
+        self.btnUnselect.resize(65, 22)
+        self.btnUnselect.clicked.connect(self.unselect_all)
+        self.btnUnselect.clicked.connect(self.get_selected_leaves_1)
+        self.btnUnselect.setStyleSheet('color:white;  background-color : #2E2E38')
+        font11 = self.btnUnselect.font()
+        font11.setBold(True)
+        self.btnUnselect.setFont(font11)
+
+        self.setStyleSheet('QGroupBox  {color: white; background-color: white}')
+
+        self.tree = QTreeWidget(self)
+        self.tree.setStyleSheet("border-style: outset; border-color : white; background-color:white;")
+
+        headerItem = QTreeWidgetItem()
+        item = QTreeWidgetItem()
+
+        qh.addWidget(self.btnSelect)
+        qh.addWidget(self.btnUnselect)
+
+        grid.addLayout(qh, 0, 0)
+        grid.addWidget(self.tree, 1, 0)
+
+        self.tree.setHeaderHidden(True)
+        self.tree.itemClicked.connect(self.get_selected_leaves_1)
+
+    def unselect_all(self):
+        def recurse_unselect(parent):
+            for i in range(parent.childCount()):
+                child = parent.child(i)
+                for j in range(child.childCount()):
+                    grandchild = child.child(j)
+                    grandgrandchild = grandchild.childCount()
+                    if grandgrandchild > 0:
+                        recurse_unselect(grandchild)
+                    else:
+                        if grandchild.checkState(0) == Qt.Checked:
+                            grandchild.setCheckState(0, Qt.Unchecked)
+
+        recurse_unselect(self.tree.invisibleRootItem())
+
+    def select_all(self):
+        def recurse_select(parent):
+            for i in range(parent.childCount()):
+                child = parent.child(i)
+                for j in range(child.childCount()):
+                    grandchild = child.child(j)
+                    grandgrandchild = grandchild.childCount()
+                    if grandgrandchild > 0:
+                        recurse_select(grandchild)
+                    else:
+                        if grandchild.checkState(0) == Qt.Unchecked:
+                            grandchild.setCheckState(0, Qt.Checked)
+
+        recurse_select(self.tree.invisibleRootItem())
+
+    def get_selected_leaves_1(self):
+        checked_items = []
+
+        def recurse(parent):
+            for i in range(parent.childCount()):
+                child = parent.child(i)
+                for j in range(child.childCount()):
+                    grandchild = child.child(j)
+                    grandgrandchild = grandchild.childCount()
+                    if grandgrandchild > 0:
+                        recurse(grandchild)
+                    else:
+                        if grandchild.checkState(0) == Qt.Checked:
+                            checked_items.append(grandchild.text(0).split(' ')[0])
+
+        recurse(self.tree.invisibleRootItem())
+
+        global checked_name
+        checked_name = ''
+        for i in checked_items:
+            checked_name = checked_name + ',' + '\'' + i + '\''
+
+        checked_name = checked_name[1:]
+
+        global checked_account_11_1
+        checked_account_11_1 = checked_name
 
 class Preparer(QGroupBox):
     def __init__(self, parent):
@@ -334,6 +437,11 @@ class MyApp(QWidget):
         self.string_date_list = []
         self.fianlDate = []
         self.clickCount = 0
+
+    def return_print(self, *message):
+        self.io = StringIO()
+        print(*message, file=self.io, end="")
+        return self.io.getvalue()
 
     def MessageBox_Open(self, text):
         self.msg = QMessageBox()
@@ -877,7 +985,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog4.setLayout(main_layout)
-        self.dialog4.setGeometry(650, 650, 700, 400)
+        self.dialog4.setGeometry(650, 650, 600, 400)
 
         # ? 제거
         self.dialog4.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -1227,7 +1335,7 @@ class MyApp(QWidget):
 
         ### 공통 지정
         self.dialog5.setLayout(layout)
-        self.dialog5.resize(880, 700)
+        self.dialog5.resize(700, 570)
         self.dialog5.setWindowTitle('Scenario5')
         self.dialog5.setWindowModality(Qt.NonModal)
         self.dialog5.show()
@@ -1508,7 +1616,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox3)
 
         self.dialog6.setLayout(main_layout)
-        self.dialog6.setGeometry(300, 300, 700, 450)
+        self.dialog6.resize(600, 400)
 
         self.dialog6.setWindowFlags(Qt.WindowCloseButtonHint)
 
@@ -1806,7 +1914,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox4)
 
         self.dialog7.setLayout(main_layout)
-        self.dialog7.setGeometry(100, 300, 900, 500)
+        self.dialog7.resize(600, 500)
 
         self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)  # ? 제거
 
@@ -2054,7 +2162,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox3)
 
         self.dialog8.setLayout(main_layout)
-        self.dialog8.setGeometry(300, 300, 800, 500)
+        self.dialog8.setGeometry(300, 300, 750, 500)
 
         # ? 제거
         self.dialog8.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -2235,7 +2343,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog9.setLayout(main_layout)
-        self.dialog9.setGeometry(300, 300, 700, 300)
+        self.dialog9.setGeometry(300, 300, 600, 300)
 
         # ? 제거
         self.dialog9.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -2618,20 +2726,21 @@ class MyApp(QWidget):
         main_layout1.addStretch()
         main_layout1.addLayout(sublayout2)
 
-        # 시나리오11
+        ### 탭 3 - 시나리오 11================================================================
         cursor1 = self.cnxn.cursor()
 
         sql1 = '''
-                         SELECT 											
-                                *
-                         FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                                 SELECT 											
+                                        *
+                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
 
-                    '''.format(field=self.selected_project_id)
+                            '''.format(field=self.selected_project_id)
 
         accountsname1 = pd.read_sql(sql, self.cnxn)
 
+        ### 계정트리 - A, B
         self.new_tree1 = Form(self)
-        self.new_tree2 = Form(self)
+        self.new_tree2 = Form1(self)
 
         self.new_tree1.tree.clear()
         self.new_tree2.tree.clear()
@@ -2669,11 +2778,11 @@ class MyApp(QWidget):
         cursor2 = self.cnxn.cursor()
 
         sql2 = '''
-                         SELECT 											
-                                *
-                         FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                                 SELECT 											
+                                        *
+                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
 
-                    '''.format(field=self.selected_project_id)
+                            '''.format(field=self.selected_project_id)
 
         accountsname2 = pd.read_sql(sql2, self.cnxn)
 
@@ -2702,8 +2811,9 @@ class MyApp(QWidget):
                             self.new_tree2.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree2.grandgrandchild.setCheckState(0, Qt.Checked)
 
-        self.new_tree2.get_selected_leaves()
+        self.new_tree2.get_selected_leaves_1()
 
+        ### 버튼 1 - Extract Data
         self.btn1 = QPushButton('   Extract Data', self.dialog12)
         self.btn1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn1.clicked.connect(self.extButtonClicked11)
@@ -2711,6 +2821,7 @@ class MyApp(QWidget):
         font9.setBold(True)
         self.btn1.setFont(font9)
 
+        ### 버튼 2 - Close
         self.btnDialog1 = QPushButton("   Close", self.dialog12)
         self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog1.clicked.connect(self.dialog_close12)
@@ -2720,71 +2831,66 @@ class MyApp(QWidget):
         self.btn1.resize(110, 30)
         self.btnDialog1.resize(110, 30)
 
-        # JE Line Number / JE Number 라디오 버튼
-        self.rbtn3 = QRadioButton('JE Line', self.dialog12)
-        self.rbtn3.setStyleSheet("color: white;")
-        font11 = self.rbtn3.font()
-        font11.setBold(True)
-        self.rbtn3.setFont(font11)
-        self.rbtn3.setChecked(True)
-        self.rbtn4 = QRadioButton('JE', self.dialog12)
-        self.rbtn4.setStyleSheet("color: white;")
-        font12 = self.rbtn4.font()
-        font12.setBold(True)
-        self.rbtn4.setFont(font12)
-
+        ### 라벨 1 - A 계정명/계정 코드
         labelAccount1 = QLabel('A 계정명/계정 코드* : ', self.dialog12)
         labelAccount1.setStyleSheet("color: white;")
         font3 = labelAccount1.font()
         font3.setBold(True)
         labelAccount1.setFont(font3)
 
+        ### 라벨 2 - B 계정명/계정 코드
         labelAccount2 = QLabel('B 계정명/계정 코드* : ', self.dialog12)
         labelAccount2.setStyleSheet("color: white;")
         font3 = labelAccount2.font()
         font3.setBold(True)
         labelAccount2.setFont(font3)
 
+        ### 라벨 3 - 중요성 금액
         labelCost1 = QLabel('중요성 금액 : ', self.dialog12)
         labelCost1.setStyleSheet("color: white;")
         font3 = labelCost1.font()
         font3.setBold(True)
         labelCost1.setFont(font3)
 
+        ### Line Edit 1 - 중요성 금액
         self.D12_Cost1 = QLineEdit(self.dialog12)
         self.D12_Cost1.setStyleSheet("background-color: white;")
         self.D12_Cost1.setPlaceholderText('중요성 금액을 입력하세요')
         self.D12_Cost1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        ### 체크 박스 - CD
         self.checkC2 = QCheckBox('Credit', self.dialog12)
         self.checkD2 = QCheckBox('Debit', self.dialog12)
         self.checkC2.setStyleSheet("color: white;")
         self.checkD2.setStyleSheet("color: white;")
 
+        ### 라벨 4 - 시나리오 번호
         labelSheet11 = QLabel('시나리오 번호* : ', self.dialog12)
         labelSheet11.setStyleSheet("color: white;")
         font5 = labelSheet12.font()
         font5.setBold(True)
         labelSheet11.setFont(font5)
+
+        ### Line Edit - 시나리오 번호
         self.D12_Sheet11 = QLineEdit(self.dialog12)
         self.D12_Sheet11.setStyleSheet("background-color: white;")
         self.D12_Sheet11.setPlaceholderText('※ 입력 예시 : F01')
         self.D12_Sheet11.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        ### 라벨 5 - CD
         labelDC2 = QLabel('차변/대변* : ', self.dialog12)
         labelDC2.setStyleSheet("color: white;")
         font1 = labelDC2.font()
         font1.setBold(True)
         labelDC2.setFont(font1)
 
+        ### 레이아웃 배치
         sublayout02 = QHBoxLayout()
         sublayout02.addWidget(labelDC2)
         sublayout02.addWidget(self.checkC2)
         sublayout02.addWidget(self.checkD2)
 
         sublayout3 = QGridLayout()
-        sublayout3.addWidget(self.rbtn3, 0, 0)
-        sublayout3.addWidget(self.rbtn4, 0, 1)
         sublayout3.addWidget(labelAccount1, 1, 0)
         sublayout3.addWidget(self.new_tree1, 1, 1)
         sublayout3.addWidget(labelAccount2, 2, 0)
@@ -2836,7 +2942,7 @@ class MyApp(QWidget):
         font12.setBold(True)
         self.rbtn2.setFont(font12)
 
-        #입력된 Cursor문
+        # 입력된 Cursor문
         labelCursortext = QLabel('입력된 Cursor : ', self.dialog12)
         labelCursortext.setStyleSheet("color: white;")
         font17 = labelCursortext.font()
@@ -2913,7 +3019,7 @@ class MyApp(QWidget):
         layout.addWidget(tabs)
 
         self.dialog12.setLayout(layout)
-        self.dialog12.resize(800, 500)
+        self.dialog12.resize(650, 550)
 
         # ? 제거
         self.dialog12.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -2991,7 +3097,7 @@ class MyApp(QWidget):
         self.rbtn2.setFont(font12)
 
         ### 버튼 1 - Extract Data
-        self.btn2 = QPushButton(' Extract Data', self.dialog13)
+        self.btn2 = QPushButton('   Extract Data', self.dialog13)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked13)
 
@@ -3128,7 +3234,7 @@ class MyApp(QWidget):
 
         ### 공통 지정
         self.dialog13.setLayout(main_layout)
-        self.dialog13.resize(800, 500)
+        self.dialog13.resize(600, 450)
 
         # ? 제거
         self.dialog13.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -3307,7 +3413,7 @@ class MyApp(QWidget):
         main_layout.addLayout(layout2)
 
         self.dialog14.setLayout(main_layout)
-        self.dialog14.setGeometry(300, 300, 800, 300)
+        self.dialog14.setGeometry(300, 300, 550, 350)
 
         # ? 제거
         self.dialog14.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -3490,10 +3596,11 @@ class MyApp(QWidget):
         self.dialog7.activateWindow()
 
     def extButtonClicked4(self):
-
         temp_N = self.D4_N.text()  # 필수값
         temp_TE = self.D4_TE.text()
         tempSheet = self.D4_Sheet.text()
+        global my_query
+        my_query = ''
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_N == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -3634,17 +3741,25 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql_query + sql_refer)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql_query)
+                
+                ### 차대 오류
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
 
-                elif self.checkC.isChecked():
+                elif self.rbtn2.isChecked() and self.checkC.isChecked():
                     self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
                     self.dataframe.reset_index(drop=True, inplace=True)
 
-                elif self.checkD.isChecked():
+                elif self.rbtn2.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
                     self.dataframe.reset_index(drop=True, inplace=True)
 
+                ### 최대 추출 라인수
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
@@ -3666,10 +3781,8 @@ class MyApp(QWidget):
 
                         buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                              + str(
-                            len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                              + str(
-                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                              + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                              + str(temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Yes)
                     ### JE
                     elif self.rbtn2.isChecked():
@@ -3679,10 +3792,8 @@ class MyApp(QWidget):
                         self.combo_sheet.addItem(str(result[1]))
                         buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                              + str(
-                            len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                              + str(
-                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                              + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                              + str(temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Yes)
 
                     if buttonReply == QMessageBox.Yes:
@@ -3764,6 +3875,12 @@ class MyApp(QWidget):
         ### 입력값 - 시트명, 연도
         tempSheet_SAP = self.D5_Sheet.text()
         tempYear_SAP = int(pname_year)
+
+        global my_query
+        if my_query:
+            my_query = my_query
+        else:
+            my_query = ''
 
         ### 예외처리 1 - 파일 경로 unicode 문제 해결
         dropped_items = []  ### ListBox 인풋값 append
@@ -3870,6 +3987,16 @@ class MyApp(QWidget):
                                 '''.format(field=self.selected_project_id, CODE=temp_AccCode, Account=checked_account5)
 
             self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+
+            ### 마지막 시트 쿼리 내역 추가
+            if self.rbtn1.isChecked():
+                my_query += self.return_print(sql_query)
+
+            if self.rbtn2.isChecked():
+                my_query += self.return_print(sql_query)
+
+            ### 예외처리 1 - 차대 체크 오류
             if self.checkC2.isChecked() and self.checkD2.isChecked():
                 self.dataframe = self.dataframe
 
@@ -3975,14 +4102,24 @@ class MyApp(QWidget):
 
     def extButtonClicked5_Non_SAP(self):
 
+        global my_query
+        if my_query:
+            my_query = my_query
+        else:
+            my_query = ''
+
         tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
         tempYear_NonSAP = int(pname_year)  # 필수값
-        temp_Code_Non_SAP = self.MyInput.toPlainText()  # 필수값 (계정코드)
+        temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
 
-        # temp_Code_Non_SAP = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP)
-        # temp_Code_Non_SAP = re.split(",", temp_Code_Non_SAP)
+        temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP_1)
+        temp_Code_Non_SAP_1 = re.split(",", temp_Code_Non_SAP_1)
         # print(temp_Code_Non_SAP) # ['447102', '445101', '289301', '289310', '289311', '289312', '289313', '289314']
+        temp_Code_Non_SAP = ''
+        for code in temp_Code_Non_SAP_1:
+            temp_Code_Non_SAP += "'" + str(code) + "', "
         temp_Code_Non_SAP = str(temp_Code_Non_SAP)
+        temp_Code_Non_SAP = temp_Code_Non_SAP[:-2]
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_Code_Non_SAP == '' or tempSheet_NonSAP == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -4065,6 +4202,13 @@ class MyApp(QWidget):
                                        Account=checked_account5_NonSAP)
 
             self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+        ### 마지막 시트 쿼리 내역 추가
+        if self.rbtn1.isChecked():
+            my_query += self.return_print(sql_query)
+
+        if self.rbtn2.isChecked():
+            my_query += self.return_print(sql_query)
 
         ### 예외처리 3 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
@@ -5302,11 +5446,11 @@ class MyApp(QWidget):
                     cursor = self.cnxn.cursor()
                     checked_preparer10 = checked_preparer
 
-                # sql문 수정
+                    # sql문 수정
                     if self.rbtn1.isChecked():
 
                         sql = '''
-    
+
                                              SELECT			
                                                    JournalEntries.BusinessUnit		
                                                    , JournalEntries.JENumber		
@@ -5334,14 +5478,15 @@ class MyApp(QWidget):
                                                        AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'			        	
                                                        AND ABS(JournalEntries.Amount) > {TE} {Account}	
                                            ORDER BY JENumber,JELineNumber			
-    
-                                        '''.format(field=self.selected_project_id, TE=tempTE, Preparer=checked_preparer10,
+
+                                        '''.format(field=self.selected_project_id, TE=tempTE,
+                                                   Preparer=checked_preparer10,
                                                    Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
 
                     elif self.rbtn2.isChecked():
 
                         sql = '''
-    
+
                                                SELECT 			
                                                             JournalEntries.BusinessUnit		
                                                             , JournalEntries.JENumber		
@@ -5374,8 +5519,9 @@ class MyApp(QWidget):
                                                                     {Preparer}
                                                                 ) {Account}	
                                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
-    
-                                        '''.format(field=self.selected_project_id, TE=tempTE, Preparer=checked_preparer10,
+
+                                        '''.format(field=self.selected_project_id, TE=tempTE,
+                                                   Preparer=checked_preparer10,
                                                    Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
 
                     self.dataframe = pd.read_sql(sql, self.cnxn)
@@ -5409,7 +5555,8 @@ class MyApp(QWidget):
 
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(checked_prep)
                                                                   + "]인 전표가 "
-                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
                                                                   + str(
                                 tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
                                                                   , QMessageBox.Yes)
@@ -5421,7 +5568,8 @@ class MyApp(QWidget):
                             self.combo_sheet.addItem(str(result[1]))
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표입력자가 [" + str(checked_prep)
                                                                   + "]인 전표가 "
-                                                                  + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                                  + str(
+                                len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
                                                                   + str(
                                 tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
                                                                   , QMessageBox.Yes)
@@ -5582,36 +5730,418 @@ class MyApp(QWidget):
                                     '- 시작시점과 종료시점 값을 8자리의 숫자로 입력해주시기 바랍니다. <br> - 중요성금액을 숫자로만 입력해주시기 바랍니다.')
 
     def extButtonClicked11(self):
-        passwords = ''
-        users = 'guest'
-        server = ids
-        password = passwords
+        temp_TE = self.D12_Cost1.text()
+        temp_Sheet = self.D12_Sheet11.text()
 
-        temp_Tree_A = self.account_tree_A.text()
-        temp_Tree_B = self.account_tree_B.text()
+        ### 예외처리 1 - 필수값 입력 누락
+        if temp_TE == '':
+            temp_TE = 0
 
-        if temp_Tree_A == '' or temp_Tree_B == '':
+        if temp_Sheet == '':
             self.alertbox_open()
 
+        ### 예외처리 2 - 시트명 중복 확인
+        elif self.combo_sheet.findText(temp_Sheet + '_Reference') != -1:
+            self.alertbox_open5()
+
+        ### 예외처리 3 - 차대변 선택 오류
+        elif not (self.checkC2.isChecked()) and not (self.checkD2.isChecked()):
+            self.alertbox_open7()
+
+        elif (self.checkC2.isChecked()) and (self.checkD2.isChecked()):
+            self.alertbox_open8()
+
         else:
-            db = 'master'
-            user = users
-            cnxn = pyodbc.connect(
-                "DRIVER={SQL Server};SERVER=" + server +
-                ";uid=" + user +
-                ";pwd=" + password +
-                ";DATABASE=" + db +
-                ";trusted_connection=" + "yes"
-            )
-            cursor = cnxn.cursor()
+            if self.checkC2.isChecked():
+                temp_State = 'Credit'
+            elif self.checkD2.isChecked():
+                temp_State = 'Debit'
 
-            # sql문 수정
-            sql_query = '''
-                    '''.format(field=fields)
+            ### 쿼리 연동
+            ### JE Line - Refer
+            sql_refer = '''
+                                    SET NOCOUNT ON;
+                                    SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                    WHERE JENumber IN (
+                                                      SELECT DISTINCT JENumber
+                                                      FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                                      WHERE ABS(Amount) > {TE} AND Year = '{YEAR}'
+                                                      )
 
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+                                                        SELECT
+                                                            JournalEntries.BusinessUnit
+                                                            , JournalEntries.JENumber
+                                                            , JournalEntries.JELineNumber
+                                                            , JournalEntries.EffectiveDate
+                                                            , JournalEntries.EntryDate
+                                                            , JournalEntries.Period
+                                                            , JournalEntries.GLAccountNumber
+                                                            , CoA.GLAccountName
+                                                            , JournalEntries.Debit
+                                                            , JournalEntries.Credit
+                                                            , JournalEntries.Amount
+                                                            , JournalEntries.FunctionalCurrencyCode
+                                                            , JournalEntries.JEDescription
+                                                            , JournalEntries.JELineDescription
+                                                            , JournalEntries.PreparerID
+                                                            , JournalEntries.ApproverID
+                                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
+                                                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                                        WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (
+                                                            SELECT DISTINCT LVL2_1.JENumber1
+                                                            FROM
+                                                                (
+                                                                    SELECT
+                                                                        LVL1_1.JENumber1,
+                                                                        LVL1_1.GLAccountNumber1,
+                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                        DivideDC1,
+                                                                        COUNT(*) AS Cnt1
+                                                                    FROM
+                                                                    (
+                                                                            SELECT
+                                                                                #tmp.JENumber AS JENumber1,
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                                CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                                CoA.AccountType AS AccountType1,
+                                                                                #tmp.Debit AS Debit1,
+                                                                                #tmp.Credit AS Credit1,
+                                                                                #tmp.Amount AS Amount1,
+                                                                                CASE
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                                END AS 'DivideDC1'
+                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                    ) LVL1_1
+                                                                    GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                                ) LVL2_1,
+                                                                (
+                                                                    SELECT
+                                                                        LVL1_2.JENumber2,
+                                                                        LVL1_2.GLAccountNumber2,
+                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                        DivideDC2,
+                                                                        COUNT(*) AS Cnt2
+                                                                    FROM
+                                                                    (
+                                                                            SELECT #tmp.JENumber AS JENumber2,
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                                CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                                CoA.AccountType AS AccountType2,
+                                                                                #tmp.Debit AS Debit2,
+                                                                                #tmp.Credit AS Credit2,
+                                                                                #tmp.Amount AS Amount2,
+                                                                                CASE
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                                END AS 'DivideDC2'
+                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                    ) LVL1_2
+                                                                    GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                                ) LVL2_2
+                                                            WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND LVL2_1.GLAccountNumber1 IN ({Account})
+                                                                AND LVL2_1.DivideDC1 = '{CD}'
+                                                            EXCEPT
+                                                                SELECT DISTINCT LVL2_1.JENumber1
+                                                            FROM
+                                                                (
+                                                                    SELECT
+                                                                        LVL1_1.JENumber1,
+                                                                        LVL1_1.GLAccountNumber1,
+                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                        DivideDC1,
+                                                                        COUNT(*) AS Cnt1
+                                                                    FROM
+                                                                    (
+                                                                            SELECT
+                                                                                #tmp.JENumber AS JENumber1,
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                                CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                                CoA.AccountType AS AccountType1,
+                                                                                #tmp.Debit AS Debit1,
+                                                                                #tmp.Credit AS Credit1,
+                                                                                #tmp.Amount AS Amount1,
+                                                                                CASE
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                                END AS 'DivideDC1'
+                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                        ) LVL1_1
+                                                                        GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                                ) LVL2_1,
+                                                                (
+                                                                    SELECT
+                                                                        LVL1_2.JENumber2,
+                                                                        LVL1_2.GLAccountNumber2,
+                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                        DivideDC2,
+                                                                        COUNT(*) AS Cnt2
+                                                                    FROM
+                                                                    (
+                                                                            SELECT #tmp.JENumber AS JENumber2,
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                                CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                                CoA.AccountType AS AccountType2,
+                                                                                #tmp.Debit AS Debit2,
+                                                                                #tmp.Credit AS Credit2,
+                                                                                #tmp.Amount AS Amount2,
+                                                                                CASE
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                                END AS 'DivideDC2'
+                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                    ) LVL1_2
+                                                                    GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                                ) LVL2_2
+                                                            WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND (LVL2_1.GLAccountNumber1 IN ({Account}) AND
+                                                                LVL2_1.DivideDC1 = '{CD}' AND
+                                                                LVL2_2.GLAccountNumber2 IN ({Account_1}) AND LVL2_2.DivideDC2 = '{CD}')
+                                                            )
+                                                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+
+                                                '''.format(field=self.selected_project_id, CD=temp_State,
+                                                           Account=checked_account_11, Account_1=checked_account_11_1,
+                                                           TE=temp_TE, YEAR=pname_year)
+
+            sql_refer2 = '''
+                            SET NOCOUNT ON;
+                            DROP TABLE #tmp
+                            SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                            WHERE JENumber IN (
+                                              SELECT DISTINCT JENumber
+                                              FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                              WHERE ABS(Amount) > {TE} AND Year = '{YEAR}'
+                                              )
+
+                                                SELECT
+                                                    JournalEntries.BusinessUnit
+                                                    , JournalEntries.JENumber
+                                                    , JournalEntries.JELineNumber
+                                                    , JournalEntries.EffectiveDate
+                                                    , JournalEntries.EntryDate
+                                                    , JournalEntries.Period
+                                                    , JournalEntries.GLAccountNumber
+                                                    , CoA.GLAccountName
+                                                    , JournalEntries.Debit
+                                                    , JournalEntries.Credit
+                                                    , JournalEntries.Amount
+                                                    , JournalEntries.FunctionalCurrencyCode
+                                                    , JournalEntries.JEDescription
+                                                    , JournalEntries.JELineDescription
+                                                    , JournalEntries.PreparerID
+                                                    , JournalEntries.ApproverID
+                                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
+                                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (
+                                                    SELECT DISTINCT LVL2_1.JENumber1
+                                                    FROM
+                                                        (
+                                                            SELECT
+                                                                LVL1_1.JENumber1,
+                                                                LVL1_1.GLAccountNumber1,
+                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                DivideDC1,
+                                                                COUNT(*) AS Cnt1
+                                                            FROM
+                                                            (
+                                                                    SELECT
+                                                                        #tmp.JENumber AS JENumber1,
+                                                                        #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                        CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                        CoA.AccountType AS AccountType1,
+                                                                        #tmp.Debit AS Debit1,
+                                                                        #tmp.Credit AS Credit1,
+                                                                        #tmp.Amount AS Amount1,
+                                                                        CASE
+                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                        END AS 'DivideDC1'
+                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                            ) LVL1_1
+                                                            GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                        ) LVL2_1,
+                                                        (
+                                                            SELECT
+                                                                LVL1_2.JENumber2,
+                                                                LVL1_2.GLAccountNumber2,
+                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                DivideDC2,
+                                                                COUNT(*) AS Cnt2
+                                                            FROM
+                                                            (
+                                                                    SELECT #tmp.JENumber AS JENumber2,
+                                                                        #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                        CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                        CoA.AccountType AS AccountType2,
+                                                                        #tmp.Debit AS Debit2,
+                                                                        #tmp.Credit AS Credit2,
+                                                                        #tmp.Amount AS Amount2,
+                                                                        CASE
+                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                        END AS 'DivideDC2'
+                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                            ) LVL1_2
+                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                        ) LVL2_2
+                                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND LVL2_1.GLAccountNumber1 IN ({Account})
+                                                        AND LVL2_1.DivideDC1 = '{CD}'
+                                                    EXCEPT
+                                                        SELECT DISTINCT LVL2_1.JENumber1
+                                                    FROM
+                                                        (
+                                                            SELECT
+                                                                LVL1_1.JENumber1,
+                                                                LVL1_1.GLAccountNumber1,
+                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                DivideDC1,
+                                                                COUNT(*) AS Cnt1
+                                                            FROM
+                                                            (
+                                                                    SELECT
+                                                                        #tmp.JENumber AS JENumber1,
+                                                                        #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                        CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                        CoA.AccountType AS AccountType1,
+                                                                        #tmp.Debit AS Debit1,
+                                                                        #tmp.Credit AS Credit1,
+                                                                        #tmp.Amount AS Amount1,
+                                                                        CASE
+                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                        END AS 'DivideDC1'
+                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                ) LVL1_1
+                                                                GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                        ) LVL2_1,
+                                                        (
+                                                            SELECT
+                                                                LVL1_2.JENumber2,
+                                                                LVL1_2.GLAccountNumber2,
+                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                DivideDC2,
+                                                                COUNT(*) AS Cnt2
+                                                            FROM
+                                                            (
+                                                                    SELECT #tmp.JENumber AS JENumber2,
+                                                                        #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                        CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                        CoA.AccountType AS AccountType2,
+                                                                        #tmp.Debit AS Debit2,
+                                                                        #tmp.Credit AS Credit2,
+                                                                        #tmp.Amount AS Amount2,
+                                                                        CASE
+                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                        END AS 'DivideDC2'
+                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                            ) LVL1_2
+                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                        ) LVL2_2
+                                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND (LVL2_1.GLAccountNumber1 IN ({Account}) AND
+                                                        LVL2_1.DivideDC1 = '{CD}' AND
+                                                        LVL2_2.GLAccountNumber2 IN ({Account_1}) AND LVL2_2.DivideDC2 = '{CD}')
+                                                    )
+                                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+
+                                        '''.format(field=self.selected_project_id, CD=temp_State,
+                                                   Account=checked_account_11,
+                                                   Account_1=checked_account_11_1,
+                                                   TE=temp_TE, YEAR=pname_year)
+
+            if self.clickCount == 0:
+                self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+            else:
+                self.dataframe_refer = pd.read_sql(sql_refer2, self.cnxn)
+            self.clickCount += 1
+
+            ### 예외처리 3 - 최대 출력 라인 초과
+            if len(self.dataframe_refer) > 1048576:
+                self.alertbox_open3()
+
+            ### 예외처리 4 - 데이터 미추출
+            elif len(self.dataframe_refer) == 0:
+                self.dataframe_refer = pd.DataFrame({'No Data': ['[연도: ' + str(pname_year) + ','
+                                                           + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
+
+                model = DataFrameModel(self.dataframe_refer)
+                self.viewtable.setModel(model)
+
+                ### JE Line - Refer
+                self.scenario_dic[temp_Sheet + '_Reference'] = self.dataframe_refer
+
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0]]
+                self.combo_sheet.addItem(str(result[0]))
+
+                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                      + str(pname_year) + ')에 생성된 계정 리스트가 '
+                                                      + str(len(self.dataframe_refer) - 1)
+                                                      + '건 추출되었습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      , QMessageBox.Yes)
+
+                if buttonReply == QMessageBox.Yes:
+                    self.dialog12.activateWindow()
+
+            else:
+                ### JE Line - Refer
+                self.scenario_dic[temp_Sheet + '_Reference'] = self.dataframe_refer
+
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0]]
+                self.combo_sheet.addItem(str(result[0]))
+
+                model = DataFrameModel(self.dataframe_refer)
+                self.viewtable.setModel(model)
+
+                ### 추가 필터링
+                if len(self.dataframe_refer) - 1 <= 500:
+                    buttonReply = QMessageBox.information(self, '라인수 추출', str(len(self.dataframe_refer) - 1)
+                                                          + '건 추출되었습니다. <br> - TE 금액('
+                                                          + str(temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
+                                                          , QMessageBox.Yes)
+                else:
+                    buttonReply = QMessageBox.information(self, '라인수 추출',
+                                                          str(len(self.dataframe_refer) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                          + temp_TE + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                          , QMessageBox.Yes)
+
+                if buttonReply == QMessageBox.Yes:
+                    self.dialog12.activateWindow()
 
     def extButtonClicked12(self):
         tempCost = self.D12_Cost.text()
@@ -5916,11 +6446,11 @@ class MyApp(QWidget):
 
                 for tempcursor in cursorindex:
                     cursor = self.cnxn.cursor()
-                    cursortext = cursortext + tempcursor +'\n'
+                    cursortext = cursortext + tempcursor + '\n'
 
                     # sql문 수정
                     sql = '''
-                            
+
                             SET NOCOUNT ON
                             --****************************************************Filter Table***************************************************							
                             CREATE TABLE #filter							
@@ -6048,7 +6578,7 @@ class MyApp(QWidget):
                             FROM #result 							
                             LEFT JOIN #COAData COA							
                             ON #result.GLAccountNumber = COA.GLAccountNumber
-                            
+
                             DROP TABLE #filter, #JEData,#result,#COAData				
 
                                '''.format(field=self.selected_project_id, cursor=tempcursor)
@@ -6611,6 +7141,12 @@ class MyApp(QWidget):
                 self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
 
             else:
+                my_query_1 = {'QUERY': [my_query]}
+                my_query_1 = pd.DataFrame(my_query_1)
+                self.scenario_dic['Query'] = my_query_1
+                print(my_query_1)
+                print(my_query)
+                print(self.scenario_dic)
                 with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
                     for temp in self.scenario_dic:
                         self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
