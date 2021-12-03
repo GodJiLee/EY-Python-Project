@@ -147,6 +147,7 @@ class Form(QGroupBox):
         checked_account_11 = checked_name
         checked_account_12 = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
 
+
 class Form1(QGroupBox):
     def __init__(self, parent):
         super(Form1, self).__init__(parent)
@@ -247,6 +248,7 @@ class Form1(QGroupBox):
 
         global checked_account_11_1
         checked_account_11_1 = checked_name
+
 
 class Preparer(QGroupBox):
     def __init__(self, parent):
@@ -3599,8 +3601,12 @@ class MyApp(QWidget):
         temp_N = self.D4_N.text()  # 필수값
         temp_TE = self.D4_TE.text()
         tempSheet = self.D4_Sheet.text()
+
         global my_query
-        my_query = ''
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_N == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -3746,7 +3752,7 @@ class MyApp(QWidget):
                     my_query += self.return_print(sql_query + sql_refer)
                 if self.rbtn2.isChecked():
                     my_query += self.return_print(sql_query)
-                
+
                 ### 차대 오류
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -3781,8 +3787,10 @@ class MyApp(QWidget):
 
                         buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                              + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                              + str(temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                              + str(
+                            len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                              + str(
+                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Yes)
                     ### JE
                     elif self.rbtn2.isChecked():
@@ -3792,8 +3800,10 @@ class MyApp(QWidget):
                         self.combo_sheet.addItem(str(result[1]))
                         buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                              + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                              + str(temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                              + str(
+                            len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                              + str(
+                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Yes)
 
                     if buttonReply == QMessageBox.Yes:
@@ -3877,7 +3887,7 @@ class MyApp(QWidget):
         tempYear_SAP = int(pname_year)
 
         global my_query
-        if my_query:
+        if 'my_query' in globals():
             my_query = my_query
         else:
             my_query = ''
@@ -3987,7 +3997,6 @@ class MyApp(QWidget):
                                 '''.format(field=self.selected_project_id, CODE=temp_AccCode, Account=checked_account5)
 
             self.dataframe = pd.read_sql(sql_query, self.cnxn)
-
 
             ### 마지막 시트 쿼리 내역 추가
             if self.rbtn1.isChecked():
@@ -4103,7 +4112,7 @@ class MyApp(QWidget):
     def extButtonClicked5_Non_SAP(self):
 
         global my_query
-        if my_query:
+        if 'my_query' in globals():
             my_query = my_query
         else:
             my_query = ''
@@ -4315,6 +4324,12 @@ class MyApp(QWidget):
         tempCost = self.D6_Cost.text()
         tempSheet = self.D6_Sheet.text()
 
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
+
         if tempDate == '' or tempSheet == '':
             self.alertbox_open()
 
@@ -4432,6 +4447,12 @@ class MyApp(QWidget):
                                        first_date=str(first), second_date=str(second), Preparer=checked_preparer6)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql)
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -4577,6 +4598,12 @@ class MyApp(QWidget):
                         self.alertbox_open2('T값과 중요성금액')
 
     def extButtonClicked7(self):
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
+
         holiday = []  # 2021년부터 2200년까지 대한민국의 공휴일 전부 holiday 리스트에 삽입
         for i in range(2021, 2023):
             chuseok = pytimekr.chuseok(i)
@@ -4746,6 +4773,12 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn3.isChecked():
+                    my_query += self.return_print(sql)
+                if self.rbtn4.isChecked():
+                    my_query += self.return_print(sql)
+
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
 
@@ -4878,6 +4911,12 @@ class MyApp(QWidget):
         tempCost = self.D8_Cost.text()
         tempSheet = self.D8_Sheet.text()
 
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
+
         realNDate = int(tempN)
 
         if tempN == '' or tempSheet == '':
@@ -4990,6 +5029,11 @@ class MyApp(QWidget):
                                                Preparer=checked_preparer8, Account=checked_account8)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql)
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -5136,6 +5180,12 @@ class MyApp(QWidget):
         tempTE = self.D9_TE.text()
         tempSheet = self.D9_Sheet.text()
 
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
+
         if tempN == '' or tempSheet == '':
             self.alertbox_open()
 
@@ -5265,6 +5315,12 @@ class MyApp(QWidget):
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql + sql_refer)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql)
+
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
 
@@ -5391,6 +5447,12 @@ class MyApp(QWidget):
         tempPoint1 = self.D10_Point1.text()[0:4] + '-' + self.D10_Point1.text()[4:6] + '-' + self.D10_Point1.text()[6:8]
         basePoint2 = self.D10_Point2.text()
         tempPoint2 = self.D10_Point2.text()[0:4] + '-' + self.D10_Point2.text()[4:6] + '-' + self.D10_Point2.text()[6:8]
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         if tempSheet == '':
             self.alertbox_open()
@@ -5525,6 +5587,13 @@ class MyApp(QWidget):
                                                    Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
 
                     self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                    ### 마지막 시트 쿼리 내역 추가
+                    if self.rbtn1.isChecked():
+                        my_query += self.return_print(sql)
+                    if self.rbtn2.isChecked():
+                        my_query += self.return_print(sql)
+
                     if self.checkC.isChecked() and self.checkD.isChecked():
                         self.dataframe = self.dataframe
 
@@ -5732,6 +5801,12 @@ class MyApp(QWidget):
     def extButtonClicked11(self):
         temp_TE = self.D12_Cost1.text()
         temp_Sheet = self.D12_Sheet11.text()
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_TE == '':
@@ -6096,7 +6171,7 @@ class MyApp(QWidget):
             ### 예외처리 4 - 데이터 미추출
             elif len(self.dataframe_refer) == 0:
                 self.dataframe_refer = pd.DataFrame({'No Data': ['[연도: ' + str(pname_year) + ','
-                                                           + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
+                                                                 + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
 
                 model = DataFrameModel(self.dataframe_refer)
                 self.viewtable.setModel(model)
@@ -6136,7 +6211,8 @@ class MyApp(QWidget):
                                                           , QMessageBox.Yes)
                 else:
                     buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          str(len(self.dataframe_refer) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                          str(len(
+                                                              self.dataframe_refer) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                           + temp_TE + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                           , QMessageBox.Yes)
 
@@ -6147,6 +6223,12 @@ class MyApp(QWidget):
         tempCost = self.D12_Cost.text()
         tempSheet = self.D12_Sheet12.text()
         tempState = ''
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         if tempCost == '':
             tempCost = 0
@@ -6388,6 +6470,9 @@ class MyApp(QWidget):
                     self.dataframe = pd.read_sql(sql2, self.cnxn)
                 self.clickCount += 1
 
+                ### 마지막 시트 쿼리 내역 추가
+                my_query += self.return_print(sql)
+
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
@@ -6423,6 +6508,12 @@ class MyApp(QWidget):
     def extButtonClickedC(self):
         tempSheet = self.D12_Sheetc.text()
         cursorpath = self.cursorCondition.text()
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         if tempSheet == '' or cursorpath == '':
             self.alertbox_open()
@@ -6588,6 +6679,9 @@ class MyApp(QWidget):
                 self.Cursortext.setText(cursortext)
                 self.dataframe = pd.concat(dflist, ignore_index=True)
 
+                ### 마지막 시트 쿼리 내역 추가
+                my_query += self.return_print(sql)
+
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
@@ -6629,6 +6723,12 @@ class MyApp(QWidget):
         temp_Continuous = str(temp_Continuous)
         temp_TE_13 = self.line_amount.text()
         tempSheet = self.D13_Sheet.text()  # 필수
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
 
         ### 예외처리 1 - 필수값 누락
         if temp_Continuous == '' or temp_TE_13 == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -6731,6 +6831,13 @@ class MyApp(QWidget):
                                            Account=checked_account13)
 
                 self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql_query)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql_query)
+
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
 
@@ -6890,6 +6997,12 @@ class MyApp(QWidget):
         tempTE = self.D14_TE.text()
         tempSheet = self.D14_Sheet.text()
 
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = ''
+
         if tempSheet == '':
             self.alertbox_open()
         # 시트명 중복 확인
@@ -6980,6 +7093,13 @@ class MyApp(QWidget):
                         '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
+
+                ### 마지막 시트 쿼리 내역 추가
+                if self.rbtn1.isChecked():
+                    my_query += self.return_print(sql)
+                if self.rbtn2.isChecked():
+                    my_query += self.return_print(sql)
+
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
 
