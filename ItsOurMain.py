@@ -1141,10 +1141,10 @@ class MyApp(QWidget):
         self.D5_Sheet2.setPlaceholderText('※ 입력 예시 : F01')
 
         ### SAP=============================================================================
-        ### 버튼 1 - GetValues
-        self.gbtn = QPushButton('Get Value', self.dialog5)
+        ### 버튼 1 - Clear Files
+        self.gbtn = QPushButton('Clear Files', self.dialog5)
         self.gbtn.setStyleSheet('color:white; background-image: url(./bar.png)')
-        self.gbtn.clicked.connect(lambda: print(self.getSelectedItem()))
+        self.gbtn.clicked.connect(self.dropFiles)
 
         font90 = self.gbtn.font()
         font90.setBold(True)
@@ -1215,17 +1215,20 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Checked)
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
+        ### 라벨 0 - 차/대변
         labelDC2 = QLabel('차변/대변* : ', self.dialog5)
         labelDC2.setStyleSheet("color: white;")
         font1 = labelDC2.font()
         font1.setBold(True)
         labelDC2.setFont(font1)
+
+        ### 체크박스 - 차/대변
         self.checkC2 = QCheckBox('Credit', self.dialog5)
         self.checkD2 = QCheckBox('Debit', self.dialog5)
         self.checkC2.setStyleSheet("color: white;")
         self.checkD2.setStyleSheet("color: white;")
 
-        ### 라벨 0 - SKA1
+        ### 라벨 1-1 - SKA1
         label_SKA1_text = QLabel('SKA1* : ', self.dialog5)
         label_SKA1_text.setStyleSheet('color:white;')
 
@@ -1233,8 +1236,8 @@ class MyApp(QWidget):
         font18.setBold(True)
         label_SKA1_text.setFont(font18)
 
-        ### 라벨 1 - SKA1 파일 드롭하기
-        label_SKA1 = QLabel('※ SKA1 파일을 Drop 하고 Get Value 버튼을 누르세요', self.dialog5)
+        ### 라벨 1-2 - SKA1 파일 드롭하기
+        label_SKA1 = QLabel('※ SKA1 파일을 Drop 하세요', self.dialog5)
         label_SKA1.setStyleSheet('color: red;')
 
         font12 = label_SKA1.font()
@@ -3074,7 +3077,6 @@ class MyApp(QWidget):
         sublayout5.addWidget(labelSheetc, 4, 0)
         sublayout5.addWidget(self.D12_Sheetc, 4, 1)
 
-
         sublayout6 = QHBoxLayout()
         sublayout6.addStretch(2)
         sublayout6.addWidget(self.btn2)
@@ -3254,7 +3256,7 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        # 차변/대변 체크박스로 구현
+        ### 차변/대변 체크박스로 구현
         self.checkC = QCheckBox('Credit', self.dialog13)
         self.checkD = QCheckBox('Debit', self.dialog13)
         self.checkC.setStyleSheet("color: white;")
@@ -3266,54 +3268,35 @@ class MyApp(QWidget):
         layout_dc.addWidget(self.checkD)
 
         ### Layout - 다이얼로그 UI
-        main_layout = QVBoxLayout()
-
-        layout1 = QVBoxLayout()
-        sublayout1 = QVBoxLayout()
-
-        layout2 = QVBoxLayout()
-        sublayout3 = QGridLayout()
-        sublayout4 = QHBoxLayout()
-
         layout0 = QGridLayout()
         layout0.addWidget(self.rbtn1, 0, 0)
         layout0.addWidget(self.rbtn2, 0, 1)
 
-        ### 탭
-        tabs = QTabWidget()
-        tab1 = QWidget()
-        tab2 = QWidget()
+        layout1 = QVBoxLayout()
+        sublayout1 = QGridLayout()
+        sublayout2 = QHBoxLayout()
 
-        tab1.setLayout(layout1)
-        tab2.setLayout(layout2)
-        tabs.addTab(tab1, "Step 1")
-        tabs.addTab(tab2, "Step 2")
+        ### sublayout 배치 - 탭 삭제
+        sublayout1.addWidget(label_Continuous, 0, 0)
+        sublayout1.addWidget(self.text_continuous, 0, 1)
+        sublayout1.addWidget(label_amount, 1, 0)
+        sublayout1.addWidget(self.line_amount, 1, 1)
+        sublayout1.addWidget(label_tree, 2, 0)
+        sublayout1.addWidget(self.new_tree, 2, 1)
+        sublayout1.addWidget(labelSheet, 3, 0)
+        sublayout1.addWidget(self.D13_Sheet, 3, 1)
 
-        main_layout.addLayout(layout0)
-        main_layout.addWidget(tabs)
-
-        ### 배치 - 탭 1
-        sublayout1.addWidget(label_Continuous)
-        sublayout1.addWidget(self.text_continuous)
-        sublayout1.addWidget(label_amount)
-        sublayout1.addWidget(self.line_amount)
-        sublayout1.addStretch(2)
+        sublayout2.addStretch(2)
+        sublayout2.addWidget(self.btn2)
+        sublayout2.addWidget(self.btnDialog)
 
         layout1.addLayout(sublayout1, stretch=4)
+        layout1.addLayout(layout_dc, stretch=4)
+        layout1.addLayout(sublayout2, stretch=1)
 
-        ### 배치 - 탭 2
-        sublayout3.addWidget(label_tree, 0, 0)
-        sublayout3.addWidget(self.new_tree, 0, 1)
-        sublayout3.addWidget(labelSheet, 1, 0)
-        sublayout3.addWidget(self.D13_Sheet, 1, 1)
-
-        sublayout4.addStretch(2)
-        sublayout4.addWidget(self.btn2)
-        sublayout4.addWidget(self.btnDialog)
-
-        layout2.addLayout(sublayout3, stretch=4)
-        layout2.addLayout(layout_dc, stretch=4)
-        layout2.addLayout(sublayout4, stretch=1)
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(layout0)
+        main_layout.addLayout(layout1)
 
         # ### 탭 페이지 지정
         # page = tabs.findChild()
@@ -3326,7 +3309,6 @@ class MyApp(QWidget):
 
         # ? 제거
         self.dialog13.setWindowFlags(Qt.WindowCloseButtonHint)
-
         self.dialog13.setWindowTitle('Scenario13')
         self.dialog13.setWindowModality(Qt.NonModal)
         self.dialog13.show()
@@ -3601,6 +3583,9 @@ class MyApp(QWidget):
     def dialog_close14(self):
         self.dialog14.close()
 
+    def dropFiles(self):
+        self.listbox_drops.clear()
+
     def getSelectedItem(self):
         myItem = QListWidgetItem(self.listbox_drops.currentItem())
         return myItem.text()
@@ -3761,7 +3746,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_N == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -3904,9 +3889,14 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql_query + sql_refer)
+                    my_query.loc[tempSheet + "_Reference"] = [tempSheet + "_Reference", "Scenario04",
+                                                              "---Filtered Result_1  Scenario04---\n" + sql_refer]
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario04",
+                                                           "---Filtered Result_2  Scenario04---\n" + sql_query]
+
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql_query)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario04",
+                                                             "---Filtered JE  Scenario04---\n" + sql_query]
 
                 ### 차대 오류
                 if self.checkC.isChecked() and self.checkD.isChecked():
@@ -4045,16 +4035,20 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 파일 경로 unicode 문제 해결
         dropped_items = []  ### ListBox 인풋값 append
-        # for i in range(self.listbox_drops.count()):
-        #     self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
+
+        for i in range(self.listbox_drops.count()):
+            myItem = QListWidgetItem(self.listbox_drops.item(i))
+            myItem = str(myItem.text())
+            dropped_items.append(myItem)
+            # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
 
         df = pd.DataFrame()  ### dataframe으로 저장
-        for i in range(len(dropped_items)):
-            df = df.append(pd.read_csv(dropped_items[i], sep='|'))
+        for file in dropped_items:
+            df = df.append(pd.read_csv(file, sep='|'))
 
         ### 당기 생성된 계정 코드 반환
         temp_AccCode = list()
@@ -4062,12 +4056,17 @@ class MyApp(QWidget):
         for i in range(len(df)):
             df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
             year = df.loc[i, 'ERDAT'][0:4]
-
             if int(year) == tempYear_SAP:
                 temp_AccCode.append(df.loc[i, 'SAKNR'])
 
+        real_Code = ''
+        for code in temp_AccCode:
+            myCode = code[2:]
+            real_Code += "'" + myCode + "', "
+        real_Code = real_Code[:-2]
+
         ### 예외처리 2 - 필수값 누락
-        if tempYear_SAP == '' or tempSheet_SAP == '' or dropped_items == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+        if tempYear_SAP == '' or tempSheet_SAP == '' or dropped_items == '':
             self.alertbox_open()
 
         ### 예외처리 3 - 시트명 중복 확인
@@ -4115,7 +4114,7 @@ class MyApp(QWidget):
                                         {Account}
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
 
-                            """.format(field=self.selected_project_id, CODE=temp_AccCode, Account=checked_account5)
+                            """.format(field=self.selected_project_id, CODE=real_Code, Account=checked_account5)
 
             elif self.rbtn2.isChecked():
                 sql_query = '''
@@ -4149,16 +4148,18 @@ class MyApp(QWidget):
                                         {Account}
                                         )
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                                '''.format(field=self.selected_project_id, CODE=temp_AccCode, Account=checked_account5)
+                                '''.format(field=self.selected_project_id, CODE=real_Code, Account=checked_account5)
 
             self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
             ### 마지막 시트 쿼리 내역 추가
             if self.rbtn1.isChecked():
-                my_query += self.return_print(sql_query)
+                my_query.loc[tempSheet_SAP + "_Result"] = [tempSheet_SAP + "_Result", "Scenario05",
+                                                           "---Filtered Result  Scenario05---\n" + sql_query]
 
             if self.rbtn2.isChecked():
-                my_query += self.return_print(sql_query)
+                my_query.loc[tempSheet_SAP + "_Journals"] = [tempSheet_SAP + "_Journals", "Scenario05",
+                                                             "---Filtered JE  Scenario05---\n" + sql_query]
 
             ### 예외처리 1 - 차대 체크 오류
             if self.checkC2.isChecked() and self.checkD2.isChecked():
@@ -4270,7 +4271,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
         tempYear_NonSAP = int(pname_year)  # 필수값
@@ -4369,10 +4370,12 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query += self.return_print(sql_query)
+            my_query.loc[tempSheet_NonSAP + "_Result"] = [tempSheet_NonSAP + "_Result", "Scenario05",
+                                                          "---Filtered Result  Scenario05---\n" + sql_query]
 
         if self.rbtn2.isChecked():
-            my_query += self.return_print(sql_query)
+            my_query.loc[tempSheet_NonSAP + "_Journals"] = [tempSheet_NonSAP + "_Journals", "Scenario05",
+                                                            "---Filtered JE  Scenario05---\n" + sql_query]
 
         ### 예외처리 3 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
@@ -4483,7 +4486,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         if tempDate == '' or tempSheet == '':
             self.alertbox_open()
@@ -4605,9 +4608,12 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario06",
+                                                           "---Filtered Result  Scenario06---\n" + sql]
+
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario06",
+                                                             "---Filtered JE  Scenario06---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -4757,7 +4763,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         holiday = []  # 2021년부터 2200년까지 대한민국의 공휴일 전부 holiday 리스트에 삽입
         for i in range(2021, 2023):
@@ -4930,9 +4936,12 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn3.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario07",
+                                                           "---Filtered Result  Scenario07---\n" + sql]
+
                 if self.rbtn4.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario07",
+                                                             "---Filtered JE  Scenario07---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -5070,7 +5079,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         realNDate = int(tempN)
 
@@ -5186,9 +5195,12 @@ class MyApp(QWidget):
                 self.dataframe = pd.read_sql(sql, self.cnxn)
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario08",
+                                                           "---Filtered Result  Scenario08---\n" + sql]
+
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario08",
+                                                             "---Filtered JE  Scenario08---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -5339,7 +5351,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         if tempN == '' or tempSheet == '':
             self.alertbox_open()
@@ -5472,9 +5484,14 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql + sql_refer)
+                    my_query.loc[tempSheet + "_Reference"] = [tempSheet + "_Reference", "Scenario09",
+                                                              "---Filtered Result_1  Scenario09---\n" + sql_refer]
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario09",
+                                                           "---Filtered Result_2  Scenario09---\n" + sql]
+
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario09",
+                                                             "---Filtered JE  Scenario09---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -5605,7 +5622,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         if tempSheet == '':
             self.alertbox_open()
@@ -5647,7 +5664,8 @@ class MyApp(QWidget):
 
                     if len(str(tempPoint1)) != 10 or len(str(tempPoint2)) != 10:
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                    elif ((tempPoint1[5:7] < '01' or tempPoint1[8:10] > '31') and (tempPoint2[5:7] >= '01' and tempPoint2[8:10] <= '31')):
+                    elif ((tempPoint1[5:7] < '01' or tempPoint1[8:10] > '31') and (
+                            tempPoint2[5:7] >= '01' and tempPoint2[8:10] <= '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                     elif ((tempPoint2[5:7] < '01' or tempPoint2[8:10] > '31')
                           and (tempPoint1[5:7] >= '01' and tempPoint1[8:10] <= '31')):
@@ -5742,9 +5760,12 @@ class MyApp(QWidget):
 
                         ### 마지막 시트 쿼리 내역 추가
                         if self.rbtn1.isChecked():
-                            my_query += self.return_print(sql)
+                            my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario10",
+                                                                   "---Filtered Result  Scenario10---\n" + sql]
+
                         if self.rbtn2.isChecked():
-                            my_query += self.return_print(sql)
+                            my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario10",
+                                                                     "---Filtered JE  Scenario10---\n" + sql]
 
                         if self.checkC.isChecked() and self.checkD.isChecked():
                             self.dataframe = self.dataframe
@@ -5850,9 +5871,11 @@ class MyApp(QWidget):
                                 self.dialog10.activateWindow()
 
                 except:
-                    if tempPoint1[5:7] == '' or tempPoint1[8:10] == '' or tempPoint2[5:7] == '' or tempPoint2[8:10] == '':
+                    if tempPoint1[5:7] == '' or tempPoint1[8:10] == '' or tempPoint2[5:7] == '' or tempPoint2[
+                                                                                                   8:10] == '':
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                    elif tempPoint1[5:7] == '00' or tempPoint1[8:10] == '00' or tempPoint2[5:7] == '00' or tempPoint2[8:10] == '00':
+                    elif tempPoint1[5:7] == '00' or tempPoint1[8:10] == '00' or tempPoint2[5:7] == '00' or tempPoint2[
+                                                                                                           8:10] == '00':
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                     else:
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
@@ -5868,7 +5891,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 필수값 입력 누락
         if temp_TE == '':
@@ -6290,7 +6313,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         if tempCost == '':
             tempCost = 0
@@ -6533,7 +6556,8 @@ class MyApp(QWidget):
                 self.clickCount += 1
 
                 ### 마지막 시트 쿼리 내역 추가
-                my_query += self.return_print(sql)
+                my_query.loc[tempSheet + '_Reference'] = [tempSheet + '_Reference', "Scenario12",
+                                                          "---Filtered Reference Scenario12---\n" + sql]
 
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
@@ -6607,7 +6631,7 @@ class MyApp(QWidget):
 
                         # sql문 수정
                         sql = '''
-    
+
                                 SET NOCOUNT ON
                                 --****************************************************Filter Table***************************************************							
                                 CREATE TABLE #filter							
@@ -6615,7 +6639,7 @@ class MyApp(QWidget):
                                 INSERT INTO #filter							
                                 VALUES							
                                 ({cursor})							
-    
+
                                 --****************************************************Insert ProjectID***************************************************							
                                 SELECT JENumber,							
                                     JELineNumber,						
@@ -6632,11 +6656,11 @@ class MyApp(QWidget):
                                     PreparerID,						
                                     ApproverID  INTO #JEData						
                                 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE							
-    
+
                                 SELECT * INTO #COAData							
                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
-    
-    
+
+
                                 --****************************************************Result Table***************************************************							
                                 CREATE TABLE #result							
                                 (JENumber NVARCHAR(100),							
@@ -6654,19 +6678,19 @@ class MyApp(QWidget):
                                 PreparerID NVARCHAR(100),							
                                 ApproverID NVARCHAR(100)							
                                 )							
-    
+
                                 --****************************************************Cursor Start***************************************************							
                                 DECLARE cur CURSOR FOR 							
                                 SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
-    
+
                                 DECLARE @GLAccountNumber VARCHAR(100)							
                                 DECLARE @Debit_Credit VARCHAR(100)							
                                 DECLARE @AL_GLAccountNumber VARCHAR(100)							
                                 DECLARE @AL_Debit_Credit VARCHAR(100)							
-    
+
                                 OPEN cur							
                                 Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
-    
+
                                 WHILE(@@FETCH_STATUS <> -1)							
                                 BEGIN;							
                                 IF (@Debit_Credit = 'Debit')							
@@ -6715,7 +6739,7 @@ class MyApp(QWidget):
                                 END;							
                                 Close cur;							
                                 Deallocate cur							
-    
+
                                 --****************************************************Filtered Result_1***************************************************							
                                 SELECT JENumber,							
                                     JELineNumber,						
@@ -6735,9 +6759,9 @@ class MyApp(QWidget):
                                 FROM #result 							
                                 LEFT JOIN #COAData COA							
                                 ON #result.GLAccountNumber = COA.GLAccountNumber
-    
+
                                 DROP TABLE #filter, #JEData,#result,#COAData				
-    
+
                                    '''.format(field=self.selected_project_id, cursor=tempcursor)
                         readlist = pd.read_sql(sql, self.cnxn)
                         dflist.append(readlist)
@@ -6794,7 +6818,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 필수값 누락
         if temp_Continuous == '' or temp_TE_13 == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -6900,9 +6924,11 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql_query)
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario13",
+                                                           "---Filtered Result  Scenario13---\n" + sql_query]
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql_query)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario13",
+                                                             "---Filtered JE  Scenario13---\n" + sql_query]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -7071,7 +7097,7 @@ class MyApp(QWidget):
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         if tempSheet == '':
             self.alertbox_open()
@@ -7166,9 +7192,11 @@ class MyApp(QWidget):
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario14",
+                                                           "---Filtered Result  Scenario14---\n" + sql]
                 if self.rbtn2.isChecked():
-                    my_query += self.return_print(sql)
+                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario14",
+                                                             "---Filtered JE  Scenario14---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
