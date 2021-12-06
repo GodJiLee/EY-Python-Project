@@ -2652,9 +2652,8 @@ class MyApp(QWidget):
             self.fianlDate.append(self.string_date)
 
         self.dialog7.activateWindow()
-
-        if self.new_calendar.close():
-            self.dialog7.activateWindow()
+        self.dialog7.setGeometry(5, 300, 750, 500)
+        self.setGeometry(800, 200, 1000, 800)
 
     def handle_date_clicked3(self, date):
         self.dialog10.activateWindow()
@@ -2801,194 +2800,6 @@ class MyApp(QWidget):
         main_layout1.addStretch()
         main_layout1.addLayout(sublayout2)
 
-        ### 탭 3 - 시나리오 11================================================================
-        cursor1 = self.cnxn.cursor()
-
-        sql1 = '''
-                                 SELECT 											
-                                        *
-                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
-                            '''.format(field=self.selected_project_id)
-
-        accountsname1 = pd.read_sql(sql, self.cnxn)
-
-        ### 계정트리 - A, B
-        self.new_tree1 = Form(self)
-        self.new_tree2 = Form1(self)
-
-        self.new_tree1.tree.clear()
-        self.new_tree2.tree.clear()
-
-        for n, i in enumerate(accountsname1.AccountType.unique()):
-            self.new_tree1.parent = QTreeWidgetItem(self.new_tree1.tree)
-
-            self.new_tree1.parent.setText(0, "{}".format(i))
-            self.new_tree1.parent.setFlags(self.new_tree1.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            child_items1 = accountsname1.AccountSubType[
-                accountsname1.AccountType == accountsname1.AccountType.unique()[n]].unique()
-            for m, x in enumerate(child_items1):
-                self.new_tree1.child = QTreeWidgetItem(self.new_tree1.parent)
-
-                self.new_tree1.child.setText(0, "{}".format(x))
-                self.new_tree1.child.setFlags(self.new_tree1.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                grandchild_items1 = accountsname1.AccountClass[accountsname1.AccountSubType == child_items1[m]].unique()
-                for o, y in enumerate(grandchild_items1):
-                    self.new_tree1.grandchild = QTreeWidgetItem(self.new_tree1.child)
-                    self.new_tree1.grandchild.setText(0, "{}".format(y))
-                    self.new_tree1.grandchild.setFlags(
-                        self.new_tree1.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                    num_name1 = accountsname1[accountsname.AccountClass == grandchild_items1[o]].iloc[:, 2:4]
-                    full_name1 = num_name1["GLAccountNumber"].map(str) + ' ' + num_name1["GLAccountName"]
-                    for z in full_name1:
-                        self.new_tree1.grandgrandchild = QTreeWidgetItem(self.new_tree1.grandchild)
-
-                        self.new_tree1.grandgrandchild.setText(0, "{}".format(z))
-                        self.new_tree1.grandgrandchild.setFlags(
-                            self.new_tree1.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree1.grandgrandchild.setCheckState(0, Qt.Checked)
-
-        self.new_tree1.get_selected_leaves()
-
-        cursor2 = self.cnxn.cursor()
-
-        sql2 = '''
-                                 SELECT 											
-                                        *
-                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
-                            '''.format(field=self.selected_project_id)
-
-        accountsname2 = pd.read_sql(sql2, self.cnxn)
-
-        for n, i in enumerate(accountsname2.AccountType.unique()):
-            self.new_tree2.parent = QTreeWidgetItem(self.new_tree2.tree)
-            self.new_tree2.parent.setText(0, "{}".format(i))
-            self.new_tree2.parent.setFlags(self.new_tree2.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            child_items2 = accountsname2.AccountSubType[
-                accountsname2.AccountType == accountsname2.AccountType.unique()[n]].unique()
-            for m, x in enumerate(child_items2):
-                self.new_tree2.child = QTreeWidgetItem(self.new_tree2.parent)
-                self.new_tree2.child.setText(0, "{}".format(x))
-                self.new_tree2.child.setFlags(self.new_tree2.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                grandchild_items2 = accountsname2.AccountClass[accountsname2.AccountSubType == child_items2[m]].unique()
-                for o, y in enumerate(grandchild_items2):
-                    self.new_tree2.grandchild = QTreeWidgetItem(self.new_tree2.child)
-                    self.new_tree2.grandchild.setText(0, "{}".format(y))
-                    self.new_tree2.grandchild.setFlags(
-                        self.new_tree2.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-                    num_name2 = accountsname2[accountsname.AccountClass == grandchild_items2[o]].iloc[:, 2:4]
-                    full_name2 = num_name2["GLAccountNumber"].map(str) + ' ' + num_name2["GLAccountName"]
-                    for z in full_name2:
-                        self.new_tree2.grandgrandchild = QTreeWidgetItem(self.new_tree2.grandchild)
-                        self.new_tree2.grandgrandchild.setText(0, "{}".format(z))
-                        self.new_tree2.grandgrandchild.setFlags(
-                            self.new_tree2.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
-                        self.new_tree2.grandgrandchild.setCheckState(0, Qt.Checked)
-
-        self.new_tree2.get_selected_leaves_1()
-
-        ### 버튼 1 - Extract Data
-        self.btn1 = QPushButton('   Extract Data', self.dialog12)
-        self.btn1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btn1.clicked.connect(self.extButtonClicked11)
-        font9 = self.btn1.font()
-        font9.setBold(True)
-        self.btn1.setFont(font9)
-
-        ### 버튼 2 - Close
-        self.btnDialog1 = QPushButton("   Close", self.dialog12)
-        self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog1.clicked.connect(self.dialog_close12)
-        font10 = self.btnDialog1.font()
-        font10.setBold(True)
-        self.btnDialog1.setFont(font10)
-        self.btn1.resize(110, 30)
-        self.btnDialog1.resize(110, 30)
-
-        ### 라벨 1 - A 계정명/계정 코드
-        labelAccount1 = QLabel('A 계정명/계정 코드* : ', self.dialog12)
-        labelAccount1.setStyleSheet("color: white;")
-        font3 = labelAccount1.font()
-        font3.setBold(True)
-        labelAccount1.setFont(font3)
-
-        ### 라벨 2 - B 계정명/계정 코드
-        labelAccount2 = QLabel('B 계정명/계정 코드* : ', self.dialog12)
-        labelAccount2.setStyleSheet("color: white;")
-        font3 = labelAccount2.font()
-        font3.setBold(True)
-        labelAccount2.setFont(font3)
-
-        ### 라벨 3 - 중요성 금액
-        labelCost1 = QLabel('중요성 금액 : ', self.dialog12)
-        labelCost1.setStyleSheet("color: white;")
-        font3 = labelCost1.font()
-        font3.setBold(True)
-        labelCost1.setFont(font3)
-
-        ### Line Edit 1 - 중요성 금액
-        self.D12_Cost1 = QLineEdit(self.dialog12)
-        self.D12_Cost1.setStyleSheet("background-color: white;")
-        self.D12_Cost1.setPlaceholderText('중요성 금액을 입력하세요')
-        self.D12_Cost1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-
-        ### 체크 박스 - CD
-        self.checkC2 = QCheckBox('Credit', self.dialog12)
-        self.checkD2 = QCheckBox('Debit', self.dialog12)
-        self.checkC2.setStyleSheet("color: white;")
-        self.checkD2.setStyleSheet("color: white;")
-        self.checkC2.setChecked(True)
-        self.checkD2.setChecked(True)
-
-        ### 라벨 4 - 시나리오 번호
-        labelSheet11 = QLabel('시나리오 번호* : ', self.dialog12)
-        labelSheet11.setStyleSheet("color: white;")
-        font5 = labelSheet12.font()
-        font5.setBold(True)
-        labelSheet11.setFont(font5)
-
-        ### Line Edit - 시나리오 번호
-        self.D12_Sheet11 = QLineEdit(self.dialog12)
-        self.D12_Sheet11.setStyleSheet("background-color: white;")
-        self.D12_Sheet11.setPlaceholderText('※ 입력 예시 : F01')
-        self.D12_Sheet11.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
-
-        ### 라벨 5 - CD
-        labelDC2 = QLabel('차변/대변* : ', self.dialog12)
-        labelDC2.setStyleSheet("color: white;")
-        font1 = labelDC2.font()
-        font1.setBold(True)
-        labelDC2.setFont(font1)
-
-        ### 레이아웃 배치
-        sublayout02 = QHBoxLayout()
-        sublayout02.addWidget(labelDC2)
-        sublayout02.addWidget(self.checkC2)
-        sublayout02.addWidget(self.checkD2)
-
-        sublayout3 = QGridLayout()
-        sublayout3.addWidget(labelAccount1, 1, 0)
-        sublayout3.addWidget(self.new_tree1, 1, 1)
-        sublayout3.addWidget(labelAccount2, 2, 0)
-        sublayout3.addWidget(self.new_tree2, 2, 1)
-        sublayout3.addWidget(labelCost1, 3, 0)
-        sublayout3.addWidget(self.D12_Cost1, 3, 1)
-        sublayout3.addWidget(labelSheet11, 4, 0)
-        sublayout3.addWidget(self.D12_Sheet11, 4, 1)
-
-        sublayout4 = QHBoxLayout()
-        sublayout4.addStretch()
-        sublayout4.addStretch()
-        sublayout4.addWidget(self.btn1)
-        sublayout4.addWidget(self.btnDialog1)
-
-        main_layout3 = QVBoxLayout()
-        main_layout3.addLayout(sublayout3)
-        main_layout3.addLayout(sublayout02)
-        main_layout3.addStretch()
-        main_layout3.addLayout(sublayout4)
-
         # Cursor문
         self.btn2 = QPushButton('   Extract Data', self.dialog12)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -3096,13 +2907,12 @@ class MyApp(QWidget):
         tabs = QTabWidget()
         tab1 = QWidget()  # 시나리오12
         tab2 = QWidget()  # cursor문
-        tab3 = QWidget()  # 시나리오11
+
         tab1.setLayout(main_layout1)
         tab2.setLayout(main_layout2)
-        tab3.setLayout(main_layout3)
+
         tabs.addTab(tab1, "시나리오12")
         tabs.addTab(tab2, "시나리오11")
-        tabs.addTab(tab3, "지워야할것")
         layout.addWidget(tabs)
 
         self.dialog12.setLayout(layout)
@@ -3700,30 +3510,6 @@ class MyApp(QWidget):
         groupbox.setLayout(layout)
 
         return groupbox
-
-    def handle_date_clicked(self, date):
-        self.dialog6.activateWindow()
-        self.D6_Date.setText(date.toString("yyyy-MM-dd"))
-        self.dialog6.activateWindow()
-        if self.new_calendar.close():
-            self.dialog6.activateWindow()
-
-    def handle_date_clicked2(self, date):
-        self.dialog7.activateWindow()
-
-        self.dateList = []
-        self.dateList.append(date)  # 사용자 입력값 추가
-
-        self.string_date_list = [date_obj.toString("yyyy-MM-dd") for date_obj in self.dateList]
-
-        for self.string_date in self.string_date_list:
-            self.D7_Date.append(self.string_date)
-            self.fianlDate.append(self.string_date)
-
-        self.dialog7.activateWindow()
-
-        if self.new_calendar.close():
-            self.dialog7.activateWindow()
 
     def calendar6(self):
         self.dialog6.activateWindow()
@@ -4492,7 +4278,7 @@ class MyApp(QWidget):
 
     def extButtonClicked6(self):
         tempDate = self.D6_Date.text()
-        realDate = date.fromisoformat(tempDate)
+
         tempTDate = self.D6_Date2.text()
         tempCost = self.D6_Cost.text()
         tempSheet = self.D6_Sheet.text()
@@ -4532,6 +4318,8 @@ class MyApp(QWidget):
             try:
                 int(tempTDate)
                 int(tempCost)
+
+                realDate = date.fromisoformat(tempDate)
 
                 first_origin = realDate - timedelta(days=int(tempTDate))
                 second_origin = realDate + timedelta(days=int(tempTDate))
