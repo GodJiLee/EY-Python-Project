@@ -50,7 +50,7 @@ class Form(QGroupBox):
 
         self.setLayout(grid)
 
-        self.btnSelect = QPushButton("Select")
+        self.btnSelect = QPushButton("Select All")
         self.btnSelect.resize(65, 22)
         self.btnSelect.clicked.connect(self.select_all)
         self.btnSelect.clicked.connect(self.get_selected_leaves)
@@ -59,7 +59,7 @@ class Form(QGroupBox):
         font11.setBold(True)
         self.btnSelect.setFont(font11)
 
-        self.btnUnselect = QPushButton("Unselect")
+        self.btnUnselect = QPushButton("Unselect All")
         self.btnUnselect.resize(65, 22)
         self.btnUnselect.clicked.connect(self.unselect_all)
         self.btnUnselect.clicked.connect(self.get_selected_leaves)
@@ -157,7 +157,7 @@ class Form1(QGroupBox):
 
         self.setLayout(grid)
 
-        self.btnSelect = QPushButton("Select")
+        self.btnSelect = QPushButton("Select All")
         self.btnSelect.resize(65, 22)
         self.btnSelect.clicked.connect(self.select_all)
         self.btnSelect.clicked.connect(self.get_selected_leaves_1)
@@ -166,7 +166,7 @@ class Form1(QGroupBox):
         font11.setBold(True)
         self.btnSelect.setFont(font11)
 
-        self.btnUnselect = QPushButton("Unselect")
+        self.btnUnselect = QPushButton("Unselect All")
         self.btnUnselect.resize(65, 22)
         self.btnUnselect.clicked.connect(self.unselect_all)
         self.btnUnselect.clicked.connect(self.get_selected_leaves_1)
@@ -266,7 +266,7 @@ class Preparer(QGroupBox):
         headerItem = QTreeWidgetItem()
         item = QTreeWidgetItem()
 
-        self.btnSelectp = QPushButton("Select")
+        self.btnSelectp = QPushButton("Select All")
         self.btnSelectp.resize(65, 22)
         self.btnSelectp.clicked.connect(self.select_all)
         self.btnSelectp.clicked.connect(self.get_selected_leaves)
@@ -275,7 +275,7 @@ class Preparer(QGroupBox):
         font11.setBold(True)
         self.btnSelectp.setFont(font11)
 
-        self.btnUnselectp = QPushButton("Unselect")
+        self.btnUnselectp = QPushButton("Unselect All")
         self.btnUnselectp.resize(65, 22)
         self.btnUnselectp.clicked.connect(self.unselect_all)
         self.btnUnselectp.clicked.connect(self.get_selected_leaves)
@@ -967,6 +967,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog4)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         self.D4_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D4_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -1107,6 +1109,8 @@ class MyApp(QWidget):
         self.checkD1 = QCheckBox('Debit', self.dialog5)
         self.checkC1.setStyleSheet("color: white;")
         self.checkD1.setStyleSheet("color: white;")
+        self.checkC1.setChecked(True)
+        self.checkD1.setChecked(True)
 
         ### 라벨1 - 계정코드 입력
         label_AccCode = QLabel('계정코드* : ', self.dialog5)
@@ -1235,6 +1239,9 @@ class MyApp(QWidget):
         self.checkD2 = QCheckBox('Debit', self.dialog5)
         self.checkC2.setStyleSheet("color: white;")
         self.checkD2.setStyleSheet("color: white;")
+
+        self.checkC2.setChecked(True)
+        self.checkD2.setChecked(True)
 
         ### 라벨 1-1 - SKA1
         label_SKA1_text = QLabel('SKA1* : ', self.dialog5)
@@ -1443,31 +1450,10 @@ class MyApp(QWidget):
         # 전표입력자 체크리스트
         cursor2 = self.cnxn.cursor()
         sql2 = '''
-                SELECT											
-                    JournalEntries.BusinessUnit											
-                    , JournalEntries.JENumber											
-                    , JournalEntries.JELineNumber											
-                    , JournalEntries.EffectiveDate											
-                    , JournalEntries.EntryDate											
-                    , JournalEntries.Period											
-                    , JournalEntries.GLAccountNumber											
-                    , CoA.GLAccountName											
-                    , JournalEntries.Debit											
-                    , JournalEntries.Credit											
-                    , CASE
-                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                        END AS DebitCredit
-                    , JournalEntries.Amount											
-                    , JournalEntries.FunctionalCurrencyCode											
-                    , JournalEntries.JEDescription											
-                    , JournalEntries.JELineDescription											
-                    , JournalEntries.Source											
-                    , JournalEntries.PreparerID											
-                    , JournalEntries.ApproverID											
-                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                ORDER BY JENumber, JELineNumber											
+                    SELECT
+                        UserName,
+                        FullName
+                    FROM [{field}_Import_Dim].[dbo].[pbcUser];
 
             '''.format(field=self.selected_project_id)
 
@@ -1475,7 +1461,21 @@ class MyApp(QWidget):
         self.new_prep = Preparer(self)
         self.new_prep.prep.clear()
 
-        for n, i in enumerate(pID.PreparerID.unique()):
+        rc = pID.shape[0]
+        real_PID = []
+
+        for i in range(0, rc):
+            a = ''
+            b = ''
+            s = ''
+            a = str(pID['UserName'][i])
+            b = str(pID['FullName'][i])
+            s = a + ' | ' + b
+            real_PID.append(s)
+
+        pID['real_PID'] = real_PID
+
+        for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
@@ -1524,6 +1524,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog6)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         labelDate = QLabel('결산일* : ', self.dialog6)
         labelDate.setStyleSheet("color: white;")
@@ -1638,7 +1640,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox3)
 
         self.dialog6.setLayout(main_layout)
-        self.dialog6.resize(600, 400)
+        self.dialog6.setGeometry(300, 300, 750, 500)
 
         self.dialog6.setWindowFlags(Qt.WindowCloseButtonHint)
 
@@ -1729,31 +1731,10 @@ class MyApp(QWidget):
         # 전표입력자 체크리스트
         cursor2 = self.cnxn.cursor()
         sql2 = '''
-                SELECT											
-                    JournalEntries.BusinessUnit											
-                    , JournalEntries.JENumber											
-                    , JournalEntries.JELineNumber											
-                    , JournalEntries.EffectiveDate											
-                    , JournalEntries.EntryDate											
-                    , JournalEntries.Period											
-                    , JournalEntries.GLAccountNumber											
-                    , CoA.GLAccountName											
-                    , JournalEntries.Debit											
-                    , JournalEntries.Credit											
-                    , CASE
-                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                        END AS DebitCredit
-                    , JournalEntries.Amount											
-                    , JournalEntries.FunctionalCurrencyCode											
-                    , JournalEntries.JEDescription											
-                    , JournalEntries.JELineDescription											
-                    , JournalEntries.Source											
-                    , JournalEntries.PreparerID											
-                    , JournalEntries.ApproverID											
-                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                ORDER BY JENumber, JELineNumber											
+                    SELECT
+                        UserName,
+                        FullName
+                    FROM [{field}_Import_Dim].[dbo].[pbcUser]
 
             '''.format(field=self.selected_project_id)
 
@@ -1761,7 +1742,21 @@ class MyApp(QWidget):
         self.new_prep = Preparer(self)
         self.new_prep.prep.clear()
 
-        for n, i in enumerate(pID.PreparerID.unique()):
+        rc = pID.shape[0]
+        real_PID = []
+
+        for i in range(0, rc):
+            a = ''
+            b = ''
+            s = ''
+            a = str(pID['UserName'][i])
+            b = str(pID['FullName'][i])
+            s = a + ' | ' + b
+            real_PID.append(s)
+
+        pID['real_PID'] = real_PID
+
+        for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
@@ -1774,6 +1769,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog7)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         labelDC = QLabel('차변/대변* : ', self.dialog7)
         labelDC.setStyleSheet("color: white;")
@@ -1835,7 +1832,7 @@ class MyApp(QWidget):
         self.D7_Date = QTextEdit(self.dialog7)
         self.D7_Date.setReadOnly(True)
         self.D7_Date.setStyleSheet("background-color: white;")
-        self.D7_Date.setPlaceholderText('날짜를 추가해주세요')
+        self.D7_Date.setPlaceholderText('날짜를 추가해주세요\n법정 공휴일 및 주말은 포함되어 있습니다')
 
         self.btnDate = QPushButton("Add Date", self.dialog7)
         self.btnDate.resize(65, 22)
@@ -1936,7 +1933,7 @@ class MyApp(QWidget):
         main_layout.addWidget(groupbox4)
 
         self.dialog7.setLayout(main_layout)
-        self.dialog7.resize(600, 500)
+        self.dialog7.setGeometry(300, 300, 750, 500)
 
         self.dialog7.setWindowFlags(Qt.WindowCloseButtonHint)  # ? 제거
 
@@ -2013,31 +2010,10 @@ class MyApp(QWidget):
         # 전표입력자 체크리스트
         cursor2 = self.cnxn.cursor()
         sql2 = '''
-                SELECT											
-                    JournalEntries.BusinessUnit											
-                    , JournalEntries.JENumber											
-                    , JournalEntries.JELineNumber											
-                    , JournalEntries.EffectiveDate											
-                    , JournalEntries.EntryDate											
-                    , JournalEntries.Period											
-                    , JournalEntries.GLAccountNumber											
-                    , CoA.GLAccountName											
-                    , JournalEntries.Debit											
-                    , JournalEntries.Credit											
-                    , CASE
-                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                        END AS DebitCredit
-                    , JournalEntries.Amount											
-                    , JournalEntries.FunctionalCurrencyCode											
-                    , JournalEntries.JEDescription											
-                    , JournalEntries.JELineDescription											
-                    , JournalEntries.Source											
-                    , JournalEntries.PreparerID											
-                    , JournalEntries.ApproverID											
-                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                ORDER BY JENumber, JELineNumber											
+                    SELECT
+                        UserName,
+                        FullName
+                    FROM [{field}_Import_Dim].[dbo].[pbcUser]
 
             '''.format(field=self.selected_project_id)
 
@@ -2045,7 +2021,21 @@ class MyApp(QWidget):
         self.new_prep = Preparer(self)
         self.new_prep.prep.clear()
 
-        for n, i in enumerate(pID.PreparerID.unique()):
+        rc = pID.shape[0]
+        real_PID = []
+
+        for i in range(0, rc):
+            a = ''
+            b = ''
+            s = ''
+            a = str(pID['UserName'][i])
+            b = str(pID['FullName'][i])
+            s = a + ' | ' + b
+            real_PID.append(s)
+
+        pID['real_PID'] = real_PID
+
+        for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
@@ -2058,6 +2048,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog8)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         labelDC = QLabel('차변/대변* : ', self.dialog8)
         labelDC.setStyleSheet("color: white;")
@@ -2327,6 +2319,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog9)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         self.D9_N.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D9_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -2427,31 +2421,10 @@ class MyApp(QWidget):
         # 전표입력자 체크리스트
         cursor2 = self.cnxn.cursor()
         sql2 = '''
-                SELECT											
-                    JournalEntries.BusinessUnit											
-                    , JournalEntries.JENumber											
-                    , JournalEntries.JELineNumber											
-                    , JournalEntries.EffectiveDate											
-                    , JournalEntries.EntryDate											
-                    , JournalEntries.Period											
-                    , JournalEntries.GLAccountNumber											
-                    , CoA.GLAccountName											
-                    , JournalEntries.Debit											
-                    , JournalEntries.Credit											
-                    , CASE
-                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                        END AS DebitCredit
-                    , JournalEntries.Amount											
-                    , JournalEntries.FunctionalCurrencyCode											
-                    , JournalEntries.JEDescription											
-                    , JournalEntries.JELineDescription											
-                    , JournalEntries.Source											
-                    , JournalEntries.PreparerID											
-                    , JournalEntries.ApproverID											
-                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                ORDER BY JENumber, JELineNumber											
+                    SELECT
+                        UserName,
+                        FullName
+                    FROM [{field}_Import_Dim].[dbo].[pbcUser]
 
             '''.format(field=self.selected_project_id)
 
@@ -2459,7 +2432,21 @@ class MyApp(QWidget):
         self.new_prep = Preparer(self)
         self.new_prep.prep.clear()
 
-        for n, i in enumerate(pID.PreparerID.unique()):
+        rc = pID.shape[0]
+        real_PID = []
+
+        for i in range(0, rc):
+            a = ''
+            b = ''
+            s = ''
+            a = str(pID['UserName'][i])
+            b = str(pID['FullName'][i])
+            s = a + ' | ' + b
+            real_PID.append(s)
+
+        pID['real_PID'] = real_PID
+
+        for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
@@ -2478,6 +2465,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog10)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         self.btn2 = QPushButton('   Extract Data', self.dialog10)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2783,6 +2772,9 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC1.setFont(font1)
 
+        self.checkC1.setChecked(True)
+        self.checkD1.setChecked(True)
+
         sublayout0 = QHBoxLayout()
         sublayout0.addWidget(labelDC1)
         sublayout0.addWidget(self.checkC1)
@@ -2946,6 +2938,8 @@ class MyApp(QWidget):
         self.checkD2 = QCheckBox('Debit', self.dialog12)
         self.checkC2.setStyleSheet("color: white;")
         self.checkD2.setStyleSheet("color: white;")
+        self.checkC2.setChecked(True)
+        self.checkD2.setChecked(True)
 
         ### 라벨 4 - 시나리오 번호
         labelSheet11 = QLabel('시나리오 번호* : ', self.dialog12)
@@ -3269,6 +3263,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog13)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         layout_dc = QHBoxLayout()
         layout_dc.addWidget(labelDC)
@@ -3454,6 +3450,8 @@ class MyApp(QWidget):
         self.checkD = QCheckBox('Debit', self.dialog14)
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
+        self.checkC.setChecked(True)
+        self.checkD.setChecked(True)
 
         self.D14_Key.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -4128,7 +4126,7 @@ class MyApp(QWidget):
                                             AND JournalEntries.GLAccountNumber IN ({CODE})
                                             {Account}
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
-    
+
                                 """.format(field=self.selected_project_id, CODE=real_Code, Account=checked_account5)
 
                 elif self.rbtn2.isChecked():
@@ -4281,7 +4279,6 @@ class MyApp(QWidget):
                         self.dialog5.activateWindow()
         else:
             self.alertbox_open10()
-
 
     def extButtonClicked5_Non_SAP(self):
 
@@ -4649,7 +4646,6 @@ class MyApp(QWidget):
 
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame({'No Data': ["[결산일: " + str(tempDate) + "," + "T일: " + str(tempTDate)
-                                                               + "," + "전표입력자: " + str(checked_prep)
                                                                + "," + "중요성금액: " + str(tempCost)
                                                                + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
@@ -4666,7 +4662,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -4674,7 +4669,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4691,7 +4685,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -4699,7 +4692,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4721,7 +4713,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -4729,7 +4720,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4746,7 +4736,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -4754,7 +4743,6 @@ class MyApp(QWidget):
                                                                   "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4977,8 +4965,7 @@ class MyApp(QWidget):
 
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(tempState) + ","
-                                                               + "," + "전표입력자: " + str(checked_prep)
-                                                               + "," + "중요성금액: " + str(tempCost)
+                                                               + "중요성금액: " + str(tempCost)
                                                                + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
@@ -4994,7 +4981,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5002,7 +4988,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -5017,7 +5002,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5025,7 +5009,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -5046,7 +5029,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5054,7 +5036,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -5071,7 +5052,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5079,7 +5059,6 @@ class MyApp(QWidget):
                                                                   + str(realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -5236,8 +5215,7 @@ class MyApp(QWidget):
 
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame(
-                        {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(realNDate) + ","
-                                     + "," + "전표입력자: " + str(checked_prep)
+                        {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(realNDate)
                                      + "," + "중요성금액: " + str(tempCost)
                                      + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
@@ -5254,7 +5232,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5262,7 +5239,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -5277,7 +5253,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5285,7 +5260,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -5306,7 +5280,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5314,7 +5287,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -5331,7 +5303,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
@@ -5339,7 +5310,6 @@ class MyApp(QWidget):
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
                                                                   + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
-                                                                  + ")" + ", " + "전표입력자(" + str(checked_prep)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -6327,12 +6297,6 @@ class MyApp(QWidget):
         tempSheet = self.D12_Sheet12.text()
         tempState = ''
 
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
-
         if tempCost == '':
             tempCost = 0
 
@@ -6342,22 +6306,22 @@ class MyApp(QWidget):
         elif checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
             self.alertbox_open6()
 
-        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+        # 시트명 중복 확인
+        elif self.combo_sheet.findText(tempSheet + '_Reference') != -1:
             self.alertbox_open5()
 
         elif not (self.checkC1.isChecked()) and not (self.checkD1.isChecked()):
             self.alertbox_open7()
 
-        elif (self.checkC1.isChecked()) and (self.checkD1.isChecked()):
-            self.alertbox_open8()  # 하나만 선택해주세요
-
         else:
             try:
                 int(tempCost)
                 if self.checkC1.isChecked():
-                    tempState = 'Credit'
+                    tempState = 'LVL4.GL_Account_Position =' + "'" + 'Credit' + "'"
                 elif self.checkD1.isChecked():
-                    tempState = 'Debit'
+                    tempState = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
+                elif self.checkD1.isChecked() and self.checkC1.isChecked():
+                    tempstate = 'LVL4.GL_Account_Position IN (' + "'" + 'Credit' + "'," + "'" + 'Debit' + "'" + ')'
 
                 cursor = self.cnxn.cursor()
                 sql = '''
@@ -6455,7 +6419,7 @@ class MyApp(QWidget):
                                                        ) LVL3                                                                                                  
                                                        GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
                                                 ) LVL4                                                                                                                                                                                                  														
-                                                WHERE LVL4.GL_Account_Position = '{CD}'
+                                                WHERE {CD}
                                                       {Account}
                                                       AND LVL4.Posting_Type = '2.Correspondent Account'
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
@@ -6559,7 +6523,7 @@ class MyApp(QWidget):
                                                        ) LVL3                                                                                                  
                                                        GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
                                                 ) LVL4                                                                                                                                                                                                  														
-                                                WHERE LVL4.GL_Account_Position = '{CD}'
+                                                WHERE {CD}
                                                       {Account}
                                                       AND LVL4.Posting_Type = '2.Correspondent Account'
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
@@ -6573,37 +6537,35 @@ class MyApp(QWidget):
                     self.dataframe = pd.read_sql(sql2, self.cnxn)
                 self.clickCount += 1
 
-                ### 마지막 시트 쿼리 내역 추가
-                my_query.loc[tempSheet + '_Reference'] = [tempSheet + '_Reference', "Scenario12",
-                                                          "---Filtered Reference Scenario12---\n" + sql]
+                self.dataframe['비경상적계정 선택여부'] = ''
 
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[특정 계정: " + checked_name + " 중요성금액: " + str(
+                    self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
                         tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
-                    self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                    self.scenario_dic['' + tempSheet + '_Reference'] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[특정 계정: " + checked_name + " 중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Ok)
-                    if buttonReply == QMessageBox.Ok:
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성금액: " + str(
+                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
                 else:
-                    self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                    self.scenario_dic['' + tempSheet + '_Reference'] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
-                    buttonReply = QMessageBox.information(self, "라인수 추출", "[특정 계정: " + checked_name + " 중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Ok)
-                    if buttonReply == QMessageBox.Ok:
+                    buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성금액: " + str(
+                        tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                    if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
             except ValueError:
