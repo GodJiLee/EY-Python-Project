@@ -6960,7 +6960,7 @@ class MyApp(QWidget):
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + 'Journals'] = self.dataframe
+                        self.scenario_dic[tempSheet + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -7339,9 +7339,7 @@ class MyApp(QWidget):
                 self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
 
             else:
-                my_query_1 = {'QUERY': [my_query]}
-                my_query_1 = pd.DataFrame(my_query_1)
-                self.scenario_dic['Query'] = my_query_1
+                self.scenario_dic['Query'] = my_query
                 with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
                     for temp in self.scenario_dic:
                         self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
