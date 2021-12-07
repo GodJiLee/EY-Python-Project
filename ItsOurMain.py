@@ -16,6 +16,11 @@ import pyodbc
 import pandas as pd
 import numpy as np
 import openpyxl
+from threading import Thread
+
+
+class Communicate(QObject):
+    closeApp = pyqtSignal()
 
 
 class Calendar(QDialog):
@@ -420,6 +425,14 @@ class ListBoxWidget(QListWidget):
 
 
 class MyApp(QWidget):
+    # Resource
+    def resource_path(self, relative_path):
+        try:
+            # PyInstaller에 의해 임시폴더에서 실행될 경우 임시폴더로 접근하는 함수
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
 
     def __init__(self):
         super().__init__()
@@ -439,6 +452,9 @@ class MyApp(QWidget):
         self.string_date_list = []
         self.fianlDate = []
         self.clickCount = 0
+        ##다이얼로그별 시그널 생성
+        self.communicate9 = Communicate()
+        self.communicate9.closeApp.connect(self.doneAction9)
 
     def return_print(self, *message):
         self.io = StringIO()
@@ -449,7 +465,7 @@ class MyApp(QWidget):
         self.msg = QMessageBox()
         self.msg.setIcon(QMessageBox.Information)
         self.msg.setWindowTitle("Warning")
-        self.msg.setWindowIcon(QIcon("./EY_logo.png"))
+        self.msg.setWindowIcon(QIcon('./EY_logo.png'))
         self.msg.setText(text)
         self.msg.exec_()
 
@@ -457,7 +473,7 @@ class MyApp(QWidget):
         self.msg = QMessageBox()
         self.msg.setIcon(QMessageBox.Information)
         self.msg.setWindowTitle("Project Connected")
-        self.msg.setWindowIcon(QIcon("./EY_logo.png"))
+        self.msg.setWindowIcon(QIcon('./EY_logo.png'))
         self.msg.setText(text)
         self.msg.exec_()
 
@@ -465,7 +481,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('필수 입력값 누락')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('필수 입력값이 누락되었습니다.')
         self.alt.exec_()
 
@@ -474,7 +490,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         txt = state
         self.alt.setWindowTitle('필수 입력값 타입 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText(txt + ' 값을 숫자로만 입력해주시기 바랍니다.')
         self.alt.exec_()
 
@@ -482,7 +498,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('최대 라인 수 초과 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('최대 라인 수가 초과 되었습니다.')
         self.alt.exec_()
 
@@ -491,7 +507,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         txt = state
         self.alt.setWindowTitle('입력값 타입 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText(txt)
         self.alt.exec_()
 
@@ -499,7 +515,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('시트명 중복')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('이미 해당 시트명이 존재합니다.')
         self.alt.exec_()
 
@@ -507,7 +523,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('계정 선택 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('계정이 선택되어 있지 않습니다.')
         self.alt.exec_()
 
@@ -515,7 +531,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('차대변 선택 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('차변 및 대변이 선택되어 있지 않습니다.')
         self.alt.exec_()
 
@@ -523,7 +539,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('차대변 선택 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('차변과 대변 중 하나만 선택해주시기 바랍니다.')
         self.alt.exec_()
 
@@ -531,7 +547,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('전표입력자 선택 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('전표입력자가 선택되어 있지 않습니다.')
         self.alt.exec_()
 
@@ -541,6 +557,15 @@ class MyApp(QWidget):
         self.alt.setWindowTitle('SKA1 파일 선택 오류')
         self.alt.setWindowIcon(QIcon('./EY_logo.png'))
         self.alt.setText('SKA1 파일을 드롭하세요.')
+        self.alt.exec_()
+
+    def alertbox_open11(self, state):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        txt = state
+        self.alt.setWindowTitle('SKA1 파일 내부 필드값 부재')
+        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setText(txt)
         self.alt.exec_()
 
     def init_UI(self):
@@ -881,7 +906,6 @@ class MyApp(QWidget):
         self.btn2 = QPushButton('   Extract Data', self.dialog4)
         self.btn2.setStyleSheet('color:white; background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClicked4)
-        # self.btn2.clicked.connect(self.doAction)
 
         font9 = self.btn2.font()
         font9.setBold(True)
@@ -903,14 +927,12 @@ class MyApp(QWidget):
         font11.setBold(True)
         self.rbtn1.setFont(font11)
         self.rbtn1.setChecked(True)
+
         self.rbtn2 = QRadioButton('JE', self.dialog4)
         self.rbtn2.setStyleSheet("color: white;")
         font12 = self.rbtn2.font()
         font12.setBold(True)
         self.rbtn2.setFont(font12)
-
-        ### Progress Bar
-        self.progressBar = QProgressBar()
 
         ### 라벨 1 - 사용빈도
         label_freq = QLabel('사용 빈도(N)* :', self.dialog4)
@@ -975,9 +997,11 @@ class MyApp(QWidget):
         self.D4_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         ### 요소 배치
+        layout0 = QGridLayout()
+        layout0.addWidget(self.rbtn1, 0, 0)
+        layout0.addWidget(self.rbtn2, 0, 1)
+
         layout1 = QGridLayout()
-        layout1.addWidget(self.rbtn1, 0, 0)
-        layout1.addWidget(self.rbtn2, 0, 1)
         layout1.addWidget(label_freq, 1, 0)
         layout1.addWidget(self.D4_N, 1, 1)
         layout1.addWidget(label_TE, 2, 0)
@@ -988,7 +1012,7 @@ class MyApp(QWidget):
         layout1.addWidget(self.D4_Sheet, 4, 1)
 
         layout2 = QHBoxLayout()
-        layout2.addWidget(self.progressBar)
+        layout2.addStretch(2)
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
 
@@ -1001,6 +1025,7 @@ class MyApp(QWidget):
 
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addLayout(layout0)
         main_layout.addLayout(layout1)
         main_layout.addLayout(layout_dc)
         main_layout.addLayout(layout2)
@@ -2235,11 +2260,10 @@ class MyApp(QWidget):
 
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
-        self.progressBar = QProgressBar()
 
         self.btn2 = QPushButton('   Extract Data', self.dialog9)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btn2.clicked.connect(self.extButtonClicked9)
+        self.btn2.clicked.connect(self.Thread9)
 
         font9 = self.btn2.font()
         font9.setBold(True)
@@ -2348,7 +2372,6 @@ class MyApp(QWidget):
         layout2.addStretch()
         layout2.addWidget(self.btn2)
         layout2.addWidget(self.btnDialog)
-        layout2.addWidget(self.progressBar)
 
         layout2.setContentsMargins(-1, 10, -1, -1)
 
@@ -2652,8 +2675,9 @@ class MyApp(QWidget):
             self.fianlDate.append(self.string_date)
 
         self.dialog7.activateWindow()
-        self.dialog7.setGeometry(5, 300, 750, 500)
-        self.setGeometry(800, 200, 1000, 800)
+
+        if self.new_calendar.close():
+            self.dialog7.activateWindow()
 
     def handle_date_clicked3(self, date):
         self.dialog10.activateWindow()
@@ -2788,19 +2812,16 @@ class MyApp(QWidget):
         sublayout1.addWidget(self.D12_Sheet12, 2, 1)
 
         sublayout2 = QHBoxLayout()
-        sublayout2.addStretch()
-        sublayout2.addStretch()
+        sublayout2.addStretch(2)
         sublayout2.addWidget(self.btn)
         sublayout2.addWidget(self.btnDialog)
 
         main_layout1 = QVBoxLayout()
-        main_layout1.addStretch()
         main_layout1.addLayout(sublayout1)
         main_layout1.addLayout(sublayout0)
-        main_layout1.addStretch()
         main_layout1.addLayout(sublayout2)
 
-        # Cursor문
+        ### Cursor문
         self.btn2 = QPushButton('   Extract Data', self.dialog12)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.extButtonClickedC)
@@ -2896,23 +2917,19 @@ class MyApp(QWidget):
         sublayout6.addWidget(self.btnDialog2)
 
         main_layout2 = QVBoxLayout()
-        main_layout2.addStretch()
         main_layout2.addLayout(sublayout5_1)
         main_layout2.addLayout(sublayout5)
-        main_layout2.addStretch()
         main_layout2.addLayout(sublayout6)
 
-        # 탭 지정
+        ### 탭 지정
         layout = QVBoxLayout()
         tabs = QTabWidget()
         tab1 = QWidget()  # 시나리오12
         tab2 = QWidget()  # cursor문
-
         tab1.setLayout(main_layout1)
         tab2.setLayout(main_layout2)
-
-        tabs.addTab(tab1, "시나리오12")
-        tabs.addTab(tab2, "시나리오11")
+        tabs.addTab(tab1, "Step1")
+        tabs.addTab(tab2, "Step2")
         layout.addWidget(tabs)
 
         self.dialog12.setLayout(layout)
@@ -3424,22 +3441,133 @@ class MyApp(QWidget):
     ###########################
     ####추가하셔야 하는 함수들#####
     ###########################
-    def timerEvent(self, e):
-        if self.step >= 100:
-            self.timer.stop()
-            self.btn2.setText('Finished')
-            return
-        self.step = self.step + 1
-        self.pbar.setValue(self.step)
 
     def doAction(self):
-        self.progressBar.setMaximum(0)
-        self.progressBar.setMinimum(0)
+        self.Action = QDialog()
+        self.Action.setStyleSheet('background-color : black;')
+        lbl_img = QLabel()
+        label = QLabel('Now Loading')
+        label.setStyleSheet("font : bold 13pt; color: white;")
+        pixmap = QPixmap('./Loading.png')
+        lbl_img.setPixmap(pixmap)
+        self.progressBar = QProgressBar()
+        self.progressBar.setRange(0, 0)
+        self.progressBar.setStyleSheet("QProgressBar::chunk "
+                                       "{"
+                                       "background-color: yellow;"
+                                       "}")
+        sub_layout = QHBoxLayout()
+        sub_layout.addWidget(lbl_img)
+        sub_layout.addWidget(label)
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(sub_layout)
+        main_layout.addWidget(self.progressBar)
 
-    def doneAction(self):
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(100)
+        self.Action.setLayout(main_layout)
+        self.Action.setGeometry(700, 400, 400, 220)
+        self.Action.setWindowFlags(Qt.FramelessWindowHint)
+        self.Action.setWindowModality(Qt.NonModal)
+        self.Action.show()
+
+    ###Thread End시 로딩창 종료 및 조건 팝업
+    def doneAction9(self):
+        self.Action.close()
+        if len(self.dataframe) > 1048576:
+            self.alertbox_open3()
+        elif self.rbtn1.isChecked():
+            if len(self.dataframe) == 0:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(
+                    self.tempTE) + ")을 적용하였습니다.추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                      , QMessageBox.Ok)
+
+            elif len(self.dataframe) <= 500:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(
+                    len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                      + ")을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                      , QMessageBox.Ok)
+            else:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(
+                    len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                      + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                      , QMessageBox.Ok)
+            if buttonReply == QMessageBox.Ok:
+                self.dialog9.activateWindow()
+        else:
+            if len(self.dataframe) == 0:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(
+                    self.tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                      , QMessageBox.Ok)
+            elif len(self.dataframe) <= 500:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(
+                    len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(self.tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
+                                                      , QMessageBox.Ok)
+            else:
+                buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
+                                                      + "회 이하인 작성자에 의해 생성된 전표가 "
+                                                      + str(
+                    len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(
+                    self.tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      , QMessageBox.Ok)
+            if buttonReply == QMessageBox.Ok:
+                self.dialog9.activateWindow()
+        self.th9.join()
+
+    ###extraction버튼 클릭 시 유효성 확인 및 Thread 시작
+    def Thread9(self):
+        self.tempN = self.D9_N.text()  # 필수값
+        self.tempTE = self.D9_TE.text()
+        self.tempSheet = self.D9_Sheet.text()
+        if self.tempN == '' or self.tempSheet == '':
+            self.alertbox_open()
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+            self.tempSheet + '_Reference') != -1):
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            self.alertbox_open()  # 계정 선택 오류
+
+        elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
+            self.alertbox_open7()
+        else:
+            if self.tempTE == '': self.tempTE = 0
+            try:
+                int(self.tempN)
+                int(self.tempTE)
+                self.doAction()
+                self.th9 = Thread(target=self.extButtonClicked9)
+                self.th9.start()
+            except ValueError:
+                try:
+                    int(self.tempN)
+                    try:
+                        int(self.tempTE)
+                    except:
+                        self.alertbox_open4('중요성금액')
+                except:
+                    try:
+                        int(self.tempTE)
+                        self.alertbox_open4('작성빈도수')
+                    except:
+                        self.alertbox_open4('작성빈도수와 중요성금액')
 
     def Sheet_ComboBox_Selected(self, text):
         model = DataFrameModel(self.scenario_dic[text])
@@ -3511,6 +3639,30 @@ class MyApp(QWidget):
 
         return groupbox
 
+    def handle_date_clicked(self, date):
+        self.dialog6.activateWindow()
+        self.D6_Date.setText(date.toString("yyyy-MM-dd"))
+        self.dialog6.activateWindow()
+        if self.new_calendar.close():
+            self.dialog6.activateWindow()
+
+    def handle_date_clicked2(self, date):
+        self.dialog7.activateWindow()
+
+        self.dateList = []
+        self.dateList.append(date)  # 사용자 입력값 추가
+
+        self.string_date_list = [date_obj.toString("yyyy-MM-dd") for date_obj in self.dateList]
+
+        for self.string_date in self.string_date_list:
+            self.D7_Date.append(self.string_date)
+            self.fianlDate.append(self.string_date)
+
+        self.dialog7.activateWindow()
+
+        if self.new_calendar.close():
+            self.dialog7.activateWindow()
+
     def calendar6(self):
         self.dialog6.activateWindow()
         self.new_calendar.show()
@@ -3530,9 +3682,9 @@ class MyApp(QWidget):
         self.new_calendar2.show()
 
     def extButtonClicked4(self):
-        temp_N = self.D4_N.text()  # 필수값
-        temp_TE = self.D4_TE.text()
-        tempSheet = self.D4_Sheet.text()
+        self.temp_N = self.D4_N.text()  # 필수값
+        self.temp_TE = self.D4_TE.text()
+        self.tempSheet = self.D4_Sheet.text()
 
         global my_query
         if 'my_query' in globals():
@@ -3541,17 +3693,17 @@ class MyApp(QWidget):
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 필수값 입력 누락
-        if temp_N == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+        if self.temp_N == '' or self.tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
             self.alertbox_open()
 
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
-                self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-            tempSheet + '_Reference') != -1):
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+            self.tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
         ### 예외처리 3 - 시트명 중복 확인 (JE)
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
@@ -3559,10 +3711,10 @@ class MyApp(QWidget):
 
         ### 쿼리 연동
         else:
-            if temp_TE == '': temp_TE = 0
+            if self.temp_TE == '': self.temp_TE = 0
             try:
-                int(temp_N)
-                int(temp_TE)
+                int(self.temp_N)
+                int(self.temp_TE)
 
                 checked_account4 = checked_account
                 cursor = self.cnxn.cursor()
@@ -3592,7 +3744,7 @@ class MyApp(QWidget):
                                         GROUP BY JournalEntries.GLAccountNumber	
                                         ORDER BY JournalEntries.GLAccountNumber
 
-                                    """.format(field=self.selected_project_id, TE=temp_TE, N=temp_N,
+                                    """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                                                Account=checked_account4)
 
                     ### JE Line - Refer
@@ -3629,7 +3781,7 @@ class MyApp(QWidget):
                                         {Account}			
                                     ORDER BY JENumber,JELineNumber				
 
-                                '''.format(field=self.selected_project_id, TE=temp_TE, N=temp_N,
+                                '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                                            Account=checked_account4)
 
                     self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
@@ -3675,20 +3827,21 @@ class MyApp(QWidget):
                                         )		
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
 
-                        '''.format(field=self.selected_project_id, TE=temp_TE, N=temp_N, Account=checked_account4)
+                        '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
+                                   Account=checked_account4)
 
                 self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Reference"] = [tempSheet + "_Reference", "Scenario04",
-                                                              "---Filtered Result_1  Scenario04---\n" + sql_refer]
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario04",
-                                                           "---Filtered Result_2  Scenario04---\n" + sql_query]
+                    my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
+                                                                   "---Filtered Result_1  Scenario04---\n" + sql_refer]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
+                                                                "---Filtered Result_2  Scenario04---\n" + sql_query]
 
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario04",
-                                                             "---Filtered JE  Scenario04---\n" + sql_query]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
+                                                                  "---Filtered JE  Scenario04---\n" + sql_query]
 
                 ### 차대 오류
                 if self.checkC.isChecked() and self.checkD.isChecked():
@@ -3707,8 +3860,8 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(temp_N) + ","
-                                                               + "중요성금액: " + str(temp_TE)
+                    self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(self.temp_N) + ","
+                                                               + "중요성금액: " + str(self.temp_TE)
                                                                + '] 라인 수 ' + str(len(self.dataframe)) + '개입니다']})
                     model = DataFrameModel(self.dataframe)
                     model_refer = DataFrameModel(self.dataframe_refer)
@@ -3716,31 +3869,31 @@ class MyApp(QWidget):
 
                     ### JE Line
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + '_Result'] = self.dataframe
-                        self.scenario_dic[tempSheet + '_Reference'] = self.dataframe_refer
+                        self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1], key_list[-2]]
                         self.combo_sheet.addItem(str(result[2]))
 
-                        buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(temp_N)
+                        buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
                                                               + str(
                             len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                               + str(
-                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                            self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Ok)
                     ### JE
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + '_Journals'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
-                        buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(temp_N)
+                        buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
                                                               + '회 이하인 작성자에 의해 생성된 전표가 '
                                                               + str(
                             len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                               + str(
-                            temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                            self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Ok)
 
                     if buttonReply == QMessageBox.Ok:
@@ -3750,8 +3903,8 @@ class MyApp(QWidget):
                 else:
                     ### JE Line
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + '_Result'] = self.dataframe
-                        self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
+                        self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
 
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1], key_list[-2]]
@@ -3763,23 +3916,23 @@ class MyApp(QWidget):
 
                         ### 추가 필터링
                         if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(temp_N)
+                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                                   + '회 이하인 전표가 ' + str(len(self.dataframe))
                                                                   + '건 추출되었습니다. <br> - TE 금액('
-                                                                  + str(temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                  + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
                         else:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(temp_N) +
+                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N) +
                                                                   '회 이하인 전표가 '
                                                                   + str(
                                 len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                                  + temp_TE + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                  + self.temp_TE + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     ### JE
                     elif self.rbtn2.isChecked():
                         ### 시트 콤보박스에 저장
-                        self.scenario_dic[tempSheet + '_Journals'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -3787,17 +3940,17 @@ class MyApp(QWidget):
                         self.viewtable.setModel(model)
                         ### 추가 필터링
                         if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(temp_N)
+                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(self.temp_N)
                                                                   + '회 이하인 전표가 ' + str(
                                 len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                                  + str(temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
+                                                                  + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                         else:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(temp_N)
+                            buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(self.temp_N)
                                                                   + '회 이하인 전표가 ' + str(
                                 len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                                  + str(temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
+                                                                  + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     if buttonReply == QMessageBox.Ok:
@@ -3806,22 +3959,22 @@ class MyApp(QWidget):
             ### 예외처리 5 - 필수 입력값 타입 오류
             except ValueError:
                 try:
-                    int(temp_N)
+                    int(self.temp_N)
                     try:
-                        int(temp_TE)
+                        int(self.temp_TE)
                     except:
                         self.alertbox_open2('중요성금액')
                 except:
                     try:
-                        int(temp_TE)
+                        int(self.temp_TE)
                         self.alertbox_open2('계정사용 빈도수')
                     except:
                         self.alertbox_open2('계정사용 빈도수와 중요성금액')
 
     def extButtonClicked5_SAP(self):
         ### 입력값 - 시트명, 연도
-        tempSheet_SAP = self.D5_Sheet.text()
-        tempYear_SAP = int(pname_year)
+        self.tempSheet_SAP = self.D5_Sheet.text()
+        self.tempYear_SAP = int(pname_year)
 
         global my_query
         if 'my_query' in globals():
@@ -3829,60 +3982,310 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        ### 예외처리 1 - 파일 경로 unicode 문제 해결
-        dropped_items = []  ### ListBox 인풋값 append
+        ### 예외처리 0 - 차/대 체크 오류
+        if not (self.checkC2.isChecked()) and not (self.checkD2.isChecked()):
+            self.alertbox_open7()
 
-        for i in range(self.listbox_drops.count()):
-            myItem = QListWidgetItem(self.listbox_drops.item(i))
-            myItem = str(myItem.text())
-            dropped_items.append(myItem)
-            # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
+        else:
 
-        ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
-        df = pd.DataFrame()  ### dataframe으로 저장
-        count = 0
-        for file in dropped_items:
-            if 'SKA1' in file:
-                df = df.append(pd.read_csv(file, sep='|'))
-            else:
-                count += 1
-                break
+            ### 예외처리 1 - 파일 경로 unicode 문제 해결
+            dropped_items = []  ### ListBox 인풋값 append
 
-        if count == 0:
-            ### 당기 생성된 계정 코드 반환
-            temp_AccCode = list()
+            for i in range(self.listbox_drops.count()):
+                myItem = QListWidgetItem(self.listbox_drops.item(i))
+                myItem = str(myItem.text())
+                dropped_items.append(myItem)
+                # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
 
-            for i in range(len(df)):
-                df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
-                year = df.loc[i, 'ERDAT'][0:4]
-                if int(year) == tempYear_SAP:
-                    temp_AccCode.append(df.loc[i, 'SAKNR'])
+            ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
+            df = pd.DataFrame()  ### dataframe으로 저장
+            count = 0
+            for file in dropped_items:
+                if 'SKA1' in file:
+                    df = df.append(pd.read_csv(file, sep='|'))
+                else:
+                    count += 1
+                    break
+            try:
+                df.loc[1, 'ERDAT']
+                df.loc[1, 'SAKNR']
 
-            real_Code = ''
-            for code in temp_AccCode:
-                myCode = code[2:]
-                real_Code += "'" + myCode + "', "
-            real_Code = real_Code[:-2]
+                if count == 0:
+                    ### 당기 생성된 계정 코드 반환
+                    temp_AccCode = list()
 
-            ### 예외처리 2 - 필수값 누락
-            if tempYear_SAP == '' or tempSheet_SAP == '' or dropped_items == '':
+                    for i in range(len(df)):
+                        df.loc[i, 'ERDAT'] = str(df.loc[i, 'ERDAT'])
+                        year = df.loc[i, 'ERDAT'][0:4]
+                        if int(year) == self.tempYear_SAP:
+                            temp_AccCode.append(df.loc[i, 'SAKNR'])
+
+                    real_Code = ''
+                    for code in temp_AccCode:
+                        myCode = code[2:]
+                        real_Code += "'" + myCode + "', "
+                    real_Code = real_Code[:-2]
+
+                    ### 예외처리 3 - 필수값 누락
+                    if self.tempYear_SAP == '' or self.tempSheet_SAP == '' or dropped_items == '':
+                        self.alertbox_open()
+
+                    ### 예외처리 4 - 시트명 중복 확인
+                    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Result') != -1:
+                        self.alertbox_open5()
+
+                    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Journals') != -1:
+                        self.alertbox_open5()
+
+                    ### 쿼리 연동
+                    else:
+                        checked_account5 = checked_account
+                        cursor = self.cnxn.cursor()
+
+                        ### JE Line 선택시 - 추출 조건에 해당하는
+                        if self.rbtn1.isChecked():
+
+                            sql_query = """
+                                            SELECT 
+                                                JournalEntries.BusinessUnit
+                                                , JournalEntries.JENumber
+                                                , JournalEntries.JELineNumber
+                                                , JournalEntries.EffectiveDate
+                                                , JournalEntries.EntryDate
+                                                , JournalEntries.Period	
+                                                , JournalEntries.GLAccountNumber
+                                                , CoA.GLAccountName
+                                                , JournalEntries.Debit
+                                                , JournalEntries.Credit
+                                                , CASE
+                                                    WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                    END AS DebitCredit
+                                                , JournalEntries.Amount
+                                                , JournalEntries.FunctionalCurrencyCode
+                                                , JournalEntries.JEDescription
+                                                , JournalEntries.JELineDescription
+                                                , JournalEntries.PreparerID
+                                                , JournalEntries.ApproverID
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
+                                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+                                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                                                    AND JournalEntries.GLAccountNumber IN ({CODE})
+                                                    {Account}
+                                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
+
+                                        """.format(field=self.selected_project_id, CODE=real_Code,
+                                                   Account=checked_account5)
+
+                        elif self.rbtn2.isChecked():
+                            sql_query = '''
+                                                SELECT
+                                                    JournalEntries.BusinessUnit
+                                                    , JournalEntries.JENumber
+                                                    , JournalEntries.JELineNumber
+                                                    , JournalEntries.EffectiveDate
+                                                    , JournalEntries.EntryDate
+                                                    , JournalEntries.Period
+                                                    , JournalEntries.GLAccountNumber
+                                                    , CoA.GLAccountName
+                                                    , JournalEntries.Debit
+                                                    , JournalEntries.Credit
+                                                    , CASE
+                                                           WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                           END AS DebitCredit
+                                                    , JournalEntries.Amount
+                                                    , JournalEntries.FunctionalCurrencyCode
+                                                    , JournalEntries.JEDescription
+                                                    , JournalEntries.JELineDescription
+                                                    , JournalEntries.PreparerID
+                                                    , JournalEntries.ApproverID
+                                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
+                                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+                                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (	
+                                                    (
+                                                    SELECT DISTINCT JENumber
+                                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                                    WHERE JournalEntries.GLAccountNumber IN ({CODE})
+                                                    {Account}
+                                                    )
+                                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                            '''.format(field=self.selected_project_id, CODE=real_Code,
+                                                       Account=checked_account5)
+
+                        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+                        ### 마지막 시트 쿼리 내역 추가
+                        if self.rbtn1.isChecked():
+                            my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
+                                                                            "Scenario05",
+                                                                            "---Filtered Result  Scenario05---\n" + sql_query]
+
+                        if self.rbtn2.isChecked():
+                            my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
+                                                                              "Scenario05",
+                                                                              "---Filtered JE  Scenario05---\n" + sql_query]
+
+                        ### DebitCredit 열 생성
+                        if self.checkC2.isChecked() and self.checkD2.isChecked():
+                            self.dataframe = self.dataframe
+
+                        elif self.checkC2.isChecked():
+                            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                            self.dataframe.reset_index(drop=True, inplace=True)
+
+                        elif self.checkD2.isChecked():
+                            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                            self.dataframe.reset_index(drop=True, inplace=True)
+
+                        ### 예외처리 5 - 최대 라인 수 초과
+                        if len(self.dataframe) > 1048576:
+                            self.alertbox_open3()
+
+                        ### 조건, 라인 수 추출
+                        elif len(self.dataframe) == 0:
+                            self.dataframe = pd.DataFrame({'No Data': ["[계정코드: " + str(temp_AccCode) + "," +
+                                                                       "연도" + str(self.tempYear_SAP) + "] 라인수 " +
+                                                                       str(len(self.dataframe)) + "개 입니다"]})
+
+                            model = DataFrameModel(self.dataframe)
+                            self.viewtable.setModel(model)
+
+                            if self.rbtn1.isChecked():
+                                self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
+                                key_list = list(self.scenario_dic.keys())
+                                result = [key_list[0], key_list[-1]]
+                                self.combo_sheet.addItem(str(result[1]))
+
+                                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                      + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                      + str(len(self.dataframe) - 1)
+                                                                      + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
+                                                                      + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                      , QMessageBox.Ok)
+
+                            elif self.rbtn2.isChecked():
+                                self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
+                                key_list = list(self.scenario_dic.keys())
+                                result = [key_list[0], key_list[-1]]
+                                self.combo_sheet.addItem(str(result[1]))
+
+                                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                      + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                      + str(len(self.dataframe) - 1)
+                                                                      + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
+                                                                      + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                      , QMessageBox.Ok)
+                            if buttonReply == QMessageBox.Ok:
+                                self.dialog5.activateWindow()
+
+                        else:
+
+                            if self.rbtn1.isChecked():
+                                self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
+                                key_list = list(self.scenario_dic.keys())
+                                result = [key_list[0], key_list[-1]]
+                                self.combo_sheet.addItem(str(result[1]))
+                                model = DataFrameModel(self.dataframe)
+                                self.viewtable.setModel(model)
+
+                                if len(self.dataframe) <= 500:
+                                    buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                          + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                          + str(len(self.dataframe))
+                                                                          + '건 추출되었습니다. <br> - SKA1(' + str(
+                                        dropped_items)
+                                                                          + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                          , QMessageBox.Ok)
+                                else:
+                                    buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                          + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                          + str(len(self.dataframe))
+                                                                          + '건 추출되었습니다. <br> - SKA1(' + str(
+                                        dropped_items)
+                                                                          + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                          , QMessageBox.Ok)
+
+                            elif self.rbtn2.isChecked():
+                                self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
+                                key_list = list(self.scenario_dic.keys())
+                                result = [key_list[0], key_list[-1]]
+                                self.combo_sheet.addItem(str(result[-1]))
+                                model = DataFrameModel(self.dataframe)
+                                self.viewtable.setModel(model)
+
+                                if len(self.dataframe) <= 500:
+                                    buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                          + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                          + str(len(self.dataframe))
+                                                                          + '건 추출되었습니다. <br> - SKA1(' + str(
+                                        dropped_items)
+                                                                          + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                          , QMessageBox.Ok)
+                                else:
+                                    buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
+                                                                          + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                                          + str(len(self.dataframe))
+                                                                          + '건 추출되었습니다. <br> - SKA1(' + str(
+                                        dropped_items)
+                                                                          + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                          , QMessageBox.Ok)
+
+                            if buttonReply == QMessageBox.Ok:
+                                self.dialog5.activateWindow()
+
+                else:
+                    self.alertbox_open10()
+
+            except KeyError:
+                try:
+                    df.loc[1, 'ERDAT']
+                    df.loc[1, 'SAKNR']
+                except:
+                    self.alertbox_open11('"ERDAT", "SAKNR" 필드를 찾을 수 없습니다')
+
+    def extButtonClicked5_Non_SAP(self):
+
+        global my_query
+        if 'my_query' in globals():
+            my_query = my_query
+        else:
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
+
+        ### 예외처리 0 - 차/대 체크 오류
+        if not (self.checkC1.isChecked()) and not (self.checkD1.isChecked()):
+            self.alertbox_open7()
+
+        else:
+            self.tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
+            tempYear_NonSAP = int(pname_year)  # 필수값
+            temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
+
+            temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP_1)
+            temp_Code_Non_SAP_1 = re.split(",", temp_Code_Non_SAP_1)
+            # print(temp_Code_Non_SAP) # ['447102', '445101', '289301', '289310', '289311', '289312', '289313', '289314']
+            temp_Code_Non_SAP = ''
+            for code in temp_Code_Non_SAP_1:
+                temp_Code_Non_SAP += "'" + str(code) + "', "
+            temp_Code_Non_SAP = str(temp_Code_Non_SAP)
+            temp_Code_Non_SAP = temp_Code_Non_SAP[:-2]
+
+            ### 예외처리 1 - 필수값 입력 누락
+            if temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
                 self.alertbox_open()
 
-            ### 예외처리 3 - 시트명 중복 확인
-            elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet_SAP + '_Result') != -1:
+            ### 예외처리 2 - 시트명 중복 확인
+            elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Result') != -1:
                 self.alertbox_open5()
 
-            elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet_SAP + '_Journals') != -1:
+            elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Journals') != -1:
                 self.alertbox_open5()
 
-            elif not (self.checkC2.isChecked()) and not (self.checkD2.isChecked()):
-                self.alertbox_open7()
+            # elif self.checkC1.isChecked() and self.checkD1.isChecked():
+            #     self.dataframe = self.dataframe
 
+            ### 쿼리 연동
             else:
-                checked_account5 = checked_account
+                checked_account5_NonSAP = checked_account
                 cursor = self.cnxn.cursor()
-
-                ### JE Line 선택시 - 추출 조건에 해당하는
+                ### JE Line
                 if self.rbtn1.isChecked():
 
                     sql_query = """
@@ -3892,13 +4295,13 @@ class MyApp(QWidget):
                                         , JournalEntries.JELineNumber
                                         , JournalEntries.EffectiveDate
                                         , JournalEntries.EntryDate
-                                        , JournalEntries.Period	
+                                        , JournalEntries.Period    
                                         , JournalEntries.GLAccountNumber
                                         , CoA.GLAccountName
                                         , JournalEntries.Debit
                                         , JournalEntries.Credit
                                         , CASE
-                                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                            WHEN JournalEntries.Debit = 0 THEN "Credit" ELSE "Debit"
                                             END AS DebitCredit
                                         , JournalEntries.Amount
                                         , JournalEntries.FunctionalCurrencyCode
@@ -3911,377 +4314,177 @@ class MyApp(QWidget):
                                     WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                             AND JournalEntries.GLAccountNumber IN ({CODE})
                                             {Account}
-                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
+                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
 
-                                """.format(field=self.selected_project_id, CODE=real_Code, Account=checked_account5)
-
+                                """.format(field=self.selected_project_id, CODE=temp_Code_Non_SAP,
+                                           Account=checked_account5_NonSAP)
+                ### JE
                 elif self.rbtn2.isChecked():
+
                     sql_query = '''
-                                        SELECT
-                                            JournalEntries.BusinessUnit
-                                            , JournalEntries.JENumber
-                                            , JournalEntries.JELineNumber
-                                            , JournalEntries.EffectiveDate
-                                            , JournalEntries.EntryDate
-                                            , JournalEntries.Period
-                                            , JournalEntries.GLAccountNumber
-                                            , CoA.GLAccountName
-                                            , JournalEntries.Debit
-                                            , JournalEntries.Credit
-                                            , CASE
-                                                   WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                   END AS DebitCredit
-                                            , JournalEntries.Amount
-                                            , JournalEntries.FunctionalCurrencyCode
-                                            , JournalEntries.JEDescription
-                                            , JournalEntries.JELineDescription
-                                            , JournalEntries.PreparerID
-                                            , JournalEntries.ApproverID
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
-                                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                        WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (	
-                                            (
-                                            SELECT DISTINCT JENumber
-                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                            WHERE JournalEntries.GLAccountNumber IN ({CODE})
-                                            {Account}
-                                            )
-                                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                                    '''.format(field=self.selected_project_id, CODE=real_Code, Account=checked_account5)
+                                    SELECT     
+                                        JournalEntries.BusinessUnit
+                                        , JournalEntries.JENumber
+                                        , JournalEntries.JELineNumber
+                                        , JournalEntries.EffectiveDate
+                                        , JournalEntries.EntryDate
+                                        , JournalEntries.Period
+                                        , JournalEntries.GLAccountNumber
+                                        , CoA.GLAccountName
+                                        , JournalEntries.Debit
+                                        , JournalEntries.Credit
+                                        , CASE
+                                            WHEN JournalEntries.Debit = 0 THEN "Credit" ELSE "Debit"
+                                            END AS DebitCredit
+                                        , JournalEntries.Amount
+                                        , JournalEntries.FunctionalCurrencyCode
+                                        , JournalEntries.JEDescription
+                                        , JournalEntries.JELineDescription
+                                        , JournalEntries.PreparerID
+                                        , JournalEntries.ApproverID
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,   
+                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
+                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN 
+                                    (
+                                        SELECT DISTINCT JENumber
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                        WHERE JournalEntries.GLAccountNumber IN ({CODE})
+                                        {Account}
+                                    )
+                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                '''.format(field=self.selected_project_id, CODE=temp_Code_Non_SAP,
+                                           Account=checked_account5_NonSAP)
 
                 self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet_SAP + "_Result"] = [tempSheet_SAP + "_Result", "Scenario05",
-                                                               "---Filtered Result  Scenario05---\n" + sql_query]
+                    my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
+                                                                  "---Filtered Result  Scenario05---\n" + sql_query]
 
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet_SAP + "_Journals"] = [tempSheet_SAP + "_Journals", "Scenario05",
-                                                                 "---Filtered JE  Scenario05---\n" + sql_query]
+                    my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
+                                                                         "Scenario05",
+                                                                         "---Filtered JE  Scenario05---\n" + sql_query]
 
-                ### 예외처리 1 - 차대 체크 오류
-                if self.checkC2.isChecked() and self.checkD2.isChecked():
+                ### DebitCredit 열 생성
+                if self.checkC1.isChecked() and self.checkD1.isChecked():
                     self.dataframe = self.dataframe
 
-                elif self.checkC2.isChecked():
+                elif self.checkC1.isChecked():
                     self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
                     self.dataframe.reset_index(drop=True, inplace=True)
 
-                elif self.checkD2.isChecked():
+                elif self.checkD1.isChecked():
                     self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
                     self.dataframe.reset_index(drop=True, inplace=True)
 
-                ### 예외처리 5 - 최대 라인 수 초과
+                ### 예외처리 5 - 최대 출력 라인 초과
                 if len(self.dataframe) > 1048576:
                     self.alertbox_open3()
 
-                ### 조건, 라인 수 추출
+                ### 예외처리 6 - 데이터 미추출
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[계정코드: " + str(temp_AccCode) + "," +
-                                                               "연도" + str(tempYear_SAP) + "] 라인수 " +
-                                                               str(len(self.dataframe)) + "개 입니다"]})
+                    self.dataframe = pd.DataFrame({'No Data': ['[연도: ' + str(tempYear_NonSAP) + ','
+                                                               + '계정코드: ' + str(temp_Code_Non_SAP) + ','
+                                                               + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
 
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
+                    ### JE Line
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet_SAP + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
+
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                              + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                              + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                               + str(len(self.dataframe) - 1)
-                                                              + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
+                                                              + '건 추출되었습니다. <br> - 계정코드(' + str(temp_Code_Non_SAP)
                                                               + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Ok)
-
+                    ### JE
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet_SAP + '_Journals'] = self.dataframe
+                        self.scenario_dic[self.tempSheet_NonSAP + 'Journals'] = self.dataframe
+
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                              + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
+                                                              + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                               + str(len(self.dataframe) - 1)
-                                                              + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
+                                                              + '건 추출되었습니다. <br> - 계정코드(' + str(temp_Code_Non_SAP)
                                                               + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                               , QMessageBox.Ok)
+
                     if buttonReply == QMessageBox.Ok:
                         self.dialog5.activateWindow()
 
                 else:
-
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet_SAP + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
+
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
+
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
 
                         if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                                  + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                                  + str(len(self.dataframe))
-                                                                  + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
-                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                            buttonReply = QMessageBox.information(self, '라인수 추출',
+                                                                  '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
+                                                                  + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
+                                                                  + str(
+                                                                      temp_Code_Non_SAP) + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
+
                         else:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                                  + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                                  + str(len(self.dataframe))
-                                                                  + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
-                                                                  + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                            buttonReply = QMessageBox.information(self, '라인수 추출',
+                                                                  '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
+                                                                  + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
+                                                                  + str(
+                                                                      temp_Code_Non_SAP) + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet_SAP + '_Journals'] = self.dataframe
+                        ### 시트 콤보박스에 저장
+                        self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
-                        self.combo_sheet.addItem(str(result[-1]))
+                        self.combo_sheet.addItem(str(result[1]))
+
                         model = DataFrameModel(self.dataframe)
                         self.viewtable.setModel(model)
 
                         if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                                  + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                                  + str(len(self.dataframe))
-                                                                  + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
-                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                                  , QMessageBox.Ok)
-                        else:
-                            buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                                  + str(tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                                  + str(len(self.dataframe))
-                                                                  + '건 추출되었습니다. <br> - SKA1(' + str(dropped_items)
-                                                                  + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                            buttonReply = QMessageBox.information(self, '라인수 추출',
+                                                                  '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
+                                                                  + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
+                                                                  + str(
+                                                                      temp_Code_Non_SAP) + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
+                        else:
+                            buttonReply = QMessageBox.information(self, '라인수 추출',
+                                                                  '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
+                                                                  + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
+                                                                  + str(
+                                                                      temp_Code_Non_SAP) + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                  , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
                         self.dialog5.activateWindow()
-        else:
-            self.alertbox_open10()
-
-    def extButtonClicked5_Non_SAP(self):
-
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
-
-        tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
-        tempYear_NonSAP = int(pname_year)  # 필수값
-        temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
-
-        temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", temp_Code_Non_SAP_1)
-        temp_Code_Non_SAP_1 = re.split(",", temp_Code_Non_SAP_1)
-        # print(temp_Code_Non_SAP) # ['447102', '445101', '289301', '289310', '289311', '289312', '289313', '289314']
-        temp_Code_Non_SAP = ''
-        for code in temp_Code_Non_SAP_1:
-            temp_Code_Non_SAP += "'" + str(code) + "', "
-        temp_Code_Non_SAP = str(temp_Code_Non_SAP)
-        temp_Code_Non_SAP = temp_Code_Non_SAP[:-2]
-
-        ### 예외처리 1 - 필수값 입력 누락
-        if temp_Code_Non_SAP == '' or tempSheet_NonSAP == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()
-
-        ### 예외처리 2 - 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet_NonSAP + '_Result') != -1:
-            self.alertbox_open5()
-
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet_NonSAP + '_Journals') != -1:
-            self.alertbox_open5()
-
-        ### 쿼리 연동
-        else:
-
-            checked_account5_NonSAP = checked_account
-            cursor = self.cnxn.cursor()
-            ### JE Line
-            if self.rbtn1.isChecked():
-
-                sql_query = """
-                                SELECT 
-                                    JournalEntries.BusinessUnit
-                                    , JournalEntries.JENumber
-                                    , JournalEntries.JELineNumber
-                                    , JournalEntries.EffectiveDate
-                                    , JournalEntries.EntryDate
-                                    , JournalEntries.Period    
-                                    , JournalEntries.GLAccountNumber
-                                    , CoA.GLAccountName
-                                    , JournalEntries.Debit
-                                    , JournalEntries.Credit
-                                    , JournalEntries.Amount
-                                    , JournalEntries.FunctionalCurrencyCode
-                                    , JournalEntries.JEDescription
-                                    , JournalEntries.JELineDescription
-                                    , JournalEntries.PreparerID
-                                    , JournalEntries.ApproverID
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                                        AND JournalEntries.GLAccountNumber IN ({CODE})
-                                        {Account}
-                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
-
-                            """.format(field=self.selected_project_id, CODE=temp_Code_Non_SAP,
-                                       Account=checked_account5_NonSAP)
-            ### JE
-            elif self.rbtn2.isChecked():
-
-                sql_query = '''
-                                SELECT     
-                                    JournalEntries.BusinessUnit
-                                    , JournalEntries.JENumber
-                                    , JournalEntries.JELineNumber
-                                    , JournalEntries.EffectiveDate
-                                    , JournalEntries.EntryDate
-                                    , JournalEntries.Period
-                                    , JournalEntries.GLAccountNumber
-                                    , CoA.GLAccountName
-                                    , JournalEntries.Debit
-                                    , JournalEntries.Credit
-                                    , JournalEntries.Amount
-                                    , JournalEntries.FunctionalCurrencyCode
-                                    , JournalEntries.JEDescription
-                                    , JournalEntries.JELineDescription
-                                    , JournalEntries.PreparerID
-                                    , JournalEntries.ApproverID
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,   
-                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
-                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN 
-                                (
-                                    SELECT DISTINCT JENumber
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                    WHERE JournalEntries.GLAccountNumber IN ({CODE})
-                                    {Account}
-                                )
-                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                            '''.format(field=self.selected_project_id, CODE=temp_Code_Non_SAP,
-                                       Account=checked_account5_NonSAP)
-
-            self.dataframe = pd.read_sql(sql_query, self.cnxn)
-
-        ### 마지막 시트 쿼리 내역 추가
-        if self.rbtn1.isChecked():
-            my_query.loc[tempSheet_NonSAP + "_Result"] = [tempSheet_NonSAP + "_Result", "Scenario05",
-                                                          "---Filtered Result  Scenario05---\n" + sql_query]
-
-        if self.rbtn2.isChecked():
-            my_query.loc[tempSheet_NonSAP + "_Journals"] = [tempSheet_NonSAP + "_Journals", "Scenario05",
-                                                            "---Filtered JE  Scenario05---\n" + sql_query]
-
-        ### 예외처리 3 - 최대 출력 라인 초과
-        if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
-
-        ### 예외처리 4 - 데이터 미추출
-        elif len(self.dataframe) == 0:
-            self.dataframe = pd.DataFrame({'No Data': ['[연도: ' + str(tempYear_NonSAP) + ','
-                                                       + '계정코드: ' + str(temp_Code_Non_SAP) + ','
-                                                       + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
-
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-
-            ### JE Line
-            if self.rbtn1.isChecked():
-                self.scenario_dic[tempSheet_NonSAP + '_Result'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
-                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                      + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
-                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(temp_Code_Non_SAP)
-                                                      + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                      , QMessageBox.Ok)
-            ### JE
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[tempSheet_NonSAP + 'Journals'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
-                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                      + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
-                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(temp_Code_Non_SAP)
-                                                      + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                      , QMessageBox.Ok)
-
-            if buttonReply == QMessageBox.Ok:
-                self.dialog5.activateWindow()
-
-        else:
-            if self.rbtn1.isChecked():
-                self.scenario_dic[tempSheet_NonSAP + '_Result'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-
-                if len(self.dataframe) <= 500:
-                    buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                          + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
-                                                          + str(
-                                                              temp_Code_Non_SAP) + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-
-                else:
-                    buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                          + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
-                                                          + str(temp_Code_Non_SAP) + ')를 적용하였습니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-
-            elif self.rbtn2.isChecked():
-                ### 시트 콤보박스에 저장
-                self.scenario_dic[tempSheet_NonSAP + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-
-                if len(self.dataframe) <= 500:
-                    buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                          + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
-                                                          + str(
-                                                              temp_Code_Non_SAP) + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-
-                else:
-                    buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          '- 당기(' + str(tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                          + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 계정코드('
-                                                          + str(temp_Code_Non_SAP) + ')를 적용하였습니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-            if buttonReply == QMessageBox.Ok:
-                self.dialog5.activateWindow()
 
     def extButtonClicked6(self):
-        tempDate = self.D6_Date.text()
-
-        tempTDate = self.D6_Date2.text()
-        tempCost = self.D6_Cost.text()
-        tempSheet = self.D6_Sheet.text()
+        self.tempDate = self.D6_Date.text()
+        self.realDate = date.fromisoformat(self.tempDate)
+        self.tempTDate = self.D6_Date2.text()
+        self.tempCost = self.D6_Cost.text()
+        self.tempSheet = self.D6_Sheet.text()
 
         global my_query
         if 'my_query' in globals():
@@ -4289,7 +4492,7 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        if tempDate == '' or tempSheet == '':
+        if self.tempDate == '' or self.tempSheet == '':
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -4299,30 +4502,28 @@ class MyApp(QWidget):
             self.alertbox_open9()  # 전표입력자 선택 안함
 
         # 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
         else:
-            if tempCost == '': tempCost = 0
-            if tempTDate == '': tempTDate = 0
+            if self.tempCost == '': self.tempCost = 0
+            if self.tempTDate == '': self.tempTDate = 0
 
             checked_account6 = checked_account
             checked_preparer6 = checked_preparer
 
             try:
-                int(tempTDate)
-                int(tempCost)
+                int(self.tempTDate)
+                int(self.tempCost)
 
-                realDate = date.fromisoformat(tempDate)
-
-                first_origin = realDate - timedelta(days=int(tempTDate))
-                second_origin = realDate + timedelta(days=int(tempTDate))
+                first_origin = self.realDate - timedelta(days=int(self.tempTDate))
+                second_origin = self.realDate + timedelta(days=int(self.tempTDate))
 
                 first_mid = str(first_origin).split('-')
                 second_mid = str(second_origin).split('-')
@@ -4364,7 +4565,7 @@ class MyApp(QWidget):
                                        {Account}
                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
 
-                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=tempCost,
+                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=self.tempCost,
                                        first_date=str(first), second_date=str(second), Preparer=checked_preparer6)
 
 
@@ -4404,19 +4605,19 @@ class MyApp(QWidget):
                                 )
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
 
-                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=tempCost,
+                            '''.format(field=self.selected_project_id, Account=checked_account6, TE=self.tempCost,
                                        first_date=str(first), second_date=str(second), Preparer=checked_preparer6)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario06",
-                                                           "---Filtered Result  Scenario06---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
+                                                                "---Filtered Result  Scenario06---\n" + sql]
 
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario06",
-                                                             "---Filtered JE  Scenario06---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
+                                                                  "---Filtered JE  Scenario06---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -4433,53 +4634,58 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[결산일: " + str(tempDate) + "," + "T일: " + str(tempTDate)
-                                                               + "," + "중요성금액: " + str(tempCost)
-                                                               + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[결산일: " + str(self.tempDate) + "," + "T일: " + str(self.tempTDate)
+                                     + "," + "중요성금액: " + str(self.tempCost)
+                                     + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
 
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4489,7 +4695,7 @@ class MyApp(QWidget):
                 else:
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -4498,21 +4704,23 @@ class MyApp(QWidget):
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -4521,16 +4729,18 @@ class MyApp(QWidget):
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출",
-                                                                  "- 결산일(" + str(tempDate) + ") 전후" + str(tempTDate)
+                                                                  "- 결산일(" + str(self.tempDate) + ") 전후" + str(
+                                                                      self.tempTDate)
                                                                   + "일에 입력된 전표가 " + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -4540,14 +4750,14 @@ class MyApp(QWidget):
 
             except ValueError:
                 try:
-                    int(tempTDate)
+                    int(self.tempTDate)
                     try:
-                        int(tempCost)
+                        int(self.tempCost)
                     except:
                         self.alertbox_open2('중요성금액')
                 except:
                     try:
-                        int(tempCost)
+                        int(self.tempCost)
                         self.alertbox_open2('T')
                     except:
                         self.alertbox_open2('T값과 중요성금액')
@@ -4594,16 +4804,16 @@ class MyApp(QWidget):
 
         self.fianlDate = []  # 초기화 작업
 
-        realDate_List = []  # SQL 쿼리에 들어갈 리스트
+        self.realDate_List = []  # SQL 쿼리에 들어갈 리스트
 
         for i in range(0, len(holiday_str)):
-            tempDate = []
-            tempDate = str(holiday_str[i]).split('-')
-            realDate = tempDate[0] + tempDate[1] + tempDate[2]
-            realDate_List.append(realDate)
+            self.tempDate = []
+            self.tempDate = str(holiday_str[i]).split('-')
+            self.realDate = self.tempDate[0] + self.tempDate[1] + self.tempDate[2]
+            self.realDate_List.append(self.realDate)
 
         checked_date = ''
-        for i in realDate_List:
+        for i in self.realDate_List:
             checked_date = checked_date + ',' + '\'' + i + '\''
 
         checked_date = checked_date[1:]
@@ -4611,19 +4821,19 @@ class MyApp(QWidget):
         checked_effective = 'AND JournalEntries.EffectiveDate IN (' + checked_date + ')'
         checked_entry = 'AND JournalEntries.EntryDate IN (' + checked_date + ')'
 
-        tempCost = self.D7_Cost.text()
-        tempSheet = self.D7_Sheet.text()
+        self.tempCost = self.D7_Cost.text()
+        self.tempSheet = self.D7_Sheet.text()
 
         if self.rbtn1.isChecked():  # Effective Date 일 때
-            tempState = checked_effective
+            self.tempState = checked_effective
 
         elif self.rbtn2.isChecked():  # Entry Date 일 때
-            tempState = checked_entry
+            self.tempState = checked_entry
 
-        if tempCost == '':
-            tempCost = 0
+        if self.tempCost == '':
+            self.tempCost = 0
 
-        if tempDate == '' or tempSheet == '':
+        if self.tempDate == '' or self.tempSheet == '':
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -4635,19 +4845,19 @@ class MyApp(QWidget):
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
-        elif self.combo_sheet.findText(tempSheet) != -1:
+        elif self.combo_sheet.findText(self.tempSheet) != -1:
             self.alertbox_open5()
 
         # 시트명 중복 확인
-        elif self.rbtn3.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn3.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn4.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn4.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         else:
             try:
-                int(tempCost)
+                int(self.tempCost)
                 checked_account7 = checked_account
                 checked_preparer7 = checked_preparer
 
@@ -4685,7 +4895,7 @@ class MyApp(QWidget):
                                     AND ABS(JournalEntries.Amount) > {TE}
                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
 
-                           '''.format(field=self.selected_project_id, TE=tempCost, Date=tempState,
+                           '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                                       Account=checked_account7, Preparer=checked_preparer7)
 
                 elif self.rbtn4.isChecked():
@@ -4723,19 +4933,19 @@ class MyApp(QWidget):
                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
 
 
-                           '''.format(field=self.selected_project_id, TE=tempCost, Date=tempState,
+                           '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                                       Account=checked_account7, Preparer=checked_preparer7)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn3.isChecked():
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario07",
-                                                           "---Filtered Result  Scenario07---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
+                                                                "---Filtered Result  Scenario07---\n" + sql]
 
                 if self.rbtn4.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario07",
-                                                             "---Filtered JE  Scenario07---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
+                                                                  "---Filtered JE  Scenario07---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -4752,51 +4962,51 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(tempState) + ","
-                                                               + "중요성금액: " + str(tempCost)
+                    self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(self.tempState) + ","
+                                                               + "중요성금액: " + str(self.tempCost)
                                                                + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         if len(self.dataframe) <= 500:  # delete
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -4805,7 +5015,7 @@ class MyApp(QWidget):
                 else:
 
                     if self.rbtn3.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -4814,21 +5024,21 @@ class MyApp(QWidget):
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn4.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -4837,16 +5047,16 @@ class MyApp(QWidget):
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일("
-                                                                  + str(realDate) + ")에 전기된 or 입력된 전표가 "
+                                                                  + str(self.realDate) + ")에 전기된 or 입력된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -4856,9 +5066,9 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClicked8(self):
-        tempN = self.D8_N.text()
-        tempCost = self.D8_Cost.text()
-        tempSheet = self.D8_Sheet.text()
+        self.tempN = self.D8_N.text()
+        self.tempCost = self.D8_Cost.text()
+        self.tempSheet = self.D8_Sheet.text()
 
         global my_query
         if 'my_query' in globals():
@@ -4866,9 +5076,9 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        realNDate = int(tempN)
+        realNDate = int(self.tempN)
 
-        if tempN == '' or tempSheet == '':
+        if self.tempN == '' or self.tempSheet == '':
             self.alertbox_open()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -4881,18 +5091,18 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         # 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
 
         else:
-            if tempCost == '': tempCost = 0
+            if self.tempCost == '': self.tempCost = 0
             try:
-                int(tempN)
-                int(tempCost)
+                int(self.tempN)
+                int(self.tempCost)
 
                 checked_account8 = checked_account
                 checked_preparer8 = checked_preparer
@@ -4933,7 +5143,7 @@ class MyApp(QWidget):
                                         AND ABS(JournalEntries.Amount) > {TE}
                                         {Account}
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                                '''.format(field=self.selected_project_id, realNDate=realNDate, TE=tempCost,
+                                '''.format(field=self.selected_project_id, realNDate=realNDate, TE=self.tempCost,
                                            Preparer=checked_preparer8, Account=checked_account8)
 
                 elif self.rbtn2.isChecked():
@@ -4974,18 +5184,18 @@ class MyApp(QWidget):
                                             {Account}
                                         )
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                                    '''.format(field=self.selected_project_id, realNDate=realNDate, TE=tempCost,
+                                    '''.format(field=self.selected_project_id, realNDate=realNDate, TE=self.tempCost,
                                                Preparer=checked_preparer8, Account=checked_account8)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario08",
-                                                           "---Filtered Result  Scenario08---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
+                                                                "---Filtered Result  Scenario08---\n" + sql]
 
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario08",
-                                                             "---Filtered JE  Scenario08---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
+                                                                  "---Filtered JE  Scenario08---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -5004,13 +5214,13 @@ class MyApp(QWidget):
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame(
                         {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(realNDate)
-                                     + "," + "중요성금액: " + str(tempCost)
+                                     + "," + "중요성금액: " + str(self.tempCost)
                                      + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -5019,19 +5229,19 @@ class MyApp(QWidget):
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -5040,14 +5250,14 @@ class MyApp(QWidget):
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -5056,7 +5266,7 @@ class MyApp(QWidget):
                 else:
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -5067,19 +5277,19 @@ class MyApp(QWidget):
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -5090,14 +5300,14 @@ class MyApp(QWidget):
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                                   + str(realNDate) + "인 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempCost)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempCost)
                                                                   + ")를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -5105,294 +5315,196 @@ class MyApp(QWidget):
 
             except ValueError:
                 try:
-                    int(tempN)
+                    int(self.tempN)
                     try:
-                        int(tempCost)
+                        int(self.tempCost)
                     except:
                         self.alertbox_open2('중요성금액')
                 except:
                     try:
-                        int(tempCost)
+                        int(self.tempCost)
                         self.alertbox_open2('N')
                     except:
                         self.alertbox_open2('N값과 중요성금액')
 
     def extButtonClicked9(self):
-
-        tempN = self.D9_N.text()  # 필수값
-        tempTE = self.D9_TE.text()
-        tempSheet = self.D9_Sheet.text()
-
         global my_query
         if 'my_query' in globals():
             my_query = my_query
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
+        cursor = self.cnxn.cursor()
+        # sql문 수정
+        if self.rbtn1.isChecked():
+            sql = '''
+                           SELECT				
+                                  JournalEntries.BusinessUnit			
+                                  , JournalEntries.JENumber			
+                                  , JournalEntries.JELineNumber			
+                                  , JournalEntries.EffectiveDate			
+                                  , JournalEntries.EntryDate			
+                                  , JournalEntries.Period			
+                                  , JournalEntries.GLAccountNumber			
+                                  , CoA.GLAccountName			
+                                  , JournalEntries.Debit			
+                                  , JournalEntries.Credit			
+                                  , CASE
+                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                        END AS DebitCredit
+                                  , JournalEntries.Amount			
+                                  , JournalEntries.FunctionalCurrencyCode			
+                                  , JournalEntries.JEDescription			
+                                  , JournalEntries.JELineDescription			
+                                  , JournalEntries.PreparerID			
+                                  , JournalEntries.ApproverID			
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
+                                  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
+                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.PreparerID IN 				
+                                  (			
+                                  SELECT DISTINCT PreparerID			
+                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                  GROUP BY PreparerID			
+                                  HAVING COUNT(GLAccountNumber) <= {N}			
+                                  )	AND ABS(JournalEntries.Amount) > {TE} {Account}		
+                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
+                        '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
+                                   Account=checked_account)
 
-        if tempN == '' or tempSheet == '':
-            self.alertbox_open()
+            sql_refer = '''
+                           SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries				
+                           WHERE JournalEntries.PreparerID IN				
+                                  (			
+                                  SELECT DISTINCT PreparerID			
+                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                  GROUP BY PreparerID			
+                                  HAVING COUNT(GLAccountNumber) <= {N}			
+                                  ) AND ABS(JournalEntries.Amount) > {TE} {Account}			
+                           GROUP BY JournalEntries.PreparerID				
 
-        # 시트명 중복 확인
-        elif self.rbtn1.isChecked() and (
-                self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-            tempSheet + '_Reference') != -1):
-            self.alertbox_open5()
+                        '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
+                                   Account=checked_account)
+            self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
-            self.alertbox_open5()
+        elif self.rbtn2.isChecked():
+            sql = '''
+                           SELECT 				
+                               JournalEntries.BusinessUnit			
+                               , JournalEntries.JENumber			
+                               , JournalEntries.JELineNumber			
+                               , JournalEntries.EffectiveDate			
+                               , JournalEntries.EntryDate			
+                               , JournalEntries.Period			
+                               , JournalEntries.GLAccountNumber			
+                               , CoA.GLAccountName			
+                               , JournalEntries.Debit			
+                               , JournalEntries.Credit			
+                               , CASE
+                                    WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                    END AS DebitCredit
+                               , JournalEntries.Amount			
+                               , JournalEntries.FunctionalCurrencyCode			
+                               , JournalEntries.JEDescription			
+                               , JournalEntries.JELineDescription			
+                               , JournalEntries.PreparerID			
+                               , JournalEntries.ApproverID			
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
+                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
+                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 				
+                               JournalEntries.JENumber IN 			
+                                   (		
+                                   SELECT DISTINCT JENumber		
+                                   FROM  [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries		
+                                   WHERE JournalEntries.PreparerID IN 		
+                                       (	
+                                       SELECT DISTINCT JournalEntries.PreparerID	
+                                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,	
+                                           (
+                                           SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt
+                                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                           GROUP BY JournalEntries.PreparerID
+                                           HAVING COUNT(GLAccountNumber) <= {N}
+                                           ) AS LVL1
+                                       WHERE LVL1.PreparerID = JournalEntries.PreparerID	
+                                       ) AND ABS(JournalEntries.Amount) > {TE}	
+                                   ) {Account} 		
+                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
+                        '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
+                                   Account=checked_account)
 
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()  # 계정 선택 오류
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
-        elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
-            self.alertbox_open7()
+        ### 마지막 시트 쿼리 내역 추가
+        if self.rbtn1.isChecked():
+            my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
+                                                           "---Filtered Result_1  Scenario09---\n" + sql_refer]
+            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
+                                                        "---Filtered Result_2  Scenario09---\n" + sql]
+
+        if self.rbtn2.isChecked():
+            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
+                                                          "---Filtered JE  Scenario09---\n" + sql]
+
+        if self.checkC.isChecked() and self.checkD.isChecked():
+            self.dataframe = self.dataframe
+
+        elif self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        elif self.checkD.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        if len(self.dataframe) > 1048576:
+            self.communicate9.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[전표작성 빈도수: " + str(self.tempN) + "," + " 중요성금액: " + str(
+                self.tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+            model = DataFrameModel(self.dataframe)
+            model_refer = DataFrameModel(self.dataframe_refer)
+            self.viewtable.setModel(model)
+
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
+                self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1], key_list[-2]]
+                self.combo_sheet.addItem(str(result[2]))
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
 
         else:
-            if tempTE == '': tempTE = 0
-            try:
-                int(tempN)
-                int(tempTE)
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
+                self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1], key_list[-2]]
+                self.combo_sheet.addItem(str(result[2]))
+                self.combo_sheet.addItem(str(result[1]))
+                model = DataFrameModel(self.dataframe)
+                model_refer = DataFrameModel(self.dataframe_refer)
+                self.viewtable.setModel(model)
 
-                cursor = self.cnxn.cursor()
-
-                # sql문 수정
-                if self.rbtn1.isChecked():
-
-                    sql = '''
-                                   SELECT				
-    	                                  JournalEntries.BusinessUnit			
-    	                                  , JournalEntries.JENumber			
-    	                                  , JournalEntries.JELineNumber			
-    	                                  , JournalEntries.EffectiveDate			
-    	                                  , JournalEntries.EntryDate			
-    	                                  , JournalEntries.Period			
-    	                                  , JournalEntries.GLAccountNumber			
-    	                                  , CoA.GLAccountName			
-    	                                  , JournalEntries.Debit			
-    	                                  , JournalEntries.Credit			
-                                          , CASE
-                                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                END AS DebitCredit
-    	                                  , JournalEntries.Amount			
-    	                                  , JournalEntries.FunctionalCurrencyCode			
-    	                                  , JournalEntries.JEDescription			
-    	                                  , JournalEntries.JELineDescription			
-    	                                  , JournalEntries.PreparerID			
-    	                                  , JournalEntries.ApproverID			
-                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-    	                                  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.PreparerID IN 				
-    	                                  (			
-    	                                  SELECT DISTINCT PreparerID			
-    	                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
-    	                                  GROUP BY PreparerID			
-    	                                  HAVING COUNT(GLAccountNumber) <= {N}			
-    	                                  )	AND ABS(JournalEntries.Amount) > {TE} {Account}		
-                                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
-
-                                '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
-
-                    sql_refer = '''
-                                   SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
-                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries				
-                                   WHERE JournalEntries.PreparerID IN				
-    	                                  (			
-    	                                  SELECT DISTINCT PreparerID			
-    	                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
-    	                                  GROUP BY PreparerID			
-    	                                  HAVING COUNT(GLAccountNumber) <= {N}			
-    	                                  ) AND ABS(JournalEntries.Amount) > {TE} {Account}			
-                                   GROUP BY JournalEntries.PreparerID				
-
-                                '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
-
-                    self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
-
-
-                elif self.rbtn2.isChecked():
-
-                    sql = '''
-                                   SELECT 				
-    	                               JournalEntries.BusinessUnit			
-    	                               , JournalEntries.JENumber			
-    	                               , JournalEntries.JELineNumber			
-    	                               , JournalEntries.EffectiveDate			
-    	                               , JournalEntries.EntryDate			
-    	                               , JournalEntries.Period			
-    	                               , JournalEntries.GLAccountNumber			
-    	                               , CoA.GLAccountName			
-    	                               , JournalEntries.Debit			
-    	                               , JournalEntries.Credit			
-                                       , CASE
-                                            WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                            END AS DebitCredit
-    	                               , JournalEntries.Amount			
-    	                               , JournalEntries.FunctionalCurrencyCode			
-    	                               , JournalEntries.JEDescription			
-    	                               , JournalEntries.JELineDescription			
-    	                               , JournalEntries.PreparerID			
-    	                               , JournalEntries.ApproverID			
-                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-    	                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 				
-    	                               JournalEntries.JENumber IN 			
-    		                               (		
-    		                               SELECT DISTINCT JENumber		
-    		                               FROM  [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries		
-    		                               WHERE JournalEntries.PreparerID IN 		
-    			                               (	
-    			                               SELECT DISTINCT JournalEntries.PreparerID	
-    			                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,	
-    				                               (
-    				                               SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt
-    				                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
-    				                               GROUP BY JournalEntries.PreparerID
-    				                               HAVING COUNT(GLAccountNumber) <= {N}
-    				                               ) AS LVL1
-    			                               WHERE LVL1.PreparerID = JournalEntries.PreparerID	
-    			                               ) AND ABS(JournalEntries.Amount) > {TE}	
-    		                               ) {Account} 		
-                                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
-
-                                '''.format(field=self.selected_project_id, TE=tempTE, N=tempN, Account=checked_account)
-
-                self.dataframe = pd.read_sql(sql, self.cnxn)
-
-                ### 마지막 시트 쿼리 내역 추가
-                if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Reference"] = [tempSheet + "_Reference", "Scenario09",
-                                                              "---Filtered Result_1  Scenario09---\n" + sql_refer]
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario09",
-                                                           "---Filtered Result_2  Scenario09---\n" + sql]
-
-                if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario09",
-                                                             "---Filtered JE  Scenario09---\n" + sql]
-
-                if self.checkC.isChecked() and self.checkD.isChecked():
-                    self.dataframe = self.dataframe
-
-                elif self.checkC.isChecked():
-                    self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-                    self.dataframe.reset_index(drop=True, inplace=True)
-
-                elif self.checkD.isChecked():
-                    self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-                    self.dataframe.reset_index(drop=True, inplace=True)
-
-                if len(self.dataframe) > 1048576:
-                    self.alertbox_open3()
-
-                elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[전표작성 빈도수: " + str(tempN) + "," + " 중요성금액: " + str(
-                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
-                    model = DataFrameModel(self.dataframe)
-                    model_refer = DataFrameModel(self.dataframe_refer)
-                    self.viewtable.setModel(model)
-
-                    if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
-                        self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1], key_list[-2]]
-                        self.combo_sheet.addItem(str(result[2]))
-                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                              + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                              + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
-                                                              + str(
-                            tempTE) + ")을 적용하였습니다.추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
-                                                              , QMessageBox.Ok)
-
-                    elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1]]
-                        self.combo_sheet.addItem(str(result[1]))
-                        buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                              + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                              + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
-                                                              + str(
-                            tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
-                                                              , QMessageBox.Ok)
-
-                    if buttonReply == QMessageBox.Ok:
-                        self.dialog9.activateWindow()
-
-                else:
-
-                    if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
-                        self.scenario_dic[tempSheet + "_Reference"] = self.dataframe_refer
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1], key_list[-2]]
-                        self.combo_sheet.addItem(str(result[2]))
-                        self.combo_sheet.addItem(str(result[1]))
-                        model = DataFrameModel(self.dataframe)
-                        model_refer = DataFrameModel(self.dataframe_refer)
-                        self.viewtable.setModel(model)
-
-                        if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                                  + str(
-                                len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
-                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표라인번호 기준]"
-                                                                  , QMessageBox.Ok)
-                        else:
-                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                                  + str(
-                                len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
-                                                                  + str(
-                                tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
-                                                                  , QMessageBox.Ok)
-
-                    elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
-                        key_list = list(self.scenario_dic.keys())
-                        result = [key_list[0], key_list[-1]]
-                        self.combo_sheet.addItem(str(result[1]))
-                        model = DataFrameModel(self.dataframe)
-                        self.viewtable.setModel(model)
-
-                        if len(self.dataframe) <= 500:
-                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                                  + str(
-                                len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
-                                                                  + str(tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
-                                                                  , QMessageBox.Ok)
-                        else:
-                            buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(tempN)
-                                                                  + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                                  + str(
-                                len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
-                                                                  + str(
-                                tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
-                                                                  , QMessageBox.Ok)
-                    if buttonReply == QMessageBox.Ok:
-                        self.dialog9.activateWindow()
-                self.doneAction()
-
-            except ValueError:
-                try:
-                    int(tempN)
-                    try:
-                        int(tempTE)
-                    except:
-                        self.alertbox_open4('중요성금액')
-                except:
-                    try:
-                        int(tempTE)
-                        self.alertbox_open4('작성빈도수')
-                    except:
-                        self.alertbox_open4('작성빈도수와 중요성금액')
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
+                key_list = list(self.scenario_dic.keys())
+                result = [key_list[0], key_list[-1]]
+                self.combo_sheet.addItem(str(result[1]))
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+        self.communicate9.closeApp.emit()
 
     def extButtonClicked10(self):
-        tempTE = self.D10_TE.text()
-        tempSheet = self.D10_Sheet.text()
-        tempPoint1 = self.D10_Point1.text()
-        tempPoint2 = self.D10_Point2.text()
+        self.tempTE = self.D10_TE.text()
+        self.tempSheet = self.D10_Sheet.text()
+        self.tempPoint1 = self.D10_Point1.text()
+        self.tempPoint2 = self.D10_Point2.text()
 
         global my_query
         if 'my_query' in globals():
@@ -5400,7 +5512,7 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        if tempSheet == '':
+        if self.tempSheet == '':
             self.alertbox_open()
 
         elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
@@ -5408,11 +5520,11 @@ class MyApp(QWidget):
 
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and (
-                self.combo_sheet.findText(tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-            tempSheet + '_Reference') != -1):
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+            self.tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -5422,32 +5534,32 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         else:
-            if tempTE == '': tempTE = 0
-            if tempPoint1 == '':
-                tempPoint1 = '1000-01-01'
-            if tempPoint2 == '':
-                tempPoint2 = '9999-12-31'
+            if self.tempTE == '': self.tempTE = 0
+            if self.tempPoint1 == '':
+                self.tempPoint1 = '1000-01-01'
+            if self.tempPoint2 == '':
+                self.tempPoint2 = '9999-12-31'
 
             try:
-                int(tempTE)
+                int(self.tempTE)
                 try:
-                    int(tempPoint1[0:4])
-                    int(tempPoint1[5:7])
-                    int(tempPoint1[8:10])
-                    int(tempPoint2[0:4])
-                    int(tempPoint2[5:7])
-                    int(tempPoint2[8:10])
+                    int(self.tempPoint1[0:4])
+                    int(self.tempPoint1[5:7])
+                    int(self.tempPoint1[8:10])
+                    int(self.tempPoint2[0:4])
+                    int(self.tempPoint2[5:7])
+                    int(self.tempPoint2[8:10])
 
-                    if len(str(tempPoint1)) != 10 or len(str(tempPoint2)) != 10:
+                    if len(str(self.tempPoint1)) != 10 or len(str(self.tempPoint2)) != 10:
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                    elif ((tempPoint1[5:7] < '01' or tempPoint1[8:10] > '31') and (
-                            tempPoint2[5:7] >= '01' and tempPoint2[8:10] <= '31')):
+                    elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31') and (
+                            self.tempPoint2[5:7] >= '01' and self.tempPoint2[8:10] <= '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
-                    elif ((tempPoint2[5:7] < '01' or tempPoint2[8:10] > '31')
-                          and (tempPoint1[5:7] >= '01' and tempPoint1[8:10] <= '31')):
+                    elif ((self.tempPoint2[5:7] < '01' or self.tempPoint2[8:10] > '31')
+                          and (self.tempPoint1[5:7] >= '01' and self.tempPoint1[8:10] <= '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
-                    elif ((tempPoint1[5:7] < '01' or tempPoint1[8:10] > '31')
-                          and (tempPoint2[5:7] < '01' and tempPoint2[8:10] > '31')):
+                    elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31')
+                          and (self.tempPoint2[5:7] < '01' and self.tempPoint2[8:10] > '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
 
                     else:
@@ -5487,9 +5599,10 @@ class MyApp(QWidget):
                                                            AND ABS(JournalEntries.Amount) > {TE} {Account}	
                                                ORDER BY JENumber,JELineNumber			
 
-                                            '''.format(field=self.selected_project_id, TE=tempTE,
+                                            '''.format(field=self.selected_project_id, TE=self.tempTE,
                                                        Preparer=checked_preparer10,
-                                                       Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+                                                       Account=checked_account, Point1=self.tempPoint1,
+                                                       Point2=self.tempPoint2)
 
                         elif self.rbtn2.isChecked():
 
@@ -5528,20 +5641,21 @@ class MyApp(QWidget):
                                                                     ) {Account}	
                                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
 
-                                            '''.format(field=self.selected_project_id, TE=tempTE,
+                                            '''.format(field=self.selected_project_id, TE=self.tempTE,
                                                        Preparer=checked_preparer10,
-                                                       Account=checked_account, Point1=tempPoint1, Point2=tempPoint2)
+                                                       Account=checked_account, Point1=self.tempPoint1,
+                                                       Point2=self.tempPoint2)
 
                         self.dataframe = pd.read_sql(sql, self.cnxn)
 
                         ### 마지막 시트 쿼리 내역 추가
                         if self.rbtn1.isChecked():
-                            my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario10",
-                                                                   "---Filtered Result  Scenario10---\n" + sql]
+                            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
+                                                                        "---Filtered Result  Scenario10---\n" + sql]
 
                         if self.rbtn2.isChecked():
-                            my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario10",
-                                                                     "---Filtered JE  Scenario10---\n" + sql]
+                            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
+                                                                          "---Filtered JE  Scenario10---\n" + sql]
 
                         if self.checkC.isChecked() and self.checkD.isChecked():
                             self.dataframe = self.dataframe
@@ -5560,14 +5674,14 @@ class MyApp(QWidget):
                         elif len(self.dataframe) == 0:
                             self.dataframe = pd.DataFrame(
                                 {'No Data': ["[시작시점: " + str(
-                                    tempPoint1) + " 종료시점: " + str(tempPoint2) + " 중요성금액: " + str(
-                                    tempTE) + "] 라인수 " + str(
+                                    self.tempPoint1) + " 종료시점: " + str(self.tempPoint2) + " 중요성금액: " + str(
+                                    self.tempTE) + "] 라인수 " + str(
                                     len(self.dataframe)) + "개입니다"]})
                             model = DataFrameModel(self.dataframe)
                             self.viewtable.setModel(model)
 
                             if self.rbtn1.isChecked():
-                                self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                                 key_list = list(self.scenario_dic.keys())
                                 result = [key_list[0], key_list[-1]]
                                 self.combo_sheet.addItem(str(result[1]))
@@ -5575,22 +5689,22 @@ class MyApp(QWidget):
                                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                       + str(
                                     len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                      + str(tempTE) + "<br> - 시작시점: " + str(
-                                    tempPoint1) + "<br> - 종료시점: " + str(
-                                    tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
+                                                                      + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                    self.tempPoint1) + "<br> - 종료시점: " + str(
+                                    self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
                                                                       , QMessageBox.Ok)
 
                             elif self.rbtn2.isChecked():
-                                self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                                 key_list = list(self.scenario_dic.keys())
                                 result = [key_list[0], key_list[-1]]
                                 self.combo_sheet.addItem(str(result[1]))
                                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                       + str(
                                     len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                      + str(tempTE) + "<br> - 시작시점: " + str(
-                                    tempPoint1) + "<br> - 종료시점: " + str(
-                                    tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                                      + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                    self.tempPoint1) + "<br> - 종료시점: " + str(
+                                    self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
                                                                       , QMessageBox.Ok)
                             if buttonReply == QMessageBox.Ok:
                                 self.dialog10.activateWindow()
@@ -5598,7 +5712,7 @@ class MyApp(QWidget):
                         else:
 
                             if self.rbtn1.isChecked():
-                                self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                                 key_list = list(self.scenario_dic.keys())
                                 result = [key_list[0], key_list[-1]]
                                 self.combo_sheet.addItem(str(result[1]))
@@ -5608,20 +5722,21 @@ class MyApp(QWidget):
                                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                           + str(
                                         len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                          + str(tempTE) + "<br> - 시작시점: " + str(
-                                        tempPoint1) + "<br> - 종료시점: " + str(tempPoint2) + "을 적용하였습니다. <br> [전표라인번호 기준]"
+                                                                          + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                        self.tempPoint1) + "<br> - 종료시점: " + str(
+                                        self.tempPoint2) + "을 적용하였습니다. <br> [전표라인번호 기준]"
                                                                           , QMessageBox.Ok)
                                 else:
                                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                           + str(
                                         len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                          + str(tempTE) + "<br> - 시작시점: " + str(
-                                        tempPoint1) + "<br> - 종료시점: " + str(
-                                        tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
+                                                                          + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                        self.tempPoint1) + "<br> - 종료시점: " + str(
+                                        self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
                                                                           , QMessageBox.Ok)
 
                             elif self.rbtn2.isChecked():
-                                self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                                 key_list = list(self.scenario_dic.keys())
                                 result = [key_list[0], key_list[-1]]
                                 self.combo_sheet.addItem(str(result[1]))
@@ -5631,27 +5746,30 @@ class MyApp(QWidget):
                                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                           + str(
                                         len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                          + str(tempTE) + "<br> - 시작시점: " + str(
-                                        tempPoint1) + "<br> - 종료시점: " + str(tempPoint2) + "을 적용하였습니다. <br> [전표번호 기준]"
+                                                                          + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                        self.tempPoint1) + "<br> - 종료시점: " + str(
+                                        self.tempPoint2) + "을 적용하였습니다. <br> [전표번호 기준]"
                                                                           , QMessageBox.Ok)
                                 else:
                                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                                           + str(
                                         len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
-                                                                          + str(tempTE) + "<br> - 시작시점: " + str(
-                                        tempPoint1) + "<br> - 종료시점: " + str(
-                                        tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                                                                          + str(self.tempTE) + "<br> - 시작시점: " + str(
+                                        self.tempPoint1) + "<br> - 종료시점: " + str(
+                                        self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
                                                                           , QMessageBox.Ok)
 
                             if buttonReply == QMessageBox.Ok:
                                 self.dialog10.activateWindow()
 
                 except:
-                    if tempPoint1[5:7] == '' or tempPoint1[8:10] == '' or tempPoint2[5:7] == '' or tempPoint2[
-                                                                                                   8:10] == '':
+                    if self.tempPoint1[5:7] == '' or self.tempPoint1[8:10] == '' or self.tempPoint2[
+                                                                                    5:7] == '' or self.tempPoint2[
+                                                                                                  8:10] == '':
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                    elif tempPoint1[5:7] == '00' or tempPoint1[8:10] == '00' or tempPoint2[5:7] == '00' or tempPoint2[
-                                                                                                           8:10] == '00':
+                    elif self.tempPoint1[5:7] == '00' or self.tempPoint1[8:10] == '00' or self.tempPoint2[
+                                                                                          5:7] == '00' or self.tempPoint2[
+                                                                                                          8:10] == '00':
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                     else:
                         self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
@@ -5659,9 +5777,10 @@ class MyApp(QWidget):
             except ValueError:
                 self.alertbox_open4("중요성금액을 숫자로만 입력해주시기 바랍니다.")
 
-    def extButtonClicked11(self):
-        temp_TE = self.D12_Cost1.text()
-        temp_Sheet = self.D12_Sheet11.text()
+    def extButtonClicked12(self):
+        self.tempCost = self.D12_Cost.text()
+        self.tempSheet = self.D12_Sheet12.text()
+        self.tempState = ''
 
         global my_query
         if 'my_query' in globals():
@@ -5669,433 +5788,17 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        ### 예외처리 1 - 필수값 입력 누락
-        if temp_TE == '':
-            temp_TE = 0
+        if self.tempCost == '':
+            self.tempCost = 0
 
-        if temp_Sheet == '':
-            self.alertbox_open()
-
-        ### 예외처리 2 - 시트명 중복 확인
-        elif self.combo_sheet.findText(temp_Sheet + '_Reference') != -1:
-            self.alertbox_open5()
-
-        ### 예외처리 3 - 차대변 선택 오류
-        elif not (self.checkC2.isChecked()) and not (self.checkD2.isChecked()):
-            self.alertbox_open7()
-
-        elif (self.checkC2.isChecked()) and (self.checkD2.isChecked()):
-            self.alertbox_open8()
-
-        else:
-            if self.checkC2.isChecked():
-                temp_State = 'Credit'
-            elif self.checkD2.isChecked():
-                temp_State = 'Debit'
-
-            ### 쿼리 연동
-            ### JE Line - Refer
-            sql_refer = '''
-                                    SET NOCOUNT ON;
-                                    SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                    WHERE JENumber IN (
-                                                      SELECT DISTINCT JENumber
-                                                      FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                                      WHERE ABS(Amount) > {TE} AND Year = '{YEAR}'
-                                                      )
-
-                                                        SELECT
-                                                            JournalEntries.BusinessUnit
-                                                            , JournalEntries.JENumber
-                                                            , JournalEntries.JELineNumber
-                                                            , JournalEntries.EffectiveDate
-                                                            , JournalEntries.EntryDate
-                                                            , JournalEntries.Period
-                                                            , JournalEntries.GLAccountNumber
-                                                            , CoA.GLAccountName
-                                                            , JournalEntries.Debit
-                                                            , JournalEntries.Credit
-                                                            , JournalEntries.Amount
-                                                            , JournalEntries.FunctionalCurrencyCode
-                                                            , JournalEntries.JEDescription
-                                                            , JournalEntries.JELineDescription
-                                                            , JournalEntries.PreparerID
-                                                            , JournalEntries.ApproverID
-                                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
-                                                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
-                                                        WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (
-                                                            SELECT DISTINCT LVL2_1.JENumber1
-                                                            FROM
-                                                                (
-                                                                    SELECT
-                                                                        LVL1_1.JENumber1,
-                                                                        LVL1_1.GLAccountNumber1,
-                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
-                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,
-                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,
-                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,
-                                                                        DivideDC1,
-                                                                        COUNT(*) AS Cnt1
-                                                                    FROM
-                                                                    (
-                                                                            SELECT
-                                                                                #tmp.JENumber AS JENumber1,
-                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,
-                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,
-                                                                                CoA.GLAccountName AS CoA_GLAccountName1,
-                                                                                CoA.AccountType AS AccountType1,
-                                                                                #tmp.Debit AS Debit1,
-                                                                                #tmp.Credit AS Credit1,
-                                                                                #tmp.Amount AS Amount1,
-                                                                                CASE
-                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                                END AS 'DivideDC1'
-                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                                    ) LVL1_1
-                                                                    GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
-                                                                ) LVL2_1,
-                                                                (
-                                                                    SELECT
-                                                                        LVL1_2.JENumber2,
-                                                                        LVL1_2.GLAccountNumber2,
-                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
-                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,
-                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,
-                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,
-                                                                        DivideDC2,
-                                                                        COUNT(*) AS Cnt2
-                                                                    FROM
-                                                                    (
-                                                                            SELECT #tmp.JENumber AS JENumber2,
-                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,
-                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,
-                                                                                CoA.GLAccountName AS CoA_GLAccountName2,
-                                                                                CoA.AccountType AS AccountType2,
-                                                                                #tmp.Debit AS Debit2,
-                                                                                #tmp.Credit AS Credit2,
-                                                                                #tmp.Amount AS Amount2,
-                                                                                CASE
-                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                                END AS 'DivideDC2'
-                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                                    ) LVL1_2
-                                                                    GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
-                                                                ) LVL2_2
-                                                            WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND LVL2_1.GLAccountNumber1 IN ({Account})
-                                                                AND LVL2_1.DivideDC1 = '{CD}'
-                                                            EXCEPT
-                                                                SELECT DISTINCT LVL2_1.JENumber1
-                                                            FROM
-                                                                (
-                                                                    SELECT
-                                                                        LVL1_1.JENumber1,
-                                                                        LVL1_1.GLAccountNumber1,
-                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
-                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,
-                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,
-                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,
-                                                                        DivideDC1,
-                                                                        COUNT(*) AS Cnt1
-                                                                    FROM
-                                                                    (
-                                                                            SELECT
-                                                                                #tmp.JENumber AS JENumber1,
-                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,
-                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,
-                                                                                CoA.GLAccountName AS CoA_GLAccountName1,
-                                                                                CoA.AccountType AS AccountType1,
-                                                                                #tmp.Debit AS Debit1,
-                                                                                #tmp.Credit AS Credit1,
-                                                                                #tmp.Amount AS Amount1,
-                                                                                CASE
-                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                                END AS 'DivideDC1'
-                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                                        ) LVL1_1
-                                                                        GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
-                                                                ) LVL2_1,
-                                                                (
-                                                                    SELECT
-                                                                        LVL1_2.JENumber2,
-                                                                        LVL1_2.GLAccountNumber2,
-                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
-                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,
-                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,
-                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,
-                                                                        DivideDC2,
-                                                                        COUNT(*) AS Cnt2
-                                                                    FROM
-                                                                    (
-                                                                            SELECT #tmp.JENumber AS JENumber2,
-                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,
-                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,
-                                                                                CoA.GLAccountName AS CoA_GLAccountName2,
-                                                                                CoA.AccountType AS AccountType2,
-                                                                                #tmp.Debit AS Debit2,
-                                                                                #tmp.Credit AS Credit2,
-                                                                                #tmp.Amount AS Amount2,
-                                                                                CASE
-                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                                END AS 'DivideDC2'
-                                                                            FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                            WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                                    ) LVL1_2
-                                                                    GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
-                                                                ) LVL2_2
-                                                            WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND (LVL2_1.GLAccountNumber1 IN ({Account}) AND
-                                                                LVL2_1.DivideDC1 = '{CD}' AND
-                                                                LVL2_2.GLAccountNumber2 IN ({Account_1}) AND LVL2_2.DivideDC2 = '{CD}')
-                                                            )
-                                                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-
-                                                '''.format(field=self.selected_project_id, CD=temp_State,
-                                                           Account=checked_account_11, Account_1=checked_account_11_1,
-                                                           TE=temp_TE, YEAR=pname_year)
-
-            sql_refer2 = '''
-                            SET NOCOUNT ON;
-                            DROP TABLE #tmp
-                            SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                            WHERE JENumber IN (
-                                              SELECT DISTINCT JENumber
-                                              FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                              WHERE ABS(Amount) > {TE} AND Year = '{YEAR}'
-                                              )
-
-                                                SELECT
-                                                    JournalEntries.BusinessUnit
-                                                    , JournalEntries.JENumber
-                                                    , JournalEntries.JELineNumber
-                                                    , JournalEntries.EffectiveDate
-                                                    , JournalEntries.EntryDate
-                                                    , JournalEntries.Period
-                                                    , JournalEntries.GLAccountNumber
-                                                    , CoA.GLAccountName
-                                                    , JournalEntries.Debit
-                                                    , JournalEntries.Credit
-                                                    , JournalEntries.Amount
-                                                    , JournalEntries.FunctionalCurrencyCode
-                                                    , JournalEntries.JEDescription
-                                                    , JournalEntries.JELineDescription
-                                                    , JournalEntries.PreparerID
-                                                    , JournalEntries.ApproverID
-                                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
-                                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
-                                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (
-                                                    SELECT DISTINCT LVL2_1.JENumber1
-                                                    FROM
-                                                        (
-                                                            SELECT
-                                                                LVL1_1.JENumber1,
-                                                                LVL1_1.GLAccountNumber1,
-                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
-                                                                MAX(LVL1_1.AccountType1) AS AccountType1,
-                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,
-                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,
-                                                                DivideDC1,
-                                                                COUNT(*) AS Cnt1
-                                                            FROM
-                                                            (
-                                                                    SELECT
-                                                                        #tmp.JENumber AS JENumber1,
-                                                                        #tmp.GLAccountNumber AS GLAccountNumber1,
-                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber1,
-                                                                        CoA.GLAccountName AS CoA_GLAccountName1,
-                                                                        CoA.AccountType AS AccountType1,
-                                                                        #tmp.Debit AS Debit1,
-                                                                        #tmp.Credit AS Credit1,
-                                                                        #tmp.Amount AS Amount1,
-                                                                        CASE
-                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                        END AS 'DivideDC1'
-                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                            ) LVL1_1
-                                                            GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
-                                                        ) LVL2_1,
-                                                        (
-                                                            SELECT
-                                                                LVL1_2.JENumber2,
-                                                                LVL1_2.GLAccountNumber2,
-                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
-                                                                MAX(LVL1_2.AccountType2) AS AccountType2,
-                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,
-                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,
-                                                                DivideDC2,
-                                                                COUNT(*) AS Cnt2
-                                                            FROM
-                                                            (
-                                                                    SELECT #tmp.JENumber AS JENumber2,
-                                                                        #tmp.GLAccountNumber AS GLAccountNumber2,
-                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber2,
-                                                                        CoA.GLAccountName AS CoA_GLAccountName2,
-                                                                        CoA.AccountType AS AccountType2,
-                                                                        #tmp.Debit AS Debit2,
-                                                                        #tmp.Credit AS Credit2,
-                                                                        #tmp.Amount AS Amount2,
-                                                                        CASE
-                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                        END AS 'DivideDC2'
-                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                            ) LVL1_2
-                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
-                                                        ) LVL2_2
-                                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND LVL2_1.GLAccountNumber1 IN ({Account})
-                                                        AND LVL2_1.DivideDC1 = '{CD}'
-                                                    EXCEPT
-                                                        SELECT DISTINCT LVL2_1.JENumber1
-                                                    FROM
-                                                        (
-                                                            SELECT
-                                                                LVL1_1.JENumber1,
-                                                                LVL1_1.GLAccountNumber1,
-                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
-                                                                MAX(LVL1_1.AccountType1) AS AccountType1,
-                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,
-                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,
-                                                                DivideDC1,
-                                                                COUNT(*) AS Cnt1
-                                                            FROM
-                                                            (
-                                                                    SELECT
-                                                                        #tmp.JENumber AS JENumber1,
-                                                                        #tmp.GLAccountNumber AS GLAccountNumber1,
-                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber1,
-                                                                        CoA.GLAccountName AS CoA_GLAccountName1,
-                                                                        CoA.AccountType AS AccountType1,
-                                                                        #tmp.Debit AS Debit1,
-                                                                        #tmp.Credit AS Credit1,
-                                                                        #tmp.Amount AS Amount1,
-                                                                        CASE
-                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                        END AS 'DivideDC1'
-                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                                ) LVL1_1
-                                                                GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
-                                                        ) LVL2_1,
-                                                        (
-                                                            SELECT
-                                                                LVL1_2.JENumber2,
-                                                                LVL1_2.GLAccountNumber2,
-                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
-                                                                MAX(LVL1_2.AccountType2) AS AccountType2,
-                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,
-                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,
-                                                                DivideDC2,
-                                                                COUNT(*) AS Cnt2
-                                                            FROM
-                                                            (
-                                                                    SELECT #tmp.JENumber AS JENumber2,
-                                                                        #tmp.GLAccountNumber AS GLAccountNumber2,
-                                                                        CoA.GLAccountNumber AS CoA_GLAccountNumber2,
-                                                                        CoA.GLAccountName AS CoA_GLAccountName2,
-                                                                        CoA.AccountType AS AccountType2,
-                                                                        #tmp.Debit AS Debit2,
-                                                                        #tmp.Credit AS Credit2,
-                                                                        #tmp.Amount AS Amount2,
-                                                                        CASE
-                                                                        WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                                        END AS 'DivideDC2'
-                                                                    FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
-                                                                    WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
-                                                            ) LVL1_2
-                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
-                                                        ) LVL2_2
-                                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND (LVL2_1.GLAccountNumber1 IN ({Account}) AND
-                                                        LVL2_1.DivideDC1 = '{CD}' AND
-                                                        LVL2_2.GLAccountNumber2 IN ({Account_1}) AND LVL2_2.DivideDC2 = '{CD}')
-                                                    )
-                                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-
-                                        '''.format(field=self.selected_project_id, CD=temp_State,
-                                                   Account=checked_account_11,
-                                                   Account_1=checked_account_11_1,
-                                                   TE=temp_TE, YEAR=pname_year)
-
-            if self.clickCount == 0:
-                self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
-            else:
-                self.dataframe_refer = pd.read_sql(sql_refer2, self.cnxn)
-            self.clickCount += 1
-
-            ### 예외처리 3 - 최대 출력 라인 초과
-            if len(self.dataframe_refer) > 1048576:
-                self.alertbox_open3()
-
-            ### 예외처리 4 - 데이터 미추출
-            elif len(self.dataframe_refer) == 0:
-                self.dataframe_refer = pd.DataFrame({'No Data': ['[연도: ' + str(pname_year) + ','
-                                                                 + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
-
-                model = DataFrameModel(self.dataframe_refer)
-                self.viewtable.setModel(model)
-
-                ### JE Line - Refer
-                self.scenario_dic[temp_Sheet + '_Reference'] = self.dataframe_refer
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0]]
-                self.combo_sheet.addItem(str(result[0]))
-
-                buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
-                                                      + str(pname_year) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe_refer) - 1)
-                                                      + '건 추출되었습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                      , QMessageBox.Ok)
-
-                if buttonReply == QMessageBox.Ok:
-                    self.dialog12.activateWindow()
-
-            else:
-                ### JE Line - Refer
-                self.scenario_dic[temp_Sheet + '_Reference'] = self.dataframe_refer
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0]]
-                self.combo_sheet.addItem(str(result[0]))
-
-                model = DataFrameModel(self.dataframe_refer)
-                self.viewtable.setModel(model)
-
-                ### 추가 필터링
-                if len(self.dataframe_refer) - 1 <= 500:
-                    buttonReply = QMessageBox.information(self, '라인수 추출', str(len(self.dataframe_refer) - 1)
-                                                          + '건 추출되었습니다. <br> - TE 금액('
-                                                          + str(temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-                else:
-                    buttonReply = QMessageBox.information(self, '라인수 추출',
-                                                          str(len(
-                                                              self.dataframe_refer) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                          + temp_TE + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
-                                                          , QMessageBox.Ok)
-
-                if buttonReply == QMessageBox.Ok:
-                    self.dialog12.activateWindow()
-
-    def extButtonClicked12(self):
-        tempCost = self.D12_Cost.text()
-        tempSheet = self.D12_Sheet12.text()
-        tempState = ''
-
-        if tempCost == '':
-            tempCost = 0
-
-        if tempSheet == '':
+        if self.tempSheet == '':
             self.alertbox_open()
 
         elif checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
             self.alertbox_open6()
 
         # 시트명 중복 확인
-        elif self.combo_sheet.findText(tempSheet + '_Reference') != -1:
+        elif self.combo_sheet.findText(self.tempSheet + '_Reference') != -1:
             self.alertbox_open5()
 
         elif not (self.checkC1.isChecked()) and not (self.checkD1.isChecked()):
@@ -6103,11 +5806,11 @@ class MyApp(QWidget):
 
         else:
             try:
-                int(tempCost)
+                int(self.tempCost)
                 if self.checkC1.isChecked():
-                    tempState = 'LVL4.GL_Account_Position =' + "'" + 'Credit' + "'"
+                    self.tempState = 'LVL4.GL_Account_Position =' + "'" + 'Credit' + "'"
                 elif self.checkD1.isChecked():
-                    tempState = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
+                    self.tempState = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
                 elif self.checkD1.isChecked() and self.checkC1.isChecked():
                     tempstate = 'LVL4.GL_Account_Position IN (' + "'" + 'Credit' + "'," + "'" + 'Debit' + "'" + ')'
 
@@ -6212,8 +5915,8 @@ class MyApp(QWidget):
                                                       AND LVL4.Posting_Type = '2.Correspondent Account'
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
-                           '''.format(field=self.selected_project_id, CD=tempState, Account=checked_account_12,
-                                      TE=tempCost, YEAR=pname_year)
+                           '''.format(field=self.selected_project_id, CD=self.tempState, Account=checked_account_12,
+                                      TE=self.tempCost, YEAR=pname_year)
 
                 sql2 = '''
                                SET NOCOUNT ON;
@@ -6316,8 +6019,12 @@ class MyApp(QWidget):
                                                       AND LVL4.Posting_Type = '2.Correspondent Account'
                                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
-                           '''.format(field=self.selected_project_id, CD=tempState, Account=checked_account_12,
-                                      TE=tempCost, YEAR=pname_year)
+                           '''.format(field=self.selected_project_id, CD=self.tempState, Account=checked_account_12,
+                                      TE=self.tempCost, YEAR=pname_year)
+
+                ### 마지막 시트 쿼리 내역 추가
+                my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
+                                                               "---Filtered Reference  Scenario12---\n" + sql]
 
                 if self.clickCount == 0:
                     self.dataframe = pd.read_sql(sql, self.cnxn)
@@ -6332,27 +6039,27 @@ class MyApp(QWidget):
 
                 elif len(self.dataframe) == 0:
                     self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
-                    self.scenario_dic['' + tempSheet + '_Reference'] = self.dataframe
+                        self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
+                    self.scenario_dic['' + self.tempSheet + '_Reference'] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Yes)
+                        self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
                 else:
-                    self.scenario_dic['' + tempSheet + '_Reference'] = self.dataframe
+                    self.scenario_dic['' + self.tempSheet + '_Reference'] = self.dataframe
                     key_list = list(self.scenario_dic.keys())
                     result = [key_list[0], key_list[-1]]
                     self.combo_sheet.addItem(str(result[1]))
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
                     buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성금액: " + str(
-                        tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
+                        self.tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다", QMessageBox.Yes)
                     if buttonReply == QMessageBox.Yes:
                         self.dialog12.activateWindow()
 
@@ -6360,20 +6067,20 @@ class MyApp(QWidget):
                 self.alertbox_open2('중요성 금액')
 
     def extButtonClickedC(self):
-        tempSheet = self.D12_Sheetc.text()
-        cursorpath = self.cursorCondition.text()
+        self.tempSheet = self.D12_Sheetc.text()
+        self.cursorpath = self.cursorCondition.text()
 
         global my_query
         if 'my_query' in globals():
             my_query = my_query
         else:
-            my_query = ''
+            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        if tempSheet == '' or cursorpath == '':
+        if self.tempSheet == '' or self.cursorpath == '':
             self.alertbox_open()
-        elif self.combo_sheet.findText(tempSheet) != -1:  # 시트명 중복 확인
+        elif self.combo_sheet.findText(self.tempSheet) != -1:  # 시트명 중복 확인
             self.alertbox_open5()
-        elif os.path.isfile(cursorpath) == False:
+        elif os.path.isfile(self.cursorpath) == False:
             self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다")
         else:
             try:
@@ -6537,15 +6244,16 @@ class MyApp(QWidget):
                     self.Cursortext.setText(cursortext)
                     self.dataframe = pd.concat(dflist, ignore_index=True)
 
-                    ### 마지막 시트 쿼리 내역 추가
-                    my_query += self.return_print(sql)
+                    ### 마지막 시트 쿼리 내역 추가 - Journals 추가로 연결해야 함
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario11",
+                                                                "---Filtered Result  Scenario11---\n" + sql]
 
                     if len(self.dataframe) > 1048576:
                         self.alertbox_open3()
 
                     elif len(self.dataframe) == 0:
                         self.dataframe = pd.DataFrame({'No Data': ['No Cursor']})
-                        self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                        self.scenario_dic['' + self.tempSheet + ''] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6559,7 +6267,7 @@ class MyApp(QWidget):
                             self.dialog12.activateWindow()
 
                     else:
-                        self.scenario_dic['' + tempSheet + ''] = self.dataframe
+                        self.scenario_dic['' + self.tempSheet + ''] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6576,11 +6284,10 @@ class MyApp(QWidget):
                 self.alertbox_open4('Cursor 조건을 확인 바랍니다')
 
     def extButtonClicked13(self):
-
-        temp_Continuous = self.text_continuous.toPlainText()  # 필수
-        temp_Continuous = str(temp_Continuous)
-        temp_TE_13 = self.line_amount.text()
-        tempSheet = self.D13_Sheet.text()  # 필수
+        self.temp_Continuous = self.text_continuous.toPlainText()  # 필수
+        self.temp_Continuous = str(self.temp_Continuous)
+        self.temp_TE_13 = self.line_amount.text()
+        self.tempSheet = self.D13_Sheet.text()  # 필수
 
         global my_query
         if 'my_query' in globals():
@@ -6589,13 +6296,13 @@ class MyApp(QWidget):
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 예외처리 1 - 필수값 누락
-        if temp_Continuous == '' or temp_TE_13 == '' or tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+        if self.temp_Continuous == '' or self.temp_TE_13 == '' or self.tempSheet == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
             self.alertbox_open()
         ### 예외처리 2 - 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
@@ -6611,8 +6318,8 @@ class MyApp(QWidget):
             checked_account13 = checked_account
 
             try:
-                int(temp_TE_13)
-                int(temp_Continuous)
+                int(self.temp_TE_13)
+                int(self.temp_Continuous)
 
                 cursor = self.cnxn.cursor()
                 ### JE Line
@@ -6647,7 +6354,7 @@ class MyApp(QWidget):
                                             AND ABS(JournalEntries.Amount) > {TE}
                                     ORDER BY JENumber, JELineNumber
 
-                            '''.format(field=self.selected_project_id, TE=temp_TE_13, CONTI=temp_Continuous,
+                            '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
                                        Account=checked_account13)
                 ### JE - Journals
                 elif self.rbtn2.isChecked():
@@ -6685,18 +6392,19 @@ class MyApp(QWidget):
                                     )
                                     ORDER BY JENumber, JELineNumber
 
-                                '''.format(field=self.selected_project_id, TE=temp_TE_13, CONTI=temp_Continuous,
+                                '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
+                                           CONTI=self.temp_Continuous,
                                            Account=checked_account13)
 
                 self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario13",
-                                                           "---Filtered Result  Scenario13---\n" + sql_query]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
+                                                                "---Filtered Result  Scenario13---\n" + sql_query]
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario13",
-                                                             "---Filtered JE  Scenario13---\n" + sql_query]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                                  "---Filtered JE  Scenario13---\n" + sql_query]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -6714,15 +6422,15 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(temp_Continuous) + ','
-                                                               + '중요성금액: ' + str(temp_TE_13)
+                    self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(self.temp_Continuous) + ','
+                                                               + '중요성금액: ' + str(self.temp_TE_13)
                                                                + '] 라인수 ' + str(len(self.dataframe)) + '개입니다']})
 
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6730,25 +6438,25 @@ class MyApp(QWidget):
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
+                                                                      self.temp_TE_13)
                                                                   + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
                         else:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
+                                                                      self.temp_TE_13)
                                                                   + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + 'Journals'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6756,21 +6464,21 @@ class MyApp(QWidget):
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
-                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                      self.temp_TE_13)
+                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                         else:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
-                                                                  + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                      self.temp_TE_13)
+                                                                  + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     if buttonReply == QMessageBox.Ok:
@@ -6779,7 +6487,7 @@ class MyApp(QWidget):
                 else:
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + '_Result'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6789,24 +6497,24 @@ class MyApp(QWidget):
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe)) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
+                                                                      self.temp_TE_13)
                                                                   + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
 
                         else:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe)) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
+                                                                      self.temp_TE_13)
                                                                   + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                                   , QMessageBox.Ok)
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + '_Journals'] = self.dataframe
+                        self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -6816,21 +6524,21 @@ class MyApp(QWidget):
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe)) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
-                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                                      self.temp_TE_13)
+                                                                  + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                         else:
                             buttonReply = QMessageBox.information(self, '라인수 추출',
                                                                   '- 연속된 숫자(' + str(
-                                                                      temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
+                                                                      self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                                   + str(
                                                                       len(self.dataframe)) + '건 추출되었습니다. <br> - TE금액(' + str(
-                                                                      temp_TE_13)
-                                                                  + ')를 적용하였습니다. <br> [전표라인번호 기준]'
+                                                                      self.temp_TE_13)
+                                                                  + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                                   , QMessageBox.Ok)
 
                     if buttonReply == QMessageBox.Ok:
@@ -6839,27 +6547,27 @@ class MyApp(QWidget):
             ### 예외처리 4 - 필수값 타입 오류
             except ValueError:
                 try:
-                    int(temp_Continuous)
+                    int(self.temp_Continuous)
                     try:
-                        int(temp_TE_13)
+                        int(self.temp_TE_13)
                     except:
                         self.alertbox_open2('중요성금액')
                 except:
                     try:
-                        int(temp_TE_13)
+                        int(self.temp_TE_13)
                         self.alertbox_open2('연속된 자릿수')
                     except:
                         self.alertbox_open2('연속된 자릿수와 중요성금액')
 
     def extButtonClicked14(self):
-        baseKey = self.D14_Key.text().split(',')
-        baseKey_clean = []
-        for a in baseKey:
+        self.baseKey = self.D14_Key.text().split(',')
+        self.baseKey_clean = []
+        for a in self.baseKey:
             a = a.strip()
-            baseKey_clean.append(a)
-        tempKey = str('%'.join(baseKey_clean))
-        tempTE = self.D14_TE.text()
-        tempSheet = self.D14_Sheet.text()
+            self.baseKey_clean.append(a)
+        self.tempKey = str('%'.join(self.baseKey_clean))
+        self.tempTE = self.D14_TE.text()
+        self.tempSheet = self.D14_Sheet.text()
 
         global my_query
         if 'my_query' in globals():
@@ -6867,13 +6575,13 @@ class MyApp(QWidget):
         else:
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
-        if tempSheet == '':
+        if self.tempSheet == '':
             self.alertbox_open()
         # 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(tempSheet + '_Result') != -1:
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(tempSheet + '_Journals') != -1:
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
         elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
@@ -6883,9 +6591,9 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         else:
-            if tempTE == '': tempTE = 0
+            if self.tempTE == '': self.tempTE = 0
             try:
-                int(tempTE)
+                int(self.tempTE)
 
                 cursor = self.cnxn.cursor()
 
@@ -6920,7 +6628,8 @@ class MyApp(QWidget):
     	                          AND ABS(JournalEntries.Amount) > {TE} {Account}
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
 
-                        '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
+                        '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
+                                   Account=checked_account)
 
                 elif self.rbtn2.isChecked():
 
@@ -6954,17 +6663,18 @@ class MyApp(QWidget):
                                     WHERE (JournalEntries.JEDescription LIKE N'%{KEY}%' OR JournalEntries.JELineDescription LIKE N'%{KEY}%')		
                                  )  AND ABS(JournalEntries.Amount) > {TE} {Account}
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
-                        '''.format(field=self.selected_project_id, KEY=tempKey, TE=tempTE, Account=checked_account)
+                        '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
+                                   Account=checked_account)
 
                 self.dataframe = pd.read_sql(sql, self.cnxn)
 
                 ### 마지막 시트 쿼리 내역 추가
                 if self.rbtn1.isChecked():
-                    my_query.loc[tempSheet + "_Result"] = [tempSheet + "_Result", "Scenario14",
-                                                           "---Filtered Result  Scenario14---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
+                                                                "---Filtered Result  Scenario14---\n" + sql]
                 if self.rbtn2.isChecked():
-                    my_query.loc[tempSheet + "_Journals"] = [tempSheet + "_Journals", "Scenario14",
-                                                             "---Filtered JE  Scenario14---\n" + sql]
+                    my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
+                                                                  "---Filtered JE  Scenario14---\n" + sql]
 
                 if self.checkC.isChecked() and self.checkD.isChecked():
                     self.dataframe = self.dataframe
@@ -6981,22 +6691,23 @@ class MyApp(QWidget):
                     self.alertbox_open3()
 
                 elif len(self.dataframe) == 0:
-                    self.dataframe = pd.DataFrame({'No Data': ["[전표 적요 특정단어: " + str(baseKey) + "," + " 중요성금액: " + str(
-                        tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+                    self.dataframe = pd.DataFrame(
+                        {'No Data': ["[전표 적요 특정단어: " + str(self.baseKey) + "," + " 중요성금액: " + str(
+                            self.tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
                     model = DataFrameModel(self.dataframe)
                     self.viewtable.setModel(model)
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
 
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                             if buttonReply == QMessageBox.Ok:
@@ -7004,9 +6715,9 @@ class MyApp(QWidget):
 
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                             if buttonReply == QMessageBox.Ok:
@@ -7014,23 +6725,23 @@ class MyApp(QWidget):
 
 
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe) - 1)
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                     if buttonReply == QMessageBox.Ok:
@@ -7039,7 +6750,7 @@ class MyApp(QWidget):
                 else:
 
                     if self.rbtn1.isChecked():
-                        self.scenario_dic[tempSheet + "_Result"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -7047,20 +6758,20 @@ class MyApp(QWidget):
                         self.viewtable.setModel(model)
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                                   , QMessageBox.Ok)
                     elif self.rbtn2.isChecked():
-                        self.scenario_dic[tempSheet + "_Journals"] = self.dataframe
+                        self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
                         key_list = list(self.scenario_dic.keys())
                         result = [key_list[0], key_list[-1]]
                         self.combo_sheet.addItem(str(result[1]))
@@ -7068,16 +6779,16 @@ class MyApp(QWidget):
                         self.viewtable.setModel(model)
                         if len(self.dataframe) <= 500:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
                         else:
                             buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 " +
-                                                                  + str(baseKey) + "이/가 포함된 전표가 "
+                                                                  + str(self.baseKey) + "이/가 포함된 전표가 "
                                                                   + str(len(self.dataframe))
-                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(tempTE)
+                                                                  + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
                                                                   + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                                   , QMessageBox.Ok)
 
@@ -7086,7 +6797,7 @@ class MyApp(QWidget):
 
             except ValueError:
                 try:
-                    int(tempTE)
+                    int(self.tempTE)
                 except:
                     self.alertbox_open4('중요성금액')
 
@@ -7098,11 +6809,9 @@ class MyApp(QWidget):
         if self.dataframe is None:
             self.MessageBox_Open("저장할 데이터가 없습니다")
             return
-
         if self.scenario_dic == {}:
             self.MessageBox_Open("저장할 Sheet가 없습니다")
             return
-
         else:
             fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
                                                    self.tr("xlsx(*.xlsx);; All Files(*.*)"))
@@ -7127,9 +6836,7 @@ class MyApp(QWidget):
                 self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
 
             else:
-                my_query_1 = {'QUERY': [my_query]}
-                my_query_1 = pd.DataFrame(my_query_1)
-                self.scenario_dic['Query'] = my_query_1
+                self.scenario_dic['Query'] = my_query
                 with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
                     for temp in self.scenario_dic:
                         self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
