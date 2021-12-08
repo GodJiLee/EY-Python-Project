@@ -552,14 +552,6 @@ class MyApp(QWidget):
         self.alt.setText('차변과 대변 중 하나만 선택해주시기 바랍니다.')
         self.alt.exec_()
 
-    def alertbox_open9(self):
-        self.alt = QMessageBox()
-        self.alt.setIcon(QMessageBox.Information)
-        self.alt.setWindowTitle('전표입력자 선택 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
-        self.alt.setText('전표입력자가 선택되어 있지 않습니다.')
-        self.alt.exec_()
-
     def alertbox_open10(self):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
@@ -1554,13 +1546,13 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        self.rbtn1 = QRadioButton('JE Line', self.dialog6)
+        self.rbtn1 = QRadioButton('JE Line             ', self.dialog6)
         self.rbtn1.setStyleSheet("color: white;")
         font11 = self.rbtn1.font()
         font11.setBold(True)
         self.rbtn1.setFont(font11)
         self.rbtn1.setChecked(True)
-        self.rbtn2 = QRadioButton('JE', self.dialog6)
+        self.rbtn2 = QRadioButton('JE             ', self.dialog6)
         self.rbtn2.setStyleSheet("color: white;")
         font12 = self.rbtn2.font()
         font12.setBold(True)
@@ -1600,6 +1592,14 @@ class MyApp(QWidget):
         font11 = self.btnDate.font()
         font11.setBold(True)
         self.btnDate.setFont(font11)
+
+        self.btnDelete = QPushButton("Delete", self.dialog6)
+        self.btnDelete.resize(65, 22)
+        self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete.clicked.connect(self.delete_date6)
+        font12 = self.btnDelete.font()
+        font12.setBold(True)
+        self.btnDelete.setFont(font12)
 
         labelDate2 = QLabel('T일 : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
@@ -1647,6 +1647,11 @@ class MyApp(QWidget):
         self.D6_Sheet.setStyleSheet("background-color: white;")
         self.D6_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
+        temp_lineedit = QLineEdit(self.dialog6)
+        temp_lineedit.setStyleSheet('background-color: #2E2E38;')
+        temp_lineedit.setDisabled(True)
+        temp_lineedit.setFrame(False)
+
         self.D6_Date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Date2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D6_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -1661,12 +1666,14 @@ class MyApp(QWidget):
         layout0 = QGridLayout()
         layout0.addWidget(self.rbtn1, 0, 0)
         layout0.addWidget(self.rbtn2, 0, 1)
+        layout0.addWidget(temp_lineedit, 0, 2)
         groupbox0.setLayout(layout0)
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
         layout1.addWidget(self.D6_Date, 0, 1)
         layout1.addWidget(self.btnDate, 0, 2)
+        layout1.addWidget(self.btnDelete, 0, 3)
         layout1.addWidget(labelDate2, 1, 0)
         layout1.addWidget(self.D6_Date2, 1, 1)
         layout1.addWidget(label_tree, 2, 0)
@@ -1851,25 +1858,25 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        self.rbtn3 = QRadioButton('JE Line', self.dialog7)
+        self.rbtn3 = QRadioButton('JE Line             ', self.dialog7)
         self.rbtn3.setStyleSheet("color: white;")
         font11 = self.rbtn3.font()
         font11.setBold(True)
         self.rbtn3.setFont(font11)
 
-        self.rbtn4 = QRadioButton('JE', self.dialog7)
+        self.rbtn4 = QRadioButton('JE             ', self.dialog7)
         self.rbtn4.setStyleSheet("color: white;")
         font12 = self.rbtn4.font()
         font12.setBold(True)
         self.rbtn4.setFont(font12)
 
-        self.rbtn1 = QRadioButton('Effective Date', self.dialog7)
+        self.rbtn1 = QRadioButton('Effective Date ', self.dialog7)
         self.rbtn1.setStyleSheet("color: white;")
         font1 = self.rbtn1.font()
         font1.setBold(True)
         self.rbtn1.setFont(font1)
 
-        self.rbtn2 = QRadioButton('Entry Date', self.dialog7)
+        self.rbtn2 = QRadioButton('Entry Date             ', self.dialog7)
         self.rbtn2.setStyleSheet("color: white;")
         font2 = self.rbtn2.font()
         font2.setBold(True)
@@ -1897,7 +1904,7 @@ class MyApp(QWidget):
         self.btnDelete = QPushButton("Delete All", self.dialog7)
         self.btnDelete.resize(65, 22)
         self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDelete.clicked.connect(self.delete_date)
+        self.btnDelete.clicked.connect(self.delete_date7)
 
         font11 = self.btnDate.font()
         font11.setBold(True)
@@ -1946,11 +1953,22 @@ class MyApp(QWidget):
         self.D7_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D7_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
-        layout0 = QGridLayout()
+        temp_lineedit = QLineEdit(self.dialog7)
+        temp_lineedit.setStyleSheet('background-color: #2E2E38;')
+        temp_lineedit.setDisabled(True)
+        temp_lineedit.setFrame(False)
+
+        temp_lineedit2 = QLineEdit(self.dialog7)
+        temp_lineedit2.setStyleSheet('background-color: #2E2E38;')
+        temp_lineedit2.setDisabled(True)
+        temp_lineedit2.setFrame(False)
+
+        layoutr = QGridLayout()
         self.rbtn1.setChecked(True)
-        layout0.addWidget(self.rbtn1, 0, 0)
-        layout0.addWidget(self.rbtn2, 0, 1)
-        groupbox1.setLayout(layout0)
+        layoutr.addWidget(self.rbtn1, 0, 0)
+        layoutr.addWidget(self.rbtn2, 0, 1)
+        layoutr.addWidget(temp_lineedit, 0, 2)
+        groupbox1.setLayout(layoutr)
 
         layout1 = QGridLayout()
         layout1.addWidget(labelDate, 0, 0)
@@ -1979,6 +1997,7 @@ class MyApp(QWidget):
         self.rbtn3.setChecked(True)
         layout3.addWidget(self.rbtn3, 0, 0)
         layout3.addWidget(self.rbtn4, 0, 1)
+        layout3.addWidget(temp_lineedit2, 0, 2)
         groupbox2.setLayout(layout3)
 
         layout_dc = QHBoxLayout()
@@ -2145,13 +2164,13 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog.resize(110, 30)
 
-        self.rbtn1 = QRadioButton('JE Line', self.dialog8)
+        self.rbtn1 = QRadioButton('JE Line             ', self.dialog8)
         self.rbtn1.setStyleSheet("color: white;")
         font11 = self.rbtn1.font()
         font11.setBold(True)
         self.rbtn1.setFont(font11)
         self.rbtn1.setChecked(True)
-        self.rbtn2 = QRadioButton('JE', self.dialog8)
+        self.rbtn2 = QRadioButton('JE             ', self.dialog8)
         self.rbtn2.setStyleSheet("color: white;")
         font12 = self.rbtn2.font()
         font12.setBold(True)
@@ -2207,6 +2226,11 @@ class MyApp(QWidget):
         self.D8_Cost.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D8_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        temp_lineedit = QLineEdit(self.dialog8)
+        temp_lineedit.setStyleSheet('background-color: #2E2E38;')
+        temp_lineedit.setDisabled(True)
+        temp_lineedit.setFrame(False)
+
         layout_dc = QHBoxLayout()
         layout_dc.addWidget(labelDC)
         layout_dc.addWidget(self.checkC)
@@ -2216,6 +2240,7 @@ class MyApp(QWidget):
         layout0 = QGridLayout()
         layout0.addWidget(self.rbtn1, 0, 0)
         layout0.addWidget(self.rbtn2, 0, 1)
+        layout0.addWidget(temp_lineedit, 0, 2)
         groupbox0.setLayout(layout0)
 
         layout1 = QGridLayout()
@@ -2626,7 +2651,7 @@ class MyApp(QWidget):
         font4.setBold(True)
         label_tree.setFont(font4)
 
-        labelTE = QLabel('TE : ', self.dialog10)
+        labelTE = QLabel('중요성 금액 : ', self.dialog10)
         labelTE.setStyleSheet("color: white;")
 
         font4 = labelTE.font()
@@ -2648,6 +2673,22 @@ class MyApp(QWidget):
         self.D10_Sheet.setStyleSheet("background-color: white;")
         self.D10_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
+        self.btnDelete1 = QPushButton("Delete", self.dialog10)
+        self.btnDelete1.resize(65, 22)
+        self.btnDelete1.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete1.clicked.connect(self.delete_date101)
+        font12 = self.btnDelete1.font()
+        font12.setBold(True)
+        self.btnDelete1.setFont(font12)
+
+        self.btnDelete2 = QPushButton("Delete", self.dialog10)
+        self.btnDelete2.resize(65, 22)
+        self.btnDelete2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete2.clicked.connect(self.delete_date102)
+        font12 = self.btnDelete2.font()
+        font12.setBold(True)
+        self.btnDelete2.setFont(font12)
+
         self.D10_Point1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Point2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -2666,9 +2707,11 @@ class MyApp(QWidget):
         layout1.addWidget(labelPoint1, 2, 0)
         layout1.addWidget(self.D10_Point1, 2, 1)
         layout1.addWidget(self.btnDate1, 2, 2)
+        layout1.addWidget(self.btnDelete1, 2, 3)
         layout1.addWidget(labelPoint2, 3, 0)
         layout1.addWidget(self.D10_Point2, 3, 1)
         layout1.addWidget(self.btnDate2, 3, 2)
+        layout1.addWidget(self.btnDelete2, 3, 3)
         layout1.addWidget(label_tree, 4, 0)
         layout1.addWidget(self.new_tree, 4, 1)
         layout1.addWidget(labelTE, 5, 0)
@@ -2700,10 +2743,19 @@ class MyApp(QWidget):
         self.dialog10.setWindowModality(Qt.NonModal)
         self.dialog10.show()
 
-    def delete_date(self):
+    def delete_date7(self):
         self.string_date_list = []
         self.finalDate = []
         self.D7_Date.setText('')
+
+    def delete_date6(self):
+        self.D6_Date.setText('')
+
+    def delete_date101(self):
+        self.D10_Point1.setText('')
+
+    def delete_date102(self):
+        self.D10_Point2.setText('')
 
     def handle_date_clicked(self, date):
         self.dialog6.activateWindow()
@@ -3933,12 +3985,6 @@ class MyApp(QWidget):
         if self.tempDate == '' or self.tempSheet == '':
             self.alertbox_open()
 
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()  # 계정 선택 오류
-
-        elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            self.alertbox_open9()  # 전표입력자 선택 안함
-
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
 
@@ -3952,8 +3998,15 @@ class MyApp(QWidget):
             if self.tempCost == '': self.tempCost = 0
             if self.tempTDate == '': self.tempTDate = 0
 
-            self.checked_account6 = checked_account
-            self.checked_preparer6 = checked_preparer
+            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.checked_account6 = ''
+            else:
+                self.checked_account6 = checked_account
+
+            if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
+                self.checked_preparer6 = ''
+            else:
+                self.checked_preparer6 = checked_preparer
 
             try:
                 int(self.tempTDate)
@@ -4053,12 +4106,6 @@ class MyApp(QWidget):
         if self.tempDate == '' or self.tempSheet == '':
             self.self.alertbox_open()
 
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()
-
-        elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            self.alertbox_open9()
-
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
@@ -4075,8 +4122,16 @@ class MyApp(QWidget):
 
             try:
                 int(self.tempCost)
-                self.checked_account7 = checked_account
-                self.checked_preparer7 = checked_preparer
+
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account7 = ''
+                else:
+                    self.checked_account7 = checked_account
+
+                if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
+                    self.checked_preparer7 = ''
+                else:
+                    self.checked_preparer7 = checked_preparer
 
                 self.doAction()
                 self.th7 = Thread(target=self.extButtonClicked7)
@@ -4092,12 +4147,6 @@ class MyApp(QWidget):
 
         if self.tempN == '' or self.tempSheet == '':
             self.alertbox_open()
-
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()
-
-        elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            self.alertbox_open9()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4121,8 +4170,16 @@ class MyApp(QWidget):
 
                 else:
 
-                    self.checked_account8 = checked_account
-                    self.checked_preparer8 = checked_preparer
+                    if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                        self.checked_account8 = ''
+                    else:
+                        self.checked_account8 = checked_account
+
+                    if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
+                        self.checked_preparer8 = ''
+                    else:
+                        self.checked_preparer8 = checked_preparer
+
                     self.realNDate = int(self.tempN)
 
                     self.doAction()
@@ -4154,9 +4211,6 @@ class MyApp(QWidget):
         if self.tempSheet == '':
             self.alertbox_open()
 
-        elif checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
-            self.alertbox_open()
-
         elif self.combo_sheet.findText(self.tempSheet + '_Reference') != -1:
             self.alertbox_open5()
 
@@ -4172,6 +4226,11 @@ class MyApp(QWidget):
                     self.tempState = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
                 elif self.checkD1.isChecked() and self.checkC1.isChecked():
                     self.tempstate = 'LVL4.GL_Account_Position IN (' + "'" + 'Credit' + "'," + "'" + 'Debit' + "'" + ')'
+
+                if checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
+                    self.checked_account12 = ''
+                else:
+                    self.checked_account12 = checked_account_12
 
                 self.doAction()
                 self.th12 = Thread(target=self.extButtonClicked12)
@@ -4195,8 +4254,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()  # 계정 선택 오류
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4205,6 +4262,12 @@ class MyApp(QWidget):
             try:
                 int(self.tempN)
                 int(self.tempTE)
+
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account9 = ''
+                else:
+                    self.checked_account9 = checked_account
+
                 self.doAction()
                 self.th9 = Thread(target=self.extButtonClicked9)
                 self.th9.start()
@@ -4231,9 +4294,6 @@ class MyApp(QWidget):
         if self.tempSheet == '':
             self.alertbox_open()
 
-        elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            self.alertbox_open9()
-
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
@@ -4242,9 +4302,6 @@ class MyApp(QWidget):
 
         elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
-
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()  # 계정 선택 오류
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4278,6 +4335,15 @@ class MyApp(QWidget):
                           and (self.tempPoint2[5:7] < '01' and self.tempPoint2[8:10] > '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                     else:
+                        if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                            self.checked_account10 = ''
+                        else:
+                            self.checked_account10 = checked_account
+
+                        if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
+                            self.checked_preparer10 = ''
+                        else:
+                            self.checked_preparer10 = checked_preparer
                         self.doAction()
                         self.th10 = Thread(target=self.extButtonClicked10)
                         self.th10.start()
@@ -4316,9 +4382,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
 
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()  # 계정 선택 오류
-
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
@@ -4326,6 +4389,12 @@ class MyApp(QWidget):
             if self.tempTE == '': self.tempTE = 0
             try:
                 int(self.tempTE)
+
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account14 = ''
+                else:
+                    self.checked_account14 = checked_account
+
                 self.doAction()
                 self.th14 = Thread(target=self.extButtonClicked14)
                 self.th14.start()
@@ -5711,7 +5780,7 @@ class MyApp(QWidget):
                                   )	AND ABS(JournalEntries.Amount) > {TE} {Account}		
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=checked_account)
+                                   Account=self.checked_account9)
 
             sql_refer = '''
                            SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
@@ -5726,7 +5795,7 @@ class MyApp(QWidget):
                            GROUP BY JournalEntries.PreparerID				
 
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=checked_account)
+                                   Account=self.checked_account9)
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
         elif self.rbtn2.isChecked():
@@ -5773,7 +5842,7 @@ class MyApp(QWidget):
                                    ) {Account} 		
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=checked_account)
+                                   Account=self.checked_account9)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -5846,7 +5915,6 @@ class MyApp(QWidget):
             my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
-        self.checked_preparer10 = checked_preparer
 
         # sql문 수정
         if self.rbtn1.isChecked():
@@ -5883,7 +5951,7 @@ class MyApp(QWidget):
 
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
-                                       Account=checked_account, Point1=self.tempPoint1, Point2=self.tempPoint2)
+                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
 
         elif self.rbtn2.isChecked():
 
@@ -5924,7 +5992,7 @@ class MyApp(QWidget):
 
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
-                                       Account=checked_account, Point1=self.tempPoint1, Point2=self.tempPoint2)
+                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -6092,7 +6160,7 @@ class MyApp(QWidget):
                                               AND LVL4.Posting_Type = '2.Correspondent Account'
                                         ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
-                   '''.format(field=self.selected_project_id, CD=self.tempState, Account=checked_account_12,
+                   '''.format(field=self.selected_project_id, CD=self.tempState, Account=self.checked_account12,
                               TE=self.tempCost, YEAR=pname_year)
 
         sql2 = '''
@@ -6196,7 +6264,7 @@ class MyApp(QWidget):
                                               AND LVL4.Posting_Type = '2.Correspondent Account'
                                         ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
 
-                   '''.format(field=self.selected_project_id, CD=self.tempState, Account=checked_account_12,
+                   '''.format(field=self.selected_project_id, CD=self.tempState, Account=self.checked_account12,
                               TE=self.tempCost, YEAR=pname_year)
 
         if self.clickCount == 0:
@@ -6206,6 +6274,9 @@ class MyApp(QWidget):
         self.clickCount += 1
 
         self.dataframe['비경상적계정 선택여부'] = ''
+
+        my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
+                                                       "---Filtered Result  Scenario12---\n" + sql]
 
         if len(self.dataframe) > 1048576:
             self.communicate12.closeApp.emit()
@@ -6918,7 +6989,8 @@ class MyApp(QWidget):
                           AND ABS(JournalEntries.Amount) > {TE} {Account}
                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
 
-                '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE, Account=checked_account)
+                '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
+                           Account=self.checked_account14)
 
         elif self.rbtn2.isChecked():
 
@@ -6952,7 +7024,8 @@ class MyApp(QWidget):
                             WHERE (JournalEntries.JEDescription LIKE N'%{KEY}%' OR JournalEntries.JELineDescription LIKE N'%{KEY}%')		
                          )  AND ABS(JournalEntries.Amount) > {TE} {Account}
                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
-                '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE, Account=checked_account)
+                '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
+                           Account=self.checked_account14)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
