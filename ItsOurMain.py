@@ -33,15 +33,23 @@ class Calendar(QDialog):
         self.setWindowTitle("Calendar")
         self.setWindowIcon(QIcon("./EY_logo.png"))
         self.setWindowModality(Qt.NonModal)
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         vbox = QVBoxLayout()
+        hbox = QHBoxLayout()
+
         self.calendar = QCalendarWidget()
         self.calendar.setGridVisible(True)
         self.calendar.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
 
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.closebtn = QPushButton("Close")
+
+        hbox.addStretch(3)
+        hbox.addWidget(self.closebtn)
 
         vbox.addWidget(self.calendar)
+        vbox.addLayout(hbox)
+
         self.setLayout(vbox)
 
 
@@ -1629,6 +1637,7 @@ class MyApp(QWidget):
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar6)
         self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar6)
         font11 = self.btnDate.font()
@@ -1944,6 +1953,7 @@ class MyApp(QWidget):
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar7)
         self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar7)
 
@@ -2666,6 +2676,7 @@ class MyApp(QWidget):
         self.btnDate1.resize(65, 22)
         self.new_calendar1 = Calendar(self)
         self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar10_1)
         self.btnDate1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate1.clicked.connect(self.calendar10_1)
         font11 = self.btnDate1.font()
@@ -2676,6 +2687,7 @@ class MyApp(QWidget):
         self.btnDate2.resize(65, 22)
         self.new_calendar2 = Calendar(self)
         self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar10_2)
         self.btnDate2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate2.clicked.connect(self.calendar10_2)
         font11 = self.btnDate1.font()
@@ -2817,10 +2829,25 @@ class MyApp(QWidget):
     def delete_date102(self):
         self.D10_Point2.setText('')
 
+    def closeCalendar6(self):
+        self.new_calendar.close()
+        self.dialog6.activateWindow()
+
+    def closeCalendar7(self):
+        self.new_calendar.close()
+        self.dialog7.activateWindow()
+
+    def closeCalendar10_1(self):
+        self.new_calendar.close()
+        self.dialog10.activateWindow()
+
+    def closeCalendar10_2(self):
+        self.new_calendar.close()
+        self.dialog10.activateWindow()
+
     def handle_date_clicked(self, date):
         self.D6_Date.setText(date.toString("yyyy-MM-dd"))
-        if self.new_calendar.close():
-            self.dialog6.activateWindow()
+        self.dialog6.activateWindow()
 
     def handle_date_clicked2(self, date):
         self.dialog7.activateWindow()
@@ -2835,18 +2862,14 @@ class MyApp(QWidget):
             self.fianlDate.append(self.string_date)
 
         self.dialog7.activateWindow()
-        self.dialog7.setGeometry(5, 300, 750, 500)
-        self.setGeometry(800, 200, 1000, 800)
 
     def handle_date_clicked3(self, date):
         self.D10_Point1.setText(date.toString("yyyy-MM-dd"))
-        if self.new_calendar1.close():
-            self.dialog10.activateWindow()
+        self.dialog10.activateWindow()
 
     def handle_date_clicked4(self, date):
         self.D10_Point2.setText(date.toString("yyyy-MM-dd"))
-        if self.new_calendar2.close():
-            self.dialog10.activateWindow()
+        self.dialog10.activateWindow()
 
     def Dialog12(self):
         self.dialog12 = QDialog()
@@ -4333,7 +4356,7 @@ class MyApp(QWidget):
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-                self.tempSheet + '_Reference') != -1):
+            self.tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
         ### 예외처리 3 - 시트명 중복 확인 (JE)
