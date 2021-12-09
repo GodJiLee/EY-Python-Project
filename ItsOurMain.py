@@ -559,14 +559,6 @@ class MyApp(QWidget):
         self.alt.setText('차변 및 대변이 선택되어 있지 않습니다.')
         self.alt.exec_()
 
-    def alertbox_open8(self):
-        self.alt = QMessageBox()
-        self.alt.setIcon(QMessageBox.Information)
-        self.alt.setWindowTitle('차대변 선택 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
-        self.alt.setText('차변과 대변 중 하나만 선택해주시기 바랍니다.')
-        self.alt.exec_()
-
     def alertbox_open10(self):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
@@ -598,6 +590,14 @@ class MyApp(QWidget):
         self.alt.setWindowTitle('필수 입력값 오류')
         self.alt.setWindowIcon(QIcon("./EY_logo.png"))
         self.alt.setText('N일은 0이상 70만 미만의 정수로만 입력 바랍니다.')
+        self.alt.exec_()
+
+    def alertbox_open14(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('전 후 선택 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('T일 이전 및 T일 이후가 선택되어 있지 않습니다.')
         self.alt.exec_()
 
     def init_UI(self):
@@ -1621,6 +1621,13 @@ class MyApp(QWidget):
         self.checkC.setChecked(True)
         self.checkD.setChecked(True)
 
+        self.checkB = QCheckBox('T일 이전', self.dialog6)
+        self.checkF = QCheckBox('T일 이후', self.dialog6)
+        self.checkB.setStyleSheet("color: white;")
+        self.checkF.setStyleSheet("color: white;")
+        self.checkB.setChecked(True)
+        self.checkF.setChecked(True)
+
         labelDate = QLabel('결산일* : ', self.dialog6)
         labelDate.setStyleSheet("color: white;")
 
@@ -1727,6 +1734,8 @@ class MyApp(QWidget):
         layout1.addWidget(self.btnDelete, 0, 3)
         layout1.addWidget(labelDate2, 1, 0)
         layout1.addWidget(self.D6_Date2, 1, 1)
+        layout1.addWidget(self.checkB, 1, 2)
+        layout1.addWidget(self.checkF, 1, 3)
         layout1.addWidget(label_tree, 2, 0)
         layout1.addWidget(self.new_tree, 2, 1)
         layout1.addWidget(labelJE, 3, 0)
@@ -4538,6 +4547,9 @@ class MyApp(QWidget):
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
+        elif not (self.checkB.isChecked()) and not (self.checkF.isChecked()):
+            self.alertbox_open14()
+
         else:
             if self.tempCost == '': self.tempCost = 0
             if self.tempTDate == '': self.tempTDate = 0
@@ -4570,9 +4582,23 @@ class MyApp(QWidget):
 
                     self.first_mid = str(self.first_origin).split('-')
                     self.second_mid = str(self.second_origin).split('-')
+                    self.base_mid = str(self.realDate).split('-')
 
-                    self.first = "'" + self.first_mid[0] + self.first_mid[1] + self.first_mid[2] + "'"
-                    self.second = "'" + self.second_mid[0] + self.second_mid[1] + self.second_mid[2] + "'"
+                    self.first_final = "'" + self.first_mid[0] + self.first_mid[1] + self.first_mid[2] + "'"  # 이전
+                    self.second_final = "'" + self.second_mid[0] + self.second_mid[1] + self.second_mid[2] + "'"  # 이후
+                    self.base_final = "'" + self.base_mid[0] + self.base_mid[1] + self.base_mid[2] + "'"  # 기준
+
+                    if self.checkB.isChecked() and self.checkF.isChecked():
+                        self.first = self.first_final
+                        self.second = self.second_final
+
+                    elif self.checkB.isChecked():
+                        self.first = self.first_final
+                        self.second = self.base_final
+
+                    elif self.checkF.isChecked():
+                        self.first = self.base_final
+                        self.second = self.second_final
 
                     self.doAction()
                     self.th6 = Thread(target=self.extButtonClicked6)
