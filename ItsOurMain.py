@@ -2838,11 +2838,11 @@ class MyApp(QWidget):
         self.dialog7.activateWindow()
 
     def closeCalendar10_1(self):
-        self.new_calendar.close()
+        self.new_calendar1.close()
         self.dialog10.activateWindow()
 
     def closeCalendar10_2(self):
-        self.new_calendar.close()
+        self.new_calendar2.close()
         self.dialog10.activateWindow()
 
     def handle_date_clicked(self, date):
