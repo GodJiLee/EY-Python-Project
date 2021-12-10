@@ -603,9 +603,9 @@ class MyApp(QWidget):
     def alertbox_open15(self):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
-        self.alt.setWindowTitle('중요성 금액 자리수 오류')
+        self.alt.setWindowTitle('자릿수 포맷 오류')
         self.alt.setWindowIcon(QIcon("./EY_logo.png"))
-        self.alt.setText('중요성 금액은 6자리로 입력해주세요.')
+        self.alt.setText('연속된 자릿수는 6자리 이상으로 입력해주세요.')
         self.alt.exec_()
 
     def init_UI(self):
@@ -1017,7 +1017,7 @@ class MyApp(QWidget):
         ### LineEdit 2 - 중요성 금액
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
-        self.D4_TE.setPlaceholderText('중요성 금액을 6자리 이상 입력하세요')
+        self.D4_TE.setPlaceholderText('중요성 금액을 입력하세요')
 
         ### 라벨 3 - 시트명
         labelSheet = QLabel('시나리오 번호* : ', self.dialog4)
@@ -4407,9 +4407,6 @@ class MyApp(QWidget):
         if self.temp_N == '' or self.tempSheet == '':
             self.alertbox_open()
 
-        elif len(str(self.temp_TE)) < 6:
-            self.alertbox_open15()
-
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
@@ -4871,11 +4868,11 @@ class MyApp(QWidget):
         if self.temp_TE_13 == '':
             self.temp_TE_13 = 0
 
-        elif len(str(self.temp_TE_13)) < 6:
+        elif self.temp_Continuous != '' and len(str(self.temp_Continuous)) < 6:
             self.alertbox_open15()
 
         ### 예외처리 1 - 필수값 누락
-        if self.temp_Continuous == '' or self.tempSheet == '':
+        elif self.temp_Continuous == '' or self.tempSheet == '':
             self.alertbox_open()
 
         ### 예외처리 2 - 시트명 중복 확인
