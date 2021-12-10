@@ -46,10 +46,8 @@ class Calendar(QDialog):
 
         hbox.addStretch(3)
         hbox.addWidget(self.closebtn)
-
         vbox.addWidget(self.calendar)
         vbox.addLayout(hbox)
-
         self.setLayout(vbox)
 
 
@@ -450,10 +448,12 @@ class MyApp(QWidget):
         self.selected_server_name = "--서버 목록--"
         self.dataframe = None
         self.cnxn = None
-        self.selected_scenario_class_index = 0
+
+        self.my_query = None
+
         self.selected_scenario_subclass_index = 0
         self.scenario_dic = {}
-        self.selected_scenario_group = None
+
         self.new_calendar = None
         self.new_tree = None
         self.new_prep = None
@@ -600,6 +600,14 @@ class MyApp(QWidget):
         self.alt.setText('T일 이전 및 T일 이후가 선택되어 있지 않습니다.')
         self.alt.exec_()
 
+    def alertbox_open15(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('중요성 금액 자리수 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('중요성 금액은 6자리로 입력해주세요.')
+        self.alt.exec_()
+
     def init_UI(self):
 
         image = QImage('./dark_gray.png')
@@ -692,16 +700,16 @@ class MyApp(QWidget):
             self.MessageBox_Open2("프로젝트가 연결되었습니다.")
 
         ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
-        del self.selected_project_id, self.dataframe, self.scenario_dic
+        del self.selected_project_id, self.dataframe, self.scenario_dic, self.my_query
 
-        global my_query
-        if 'my_query' in globals():
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
+        self.my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         self.ProjectCombobox.clear()
         self.ProjectCombobox.addItem("--프로젝트 목록--")
         for i in range(len(selected_project_names)):
             self.ProjectCombobox.addItem(selected_project_names.iloc[i, 0])
+
+        self.combo_sheet.clear()
 
         self.selected_project_id = None
         self.dataframe = None
@@ -779,23 +787,23 @@ class MyApp(QWidget):
         ##서버 선택 콤보박스
         self.cb_server = QComboBox(self)
         self.cb_server.addItem('--서버 목록--')
-        for i in range(1, 9):
-            self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
+        for server in [1, 2, 3, 4, 6, 7, 8, 9]:
+            self.cb_server.addItem(f'KRSEOVMPPACSQ0{server}\INST1')
 
         ### Scenario 유형 콤보박스 - 소분류 수정
         self.comboScenario = QComboBox(self)
 
-        self.comboScenario.addItem('--시나리오 목록--', [''])
-        self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트', [''])
-        self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출', [''])
-        self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표', [''])
-        self.comboScenario.addItem('07 : 비영업일 전기/입력 전표', [''])
-        self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표', [''])
-        self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표', [''])
-        self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표', [''])
-        self.comboScenario.addItem('11-12 : 특정 계정(A) 상대계정 리스트 검토', [''])
-        self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토', [''])
-        self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (중요성 금액 제시 가능)', [''])
+        self.comboScenario.addItem('--시나리오 목록--')
+        self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트')
+        self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출')
+        self.comboScenario.addItem('06 : 결산일 전후 T일 입력 전표')
+        self.comboScenario.addItem('07 : 비영업일 전기/입력 전표')
+        self.comboScenario.addItem('08 : 효력, 입력 일자 간 차이가 N일 이상인 전표')
+        self.comboScenario.addItem('09 : 전표 작성 빈도수가 N회 이하인 작성자에 의한 생성된 전표')
+        self.comboScenario.addItem('10 : 특정 전표 입력자(W)에 의해 생성된 전표')
+        self.comboScenario.addItem('11-12 : 특정 계정(A) 상대계정 리스트 검토')
+        self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토')
+        self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (중요성 금액 제시 가능)')
 
         self.ProjectCombobox = QComboBox(self)
 
@@ -865,34 +873,34 @@ class MyApp(QWidget):
             self.MessageBox_Open("시나리오가 선택되지 않았습니다")
             return
 
-        if self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 1:
+        if self.selected_scenario_subclass_index == 1:
             self.Dialog4()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 2:
+        elif self.selected_scenario_subclass_index == 2:
             self.Dialog5()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 3:
+        elif self.selected_scenario_subclass_index == 3:
             self.Dialog6()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 4:
+        elif self.selected_scenario_subclass_index == 4:
             self.Dialog7()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 5:
+        elif self.selected_scenario_subclass_index == 5:
             self.Dialog8()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 6:
+        elif self.selected_scenario_subclass_index == 6:
             self.Dialog9()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 7:
+        elif self.selected_scenario_subclass_index == 7:
             self.Dialog10()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 8:
+        elif self.selected_scenario_subclass_index == 8:
             self.Dialog12()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 9:
+        elif self.selected_scenario_subclass_index == 9:
             self.Dialog13()
 
-        elif self.selected_scenario_class_index == 0 and self.selected_scenario_subclass_index == 10:
+        elif self.selected_scenario_subclass_index == 10:
             self.Dialog14()
 
         gc.collect()
@@ -1009,7 +1017,7 @@ class MyApp(QWidget):
         ### LineEdit 2 - 중요성 금액
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
-        self.D4_TE.setPlaceholderText('중요성 금액을 입력하세요')
+        self.D4_TE.setPlaceholderText('중요성 금액을 6자리 이상 입력하세요')
 
         ### 라벨 3 - 시트명
         labelSheet = QLabel('시나리오 번호* : ', self.dialog4)
@@ -1961,8 +1969,8 @@ class MyApp(QWidget):
         self.btnDate = QPushButton("Add Date", self.dialog7)
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
-        self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
         self.new_calendar.closebtn.clicked.connect(self.closeCalendar7)
+        self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
         self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar7)
 
@@ -2684,8 +2692,8 @@ class MyApp(QWidget):
         self.btnDate1 = QPushButton("Date", self.dialog10)
         self.btnDate1.resize(65, 22)
         self.new_calendar1 = Calendar(self)
-        self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
         self.new_calendar1.closebtn.clicked.connect(self.closeCalendar10_1)
+        self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
         self.btnDate1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate1.clicked.connect(self.calendar10_1)
         font11 = self.btnDate1.font()
@@ -2695,8 +2703,8 @@ class MyApp(QWidget):
         self.btnDate2 = QPushButton("Date", self.dialog10)
         self.btnDate2.resize(65, 22)
         self.new_calendar2 = Calendar(self)
-        self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
         self.new_calendar2.closebtn.clicked.connect(self.closeCalendar10_2)
+        self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
         self.btnDate2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate2.clicked.connect(self.calendar10_2)
         font11 = self.btnDate1.font()
@@ -3692,7 +3700,7 @@ class MyApp(QWidget):
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N) + '회 이하인 전표가 '
                                                       + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + self.temp_TE + ')을 적용하였습니다. <br> [전표라인번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             if buttonReply == QMessageBox.Ok: self.dialog4.activateWindow()
@@ -3703,7 +3711,7 @@ class MyApp(QWidget):
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                       + str(
-                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                    str(self.temp_TE)) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(self.temp_N)
@@ -4087,7 +4095,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
@@ -4095,7 +4103,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4104,7 +4112,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4116,7 +4124,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
@@ -4124,7 +4132,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4133,7 +4141,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4362,6 +4370,9 @@ class MyApp(QWidget):
         if self.temp_N == '' or self.tempSheet == '':
             self.alertbox_open()
 
+        elif len(str(self.temp_TE)) < 6:
+            self.alertbox_open15()
+
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
@@ -4378,7 +4389,6 @@ class MyApp(QWidget):
         ### 쿼리 연동
         else:
             if self.temp_TE == '': self.temp_TE = 0
-
             try:
                 int(self.temp_N)
                 int(self.temp_TE)
@@ -4417,7 +4427,6 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         else:
-
             ### 예외처리 1 - 파일 경로 unicode 문제 해결
             self.dropped_items = []  ### ListBox 인풋값 append
 
@@ -4426,6 +4435,11 @@ class MyApp(QWidget):
                 myItem = str(myItem.text())
                 self.dropped_items.append(myItem)
                 # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
+
+            ##예외처리 - SKA1 드롭박스에 아무 것도 없는 경우
+            if not self.dropped_items:
+                self.alertbox_open()
+                return
 
             ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
             df = pd.DataFrame()  ### dataframe으로 저장
@@ -4674,7 +4688,8 @@ class MyApp(QWidget):
             self.tempCost = 0
 
         if self.tempDate == '' or self.tempSheet == '':
-            self.self.alertbox_open()
+            ####수정사항 시작###
+            self.alertbox_open()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4815,8 +4830,15 @@ class MyApp(QWidget):
         self.temp_TE_13 = self.line_amount.text()
         self.tempSheet = self.D13_Sheet.text()  # 필수
 
+        ###예외처리 0 - TE 금액 누락시
+        if self.temp_TE_13 == '':
+            self.temp_TE_13 = 0
+
+        elif len(str(self.temp_TE_13)) < 6:
+            self.alertbox_open15()
+
         ### 예외처리 1 - 필수값 누락
-        if self.temp_Continuous == '' or self.temp_TE_13 == '' or self.tempSheet == '':
+        if self.temp_Continuous == '' or self.tempSheet == '':
             self.alertbox_open()
 
         ### 예외처리 2 - 시트명 중복 확인
@@ -5054,24 +5076,32 @@ class MyApp(QWidget):
                     self.alertbox_open4('중요성금액 값을 숫자로만 입력해주시기 바랍니다.')
 
     def Sheet_ComboBox_Selected(self, text):
+
         model = DataFrameModel(self.scenario_dic[text])
         self.viewtable.setModel(model)
-        self.selected_scenario_group = text
 
     def RemoveSheetButton_Clicked(self):
+
+        ##예외 처리 - 삭제할 Sheet가 없는 경우
         if not self.scenario_dic:
             self.MessageBox_Open("삭제할 Sheet가 없습니다")
+            return
+
+        ##Sheet 정보 삭제
+        del self.scenario_dic[self.combo_sheet.currentText()]
+        ##Query 정보 삭제
+        self.my_query.drop(labels=[self.combo_sheet.currentText()], axis=0, inplace=True)
+        ##Sheet name 콤보박스에서 해당 sheet 삭제
+        self.combo_sheet.removeItem(self.combo_sheet.currentIndex())
+        gc.collect()
+
+        if not self.scenario_dic:
+            self.dataframe = pd.DataFrame({'No Sheet': []})
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
         else:
-            del self.scenario_dic[self.combo_sheet.currentText()]
-            temp = self.combo_sheet.findText(self.combo_sheet.currentText())
-            self.combo_sheet.removeItem(temp)
-            if not self.scenario_dic:
-                self.dataframe = pd.DataFrame({'No Sheet': []})
-                model = DataFrameModel(self.dataframe)
-                self.viewtable.setModel(model)
-            else:
-                model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
-                self.viewtable.setModel(model)
+            model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
+            self.viewtable.setModel(model)
 
     def Save_Buttons_Group(self):
         ##GroupBox
@@ -5124,6 +5154,7 @@ class MyApp(QWidget):
         return groupbox
 
     def calendar6(self):
+        self.dialog6.activateWindow()
         self.new_calendar.show()
         self.dialog6.activateWindow()
 
@@ -5133,26 +5164,21 @@ class MyApp(QWidget):
         self.dialog7.activateWindow()
 
     def calendar10_1(self):
-        self.new_calendar1.show()
         self.dialog10.activateWindow()
+        self.new_calendar1.show()
 
     def calendar10_2(self):
-        self.new_calendar2.show()
         self.dialog10.activateWindow()
+        self.new_calendar2.show()
 
+    ####수정사항 시작 ####
     def extButtonClicked4(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
-
         cursor = self.cnxn.cursor()
 
         ### JE Line - Result
         if self.rbtn1.isChecked():
 
-            sql_query = """
+            sql_refer = """
                                 SELECT 
                                     JournalEntries.GLAccountNumber
                                     , MAX(CoA.GLAccountName) AS GLAccountName
@@ -5176,7 +5202,7 @@ class MyApp(QWidget):
                                        Account=self.checked_account4)
 
             ### JE Line - Refer
-            sql_refer = '''
+            sql_query = '''
                             SELECT				
                                 JournalEntries.BusinessUnit			
                                 , JournalEntries.JENumber			
@@ -5254,59 +5280,54 @@ class MyApp(QWidget):
                                 )		
                         ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                 '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                           Account=checked_account4)
+                           Account=self.checked_account4)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
-                                                           "---Filtered Result_1  Scenario04---\n" + sql_refer]
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
-                                                        "---Filtered Result_2  Scenario04---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
+                                                             "---Filtered Result_2  Scenario04---\n" + sql_query]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
-                                                          "---Filtered JE  Scenario04---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
+                                                                "---Filtered Result_1  Scenario04---\n" + sql_refer]
+
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
+                                                               "---Filtered JE  Scenario04---\n" + sql_query]
 
         ### 차대 오류
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.rbtn2.isChecked() and self.checkC.isChecked():
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.rbtn2.isChecked() and self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 최대 추출 라인수
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate4.closeApp.emit()
 
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(self.temp_N) + ","
                                                        + "중요성금액: " + str(self.temp_TE)
                                                        + '] 라인 수 ' + str(len(self.dataframe)) + '개입니다']})
             model = DataFrameModel(self.dataframe)
-            model_refer = DataFrameModel(self.dataframe_refer)
             self.viewtable.setModel(model)
-
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1], key_list[-2]]
-                self.combo_sheet.addItem(str(result[2]))
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
 
             ### JE
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             self.communicate4.closeApp.emit()
 
@@ -5314,13 +5335,10 @@ class MyApp(QWidget):
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1], key_list[-2]]
-
-                self.combo_sheet.addItem(str(result[2]))
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
@@ -5328,20 +5346,14 @@ class MyApp(QWidget):
             elif self.rbtn2.isChecked():
                 ### 시트 콤보박스에 저장
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate4.closeApp.emit()
 
     def extButtonClicked5_SAP(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 쿼리 연동
         cursor = self.cnxn.cursor()
@@ -5415,32 +5427,30 @@ class MyApp(QWidget):
                                        Account=self.checked_account5_SAP)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
-                                                            "Scenario05",
-                                                            "---Filtered Result  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
+                                                                 "Scenario05",
+                                                                 "---Filtered Result  Scenario05---\n" + sql_query]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
-                                                              "Scenario05",
-                                                              "---Filtered JE  Scenario05---\n" + sql_query]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
+                                                                   "Scenario05",
+                                                                   "---Filtered JE  Scenario05---\n" + sql_query]
 
         ### DebitCredit 열 생성
-        if self.checkC2.isChecked() and self.checkD2.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC2.isChecked():
+        if not self.checkD2.isChecked() and self.checkC2.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD2.isChecked():
+        elif self.checkD2.isChecked() and not self.checkC2.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 예외처리 5 - 최대 라인 수 초과
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate5_SAP.closeApp.emit()
 
         ### 조건, 라인 수 추출
         elif len(self.dataframe) == 0:
@@ -5453,44 +5463,34 @@ class MyApp(QWidget):
 
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             self.communicate5_SAP.closeApp.emit()
 
         else:
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[-1]))
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate5_SAP.closeApp.emit()
 
     def extButtonClicked5_Non_SAP(self):
-
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 쿼리 연동
         cursor = self.cnxn.cursor()
@@ -5568,29 +5568,26 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
-                                                               "---Filtered Result  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
+                                                                    "---Filtered Result  Scenario05---\n" + sql_query]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
-                                                                 "Scenario05",
-                                                                 "---Filtered JE  Scenario05---\n" + sql_query]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
+                                                                      "Scenario05",
+                                                                      "---Filtered JE  Scenario05---\n" + sql_query]
 
         ### DebitCredit 열 생성
-        if self.checkC1.isChecked() and self.checkD1.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC1.isChecked():
+        if not self.checkD1.isChecked() and self.checkC1.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD1.isChecked():
+        elif self.checkD1.isChecked() and not self.checkC1.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 예외처리 5 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate5_Non_SAP.closeApp.emit()
 
         ### 예외처리 6 - 데이터 미추출
         elif len(self.dataframe) == 0:
@@ -5604,18 +5601,14 @@ class MyApp(QWidget):
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             ### JE
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet_NonSAP + 'Journals'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_NoneSAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             self.communicate5_Non_SAP.closeApp.emit()
 
@@ -5623,33 +5616,22 @@ class MyApp(QWidget):
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
-
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             ### JE
             elif self.rbtn2.isChecked():
-                ### 시트 콤보박스에 저장
                 self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
-
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate5_Non_SAP.closeApp.emit()
 
     def extButtonClicked6(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
 
@@ -5729,21 +5711,19 @@ class MyApp(QWidget):
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
-                                                        "---Filtered Result  Scenario06---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
+                                                             "---Filtered Result  Scenario06---\n" + sql]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
-                                                          "---Filtered JE  Scenario06---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
+                                                               "---Filtered JE  Scenario06---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -5759,43 +5739,35 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
             self.communicate6.closeApp.emit()
 
         else:
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate6.closeApp.emit()
 
     def extButtonClicked7(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
 
@@ -5873,21 +5845,19 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn3.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
-                                                        "---Filtered Result  Scenario07---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
+                                                             "---Filtered Result  Scenario07---\n" + sql]
 
-        if self.rbtn4.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
-                                                          "---Filtered JE  Scenario07---\n" + sql]
+        elif self.rbtn4.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
+                                                               "---Filtered JE  Scenario07---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -5902,44 +5872,36 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
             if self.rbtn3.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn4.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
             self.communicate7.closeApp.emit()
 
         else:
 
             if self.rbtn3.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
 
             elif self.rbtn4.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
             self.communicate7.closeApp.emit()
 
     def extButtonClicked8(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
 
@@ -6020,21 +5982,19 @@ class MyApp(QWidget):
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
-                                                        "---Filtered Result  Scenario08---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
+                                                             "---Filtered Result  Scenario08---\n" + sql]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
-                                                          "---Filtered JE  Scenario08---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
+                                                               "---Filtered JE  Scenario08---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -6050,44 +6010,36 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate8.closeApp.emit()
 
         else:
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate8.closeApp.emit()
 
     def extButtonClicked9(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
+
         cursor = self.cnxn.cursor()
         # sql문 수정
         if self.rbtn1.isChecked():
@@ -6190,23 +6142,21 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
-                                                           "---Filtered Result_1  Scenario09---\n" + sql_refer]
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
-                                                        "---Filtered Result_2  Scenario09---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
+                                                             "---Filtered Result_2  Scenario09---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
+                                                                "---Filtered Result_1  Scenario09---\n" + sql_refer]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
-                                                          "---Filtered JE  Scenario09---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
+                                                               "---Filtered JE  Scenario09---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -6216,45 +6166,36 @@ class MyApp(QWidget):
         elif len(self.dataframe) == 0:
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1], key_list[-2]]
-                self.combo_sheet.addItem(str(result[2]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
         else:
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                self.scenario_dic[self.tempSheet + "_Reference"] = self.dataframe_refer
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1], key_list[-2]]
-                self.combo_sheet.addItem(str(result[2]))
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
                 model = DataFrameModel(self.dataframe)
-                model_refer = DataFrameModel(self.dataframe_refer)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate9.closeApp.emit()
 
     def extButtonClicked10(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
 
@@ -6336,21 +6277,19 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
-                                                        "---Filtered Result  Scenario10---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
+                                                             "---Filtered Result  Scenario10---\n" + sql]
 
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
-                                                          "---Filtered JE  Scenario10---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
+                                                               "---Filtered JE  Scenario10---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -6360,42 +6299,33 @@ class MyApp(QWidget):
         elif len(self.dataframe) == 0:
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
         else:
 
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate10.closeApp.emit()
 
     def extButtonClicked12(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         cursor = self.cnxn.cursor()
         sql = '''
@@ -6609,8 +6539,8 @@ class MyApp(QWidget):
 
         self.dataframe['비경상적계정 선택여부'] = ''
 
-        my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
-                                                       "---Filtered Result  Scenario12---\n" + sql]
+        self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
+                                                            "---Filtered Result  Scenario12---\n" + sql]
 
         if len(self.dataframe) > 1048576:
             self.communicate12.closeApp.emit()
@@ -6618,29 +6548,22 @@ class MyApp(QWidget):
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
                 self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
-            self.scenario_dic['' + self.tempSheet + '_Reference'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
+            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
+            self.combo_sheet.addItem(self.tempSheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate12.closeApp.emit()
 
         else:
-            self.scenario_dic['' + self.tempSheet + '_Reference'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
+            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
+            self.combo_sheet.addItem(self.tempSheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             self.communicate12.closeApp.emit()
 
     def extButtonClickedC(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         index = self.wbC[self.wbC.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
         cursorindex = []
@@ -6660,7 +6583,6 @@ class MyApp(QWidget):
 
                 # sql문 수정
                 sql = '''
-
                         SET NOCOUNT ON
                         --****************************************************Filter Table***************************************************							
                         CREATE TABLE #filter							
@@ -6668,7 +6590,6 @@ class MyApp(QWidget):
                         INSERT INTO #filter							
                         VALUES							
                         ({cursor})							
-
                         --****************************************************Insert ProjectID***************************************************							
                         SELECT JENumber,							
                             JELineNumber,						
@@ -6685,11 +6606,8 @@ class MyApp(QWidget):
                             PreparerID,						
                             ApproverID  INTO #JEData						
                         FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE							
-
                         SELECT * INTO #COAData							
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
-
-
                         --****************************************************Result Table***************************************************							
                         CREATE TABLE #result							
                         (JENumber NVARCHAR(100),							
@@ -6707,19 +6625,15 @@ class MyApp(QWidget):
                         PreparerID NVARCHAR(100),							
                         ApproverID NVARCHAR(100)							
                         )							
-
                         --****************************************************Cursor Start***************************************************							
                         DECLARE cur CURSOR FOR 							
                         SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
-
                         DECLARE @GLAccountNumber VARCHAR(100)							
                         DECLARE @Debit_Credit VARCHAR(100)							
                         DECLARE @AL_GLAccountNumber VARCHAR(100)							
                         DECLARE @AL_Debit_Credit VARCHAR(100)							
-
                         OPEN cur							
                         Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
-
                         WHILE(@@FETCH_STATUS <> -1)							
                         BEGIN;							
                         IF (@Debit_Credit = 'Debit')							
@@ -6768,7 +6682,6 @@ class MyApp(QWidget):
                         END;							
                         Close cur;							
                         Deallocate cur							
-
                         --****************************************************Filtered Result_1***************************************************							
                         SELECT JENumber,							
                             JELineNumber,						
@@ -6788,14 +6701,11 @@ class MyApp(QWidget):
                         FROM #result 							
                         LEFT JOIN #COAData COA							
                         ON #result.GLAccountNumber = COA.GLAccountNumber
-
                         DROP TABLE #filter, #JEData,#result,#COAData				
-
                            '''.format(field=self.selected_project_id, cursor=tempcursor)
 
             elif self.rbtn2.isChecked():
                 sql = '''
-
                         SET NOCOUNT ON
                     -- Filtered JE				
                         --****************************************************Filter Table***************************************************			
@@ -6804,7 +6714,6 @@ class MyApp(QWidget):
                         INSERT INTO #filter			
                         VALUES			
                         ({cursor})			
-
                         --****************************************************Insert ProjectID***************************************************			
                         SELECT JENumber,			
                             JELineNumber,		
@@ -6821,11 +6730,8 @@ class MyApp(QWidget):
                             PreparerID,		
                             ApproverID  INTO #JEData		
                         FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE			
-
                         SELECT * INTO #COAData			
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]			
-
-
                         --****************************************************Result Table***************************************************			
                         CREATE TABLE #result			
                         (JENumber NVARCHAR(100),			
@@ -6843,19 +6749,15 @@ class MyApp(QWidget):
                         PreparerID NVARCHAR(100),			
                         ApproverID NVARCHAR(100)			
                         )			
-
                         --****************************************************Cursor Start***************************************************			
                         DECLARE cur CURSOR FOR 			
                         SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter			
-
                         DECLARE @GLAccountNumber VARCHAR(100)			
                         DECLARE @Debit_Credit VARCHAR(100)			
                         DECLARE @AL_GLAccountNumber VARCHAR(100)			
                         DECLARE @AL_Debit_Credit VARCHAR(100)			
-
                         OPEN cur			
                         Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
-
                         WHILE(@@FETCH_STATUS <> -1)			
                         BEGIN;			
                         IF (@Debit_Credit = 'Debit')			
@@ -6904,9 +6806,7 @@ class MyApp(QWidget):
                         END;			
                         Close cur;			
                         Deallocate cur			
-
                         --****************************************************Filtered 전표추출***************************************************			
-
                         SELECT JENumber,			
                             JELineNumber,		
                             EffectiveDate,		
@@ -6930,50 +6830,48 @@ class MyApp(QWidget):
                             where #result.GLAccountNumber = #COAData.GLAccountNumber		
                             )		
                         ORDER BY JENumber,JELineNumber			
-
                         DROP TABLE #filter, #JEData,#result,#COAData	
-
                             '''.format(field=self.selected_project_id, cursor=tempcursor)
 
             readlist = pd.read_sql(sql, self.cnxn)
             dflist.append(readlist)
 
         self.dataframe = pd.concat(dflist, ignore_index=True)
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario12",
-                                                        "---Filtered Result  Scenario12---\n" + sql]
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                          "---Filtered JE  Scenario12---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario12",
+                                                             "---Filtered Result  Scenario12---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                               "---Filtered JE  Scenario12---\n" + sql]
 
         if len(self.dataframe) == 0:
+
             if self.rbtn1.isChecked():
-                self.scenario_dic['' + self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             elif self.rbtn2.isChecked():
-                self.scenario_dic['' + self.tempSheet + '_Journals'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
 
         else:
             if self.rbtn1.isChecked():
-                self.scenario_dic['' + self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             elif self.rbtn2.isChecked():
-                self.scenario_dic['' + self.tempSheet + '_Journals'] = self.dataframe
-            key_list = list(self.scenario_dic.keys())
-            result = [key_list[0], key_list[-1]]
-            self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
         self.communicateC.closeApp2.emit(cursortext)
 
     def extButtonClicked13(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
 
         ### 쿼리 연동
         cursor = self.cnxn.cursor()
@@ -7054,49 +6952,43 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
-                                                        "---Filtered Result  Scenario13---\n" + sql_query]
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                          "---Filtered JE  Scenario13---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
+                                                             "---Filtered Result  Scenario13---\n" + sql_query]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                               "---Filtered JE  Scenario13---\n" + sql_query]
 
-        ### 차대 오류
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 예외처리 3 - 최대 추출 라인수
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate13.closeApp.emit()
 
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(self.temp_Continuous) + ','
                                                        + '중요성금액: ' + str(self.temp_TE_13)
                                                        + '] 라인수 ' + str(len(self.dataframe)) + '개입니다']})
-
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             ### JE
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             self.communicate13.closeApp.emit()
 
@@ -7104,29 +6996,23 @@ class MyApp(QWidget):
             ### JE Line
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             ### JE
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             self.communicate13.closeApp.emit()
 
     def extButtonClicked14(self):
-        global my_query
-        if 'my_query' in globals():
-            my_query = my_query
-        else:
-            my_query = pd.DataFrame(columns=["Sheet name", "Scenario number", "Query"])
+
         cursor = self.cnxn.cursor()
 
         # sql 문 수정
@@ -7201,20 +7087,18 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
-                                                        "---Filtered Result  Scenario14---\n" + sql]
-        if self.rbtn2.isChecked():
-            my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
-                                                          "---Filtered JE  Scenario14---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
+                                                             "---Filtered Result  Scenario14---\n" + sql]
+        elif self.rbtn2.isChecked():
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
+                                                               "---Filtered JE  Scenario14---\n" + sql]
 
-        if self.checkC.isChecked() and self.checkD.isChecked():
-            self.dataframe = self.dataframe
-
-        elif self.checkC.isChecked():
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
-        elif self.checkD.isChecked():
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
             self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
             self.dataframe.reset_index(drop=True, inplace=True)
 
@@ -7222,32 +7106,29 @@ class MyApp(QWidget):
             self.communicate14.closeApp.emit()
 
         elif len(self.dataframe) == 0:
+
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
         else:
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + "_Result"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
             elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + "_Journals"] = self.dataframe
-                key_list = list(self.scenario_dic.keys())
-                result = [key_list[0], key_list[-1]]
-                self.combo_sheet.addItem(str(result[1]))
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate14.closeApp.emit()
@@ -7293,11 +7174,13 @@ class MyApp(QWidget):
                     self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
 
                 else:
-                    self.scenario_dic['Query'] = my_query
+                    ####수정사항####
                     with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
+                        self.my_query.to_excel(writer, sheet_name='Query', index=False,
+                                               freeze_panes=(1, 0))
                     self.MessageBox_Open("저장을 완료했습니다")
 
 
