@@ -33,19 +33,21 @@ class Calendar(QDialog):
         self.setWindowTitle("Calendar")
         self.setWindowIcon(QIcon("./EY_logo.png"))
         self.setWindowModality(Qt.NonModal)
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         vbox = QVBoxLayout()
+        hbox = QHBoxLayout()
+
         self.calendar = QCalendarWidget()
         self.calendar.setGridVisible(True)
         self.calendar.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
 
-        self.label = QLabel("")
-        self.label.setStyleSheet('color:red')
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.closebtn = QPushButton("Close")
 
+        hbox.addStretch(3)
+        hbox.addWidget(self.closebtn)
         vbox.addWidget(self.calendar)
-        vbox.addWidget(self.label)
-
+        vbox.addLayout(hbox)
         self.setLayout(vbox)
 
 
@@ -1650,6 +1652,7 @@ class MyApp(QWidget):
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar6)
         self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar6)
         font11 = self.btnDate.font()
@@ -1966,6 +1969,7 @@ class MyApp(QWidget):
         self.btnDate = QPushButton("Add Date", self.dialog7)
         self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
+        self.new_calendar.closebtn.clicked.connect(self.closeCalendar7)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
         self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar7)
@@ -2688,6 +2692,7 @@ class MyApp(QWidget):
         self.btnDate1 = QPushButton("Date", self.dialog10)
         self.btnDate1.resize(65, 22)
         self.new_calendar1 = Calendar(self)
+        self.new_calendar1.closebtn.clicked.connect(self.closeCalendar10_1)
         self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
         self.btnDate1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate1.clicked.connect(self.calendar10_1)
@@ -2698,6 +2703,7 @@ class MyApp(QWidget):
         self.btnDate2 = QPushButton("Date", self.dialog10)
         self.btnDate2.resize(65, 22)
         self.new_calendar2 = Calendar(self)
+        self.new_calendar2.closebtn.clicked.connect(self.closeCalendar10_2)
         self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
         self.btnDate2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate2.clicked.connect(self.calendar10_2)
@@ -2840,12 +2846,25 @@ class MyApp(QWidget):
     def delete_date102(self):
         self.D10_Point2.setText('')
 
-    def handle_date_clicked(self, date):
+    def closeCalendar6(self):
+        self.new_calendar.close()
         self.dialog6.activateWindow()
+
+    def closeCalendar7(self):
+        self.new_calendar.close()
+        self.dialog7.activateWindow()
+
+    def closeCalendar10_1(self):
+        self.new_calendar1.close()
+        self.dialog10.activateWindow()
+
+    def closeCalendar10_2(self):
+        self.new_calendar2.close()
+        self.dialog10.activateWindow()
+
+    def handle_date_clicked(self, date):
         self.D6_Date.setText(date.toString("yyyy-MM-dd"))
         self.dialog6.activateWindow()
-        if self.new_calendar.close():
-            self.dialog6.activateWindow()
 
     def handle_date_clicked2(self, date):
         self.dialog7.activateWindow()
@@ -2860,22 +2879,14 @@ class MyApp(QWidget):
             self.fianlDate.append(self.string_date)
 
         self.dialog7.activateWindow()
-        self.dialog7.setGeometry(5, 300, 750, 500)
-        self.setGeometry(800, 200, 1000, 800)
 
     def handle_date_clicked3(self, date):
-        self.dialog10.activateWindow()
         self.D10_Point1.setText(date.toString("yyyy-MM-dd"))
         self.dialog10.activateWindow()
-        if self.new_calendar1.close():
-            self.dialog10.activateWindow()
 
     def handle_date_clicked4(self, date):
-        self.dialog10.activateWindow()
         self.D10_Point2.setText(date.toString("yyyy-MM-dd"))
         self.dialog10.activateWindow()
-        if self.new_calendar2.close():
-            self.dialog10.activateWindow()
 
     def Dialog12(self):
         self.dialog12 = QDialog()
@@ -3674,14 +3685,16 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + str(
+                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) <= 500:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + str(
+                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -4363,7 +4376,7 @@ class MyApp(QWidget):
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
         elif self.rbtn1.isChecked() and (
                 self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-                self.tempSheet + '_Reference') != -1):
+            self.tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
         ### 예외처리 3 - 시트명 중복 확인 (JE)
@@ -4379,6 +4392,11 @@ class MyApp(QWidget):
             try:
                 int(self.temp_N)
                 int(self.temp_TE)
+
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account4 = ''
+                else:
+                    self.checked_account4 = checked_account
 
                 self.doAction()
                 self.th4 = Thread(target=self.extButtonClicked4)
@@ -4436,6 +4454,11 @@ class MyApp(QWidget):
                 df.loc[1, 'ERDAT']
                 df.loc[1, 'SAKNR']
 
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account5_SAP = ''
+                else:
+                    self.checked_account5_SAP = checked_account
+
                 if count == 0:
                     ### 당기 생성된 계정 코드 반환
                     self.temp_AccCode = list()
@@ -4484,6 +4507,11 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         else:
+            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.checked_account5_Non = ''
+            else:
+                self.checked_account5_Non = checked_account
+
             self.tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
             self.tempYear_NonSAP = int(pname_year)  # 필수값
             self.temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
@@ -4499,7 +4527,7 @@ class MyApp(QWidget):
             self.temp_Code_Non_SAP = self.temp_Code_Non_SAP[:-2]
 
             ### 예외처리 1 - 필수값 입력 누락
-            if self.temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '' or checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+            if self.temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '':
                 self.alertbox_open()
 
             ### 예외처리 2 - 시트명 중복 확인
@@ -4823,14 +4851,15 @@ class MyApp(QWidget):
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
 
-        ### 예외처리 3 - 계정 선택 오류
-        elif checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.alertbox_open()
-
         else:
             try:
                 int(self.temp_TE_13)
                 int(self.temp_Continuous)
+
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.checked_account13 = ''
+                else:
+                    self.checked_account13 = checked_account
 
                 self.doAction()
                 self.th13 = Thread(target=self.extButtonClicked13)
@@ -5144,8 +5173,6 @@ class MyApp(QWidget):
 
     ####수정사항 시작 ####
     def extButtonClicked4(self):
-
-        checked_account4 = checked_account
         cursor = self.cnxn.cursor()
 
         ### JE Line - Result
@@ -5172,7 +5199,7 @@ class MyApp(QWidget):
                                 GROUP BY JournalEntries.GLAccountNumber	
                                 ORDER BY JournalEntries.GLAccountNumber
                             """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                       Account=checked_account4)
+                                       Account=self.checked_account4)
 
             ### JE Line - Refer
             sql_query = '''
@@ -5208,7 +5235,7 @@ class MyApp(QWidget):
                                 {Account}			
                             ORDER BY JENumber,JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                   Account=checked_account4)
+                                   Account=self.checked_account4)
 
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
@@ -5253,7 +5280,7 @@ class MyApp(QWidget):
                                 )		
                         ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                 '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                           Account=checked_account4)
+                           Account=self.checked_account4)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5329,7 +5356,6 @@ class MyApp(QWidget):
     def extButtonClicked5_SAP(self):
 
         ### 쿼리 연동
-        checked_account5 = checked_account
         cursor = self.cnxn.cursor()
 
         ### JE Line 선택시 - 추출 조건에 해당하는
@@ -5363,7 +5389,7 @@ class MyApp(QWidget):
                                     {Account}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
                         """.format(field=self.selected_project_id, CODE=self.real_Code,
-                                   Account=checked_account5)
+                                   Account=self.checked_account5_SAP)
 
         elif self.rbtn2.isChecked():
             sql_query = '''
@@ -5398,7 +5424,7 @@ class MyApp(QWidget):
                                     )
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
-                                       Account=checked_account5)
+                                       Account=self.checked_account5_SAP)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5467,7 +5493,6 @@ class MyApp(QWidget):
     def extButtonClicked5_Non_SAP(self):
 
         ### 쿼리 연동
-        checked_account5_NonSAP = checked_account
         cursor = self.cnxn.cursor()
 
         ### JE Line
@@ -5501,7 +5526,7 @@ class MyApp(QWidget):
                                     {Account}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
                         """.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
-                                   Account=checked_account5_NonSAP)
+                                   Account=self.checked_account5_Non)
         ### JE
         elif self.rbtn2.isChecked():
 
@@ -5537,7 +5562,7 @@ class MyApp(QWidget):
                             )
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                         '''.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
-                                   Account=checked_account5_NonSAP)
+                                   Account=self.checked_account5_Non)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -6151,6 +6176,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate9.closeApp.emit()
 
         else:
             if self.rbtn1.isChecked():
@@ -6168,7 +6194,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
-        self.communicate9.closeApp.emit()
+            self.communicate9.closeApp.emit()
 
     def extButtonClicked10(self):
 
@@ -6282,6 +6308,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate10.closeApp.emit()
 
         else:
 
@@ -6298,7 +6325,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
-        self.communicate10.closeApp.emit()
+            self.communicate10.closeApp.emit()
 
     def extButtonClicked12(self):
 
@@ -6849,7 +6876,6 @@ class MyApp(QWidget):
     def extButtonClicked13(self):
 
         ### 쿼리 연동
-        checked_account13 = checked_account
         cursor = self.cnxn.cursor()
 
         ### JE Line
@@ -6884,7 +6910,7 @@ class MyApp(QWidget):
                                     AND ABS(JournalEntries.Amount) > {TE}
                             ORDER BY JENumber, JELineNumber
                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
-                               Account=checked_account13)
+                               Account=self.checked_account13)
         ### JE - Journals
         elif self.rbtn2.isChecked():
 
@@ -6922,7 +6948,7 @@ class MyApp(QWidget):
                             ORDER BY JENumber, JELineNumber
                         '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                    CONTI=self.temp_Continuous,
-                                   Account=checked_account13)
+                                   Account=self.checked_account13)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -7092,6 +7118,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate14.closeApp.emit()
 
         else:
             if self.rbtn1.isChecked():
@@ -7107,7 +7134,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
-        self.communicate14.closeApp.emit()
+            self.communicate14.closeApp.emit()
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
