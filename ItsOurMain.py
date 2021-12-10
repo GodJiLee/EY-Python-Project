@@ -3669,7 +3669,7 @@ class MyApp(QWidget):
 
         self.Action.setLayout(main_layout)
         self.Action.setGeometry(700, 400, 400, 220)
-        self.Action.setWindowFlags(Qt.FramelessWindowHint)
+        self.Action.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.Action.setWindowModality(Qt.NonModal)
         self.Action.show()
 
@@ -4056,15 +4056,22 @@ class MyApp(QWidget):
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다.<br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
+
             if buttonReply == QMessageBox.Ok:
                 self.dialog12.activateWindow()
         else:
@@ -4156,15 +4163,27 @@ class MyApp(QWidget):
 
         if len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[전표작성 빈도수: " + str(self.tempN) + "," + " 중요성금액: " + str(
-                self.tempTE) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
+                self.tempTE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             model_refer = DataFrameModel(self.dataframe_refer)
             self.viewtable.setModel(model)
             if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
+            if self.rbtn1.isChecked():
 
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                       + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액("
                                                       + str(
                     self.tempTE) + ")을 적용하였습니다.추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4172,7 +4191,7 @@ class MyApp(QWidget):
 
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                       + "회 이하인 작성자에 의해 생성된 전표가 "
-                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액("
+                                                      + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액("
                                                       + str(
                     self.tempTE) + ")을 적용하였습니다.추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4186,14 +4205,14 @@ class MyApp(QWidget):
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                           + "회 이하인 작성자에 의해 생성된 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                           + "회 이하인 작성자에 의해 생성된 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 if buttonReply == QMessageBox.Ok:
@@ -4205,14 +4224,14 @@ class MyApp(QWidget):
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                           + "회 이하인 작성자에 의해 생성된 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액("
                                                           + str(self.tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                           + "회 이하인 작성자에 의해 생성된 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액("
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액("
                                                           + str(
                         self.tempTE) + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
@@ -4233,12 +4252,21 @@ class MyApp(QWidget):
                     len(self.dataframe) - 1) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             if self.rbtn1.isChecked():
 
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                       + str(
-                    len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
+                    len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액: "
                                                       + str(self.tempTE) + "<br> - 시작시점: " + str(
                     self.tempPoint1) + "<br> - 종료시점: " + str(
                     self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
@@ -4247,7 +4275,7 @@ class MyApp(QWidget):
 
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                       + str(
-                    len(self.dataframe) - 1) + "건 추출되었습니다. <br> - TE금액: "
+                    len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액: "
                                                       + str(self.tempTE) + "<br> - 시작시점: " + str(
                     self.tempPoint1) + "<br> - 종료시점: " + str(
                     self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
@@ -4261,14 +4289,14 @@ class MyApp(QWidget):
                 if len(self.dataframe) <= 500:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액: "
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액: "
                                                           + str(self.tempTE) + "<br> - 시작시점: " + str(
                         self.tempPoint1) + "<br> - 종료시점: " + str(self.tempPoint2) + "을 적용하였습니다. <br> [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액: "
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액: "
                                                           + str(self.tempTE) + "<br> - 시작시점: " + str(
                         self.tempPoint1) + "<br> - 종료시점: " + str(
                         self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
@@ -4279,14 +4307,14 @@ class MyApp(QWidget):
                 if len(self.dataframe) <= 500:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액: "
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액: "
                                                           + str(self.tempTE) + "<br> - 시작시점: " + str(
                         self.tempPoint1) + "<br> - 종료시점: " + str(self.tempPoint2) + "을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
                                                           + str(
-                        len(self.dataframe)) + "건 추출되었습니다. <br> - TE금액: "
+                        len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액: "
                                                           + str(self.tempTE) + "<br> - 시작시점: " + str(
                         self.tempPoint1) + "<br> - 종료시점: " + str(
                         self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
@@ -4306,17 +4334,26 @@ class MyApp(QWidget):
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            if self.rbtn1.isChecked():
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                       + str(self.baseKey) + "이/가 포함된 전표가 "
                                                       + str(len(self.dataframe) - 1)
-                                                      + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                      + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                       + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                       + str(self.baseKey) + "이/가 포함된 전표가 "
                                                       + str(len(self.dataframe) - 1)
-                                                      + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                      + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                       + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
 
@@ -4330,14 +4367,14 @@ class MyApp(QWidget):
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                           + str(self.baseKey) + "이/가 포함된 전표가 "
                                                           + str(len(self.dataframe))
-                                                          + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                          + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                           + str(self.baseKey) + "이/가 포함된 전표가 "
                                                           + str(len(self.dataframe))
-                                                          + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                          + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 if buttonReply == QMessageBox.Ok:
@@ -4347,14 +4384,14 @@ class MyApp(QWidget):
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                           + str(self.baseKey) + "이/가 포함된 전표가 "
                                                           + str(len(self.dataframe))
-                                                          + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                          + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                           + str(self.baseKey) + "이/가 포함된 전표가 "
                                                           + str(len(self.dataframe))
-                                                          + "건 추출되었습니다. <br> - TE금액(" + str(self.tempTE)
+                                                          + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 if buttonReply == QMessageBox.Ok:
@@ -6164,18 +6201,6 @@ class MyApp(QWidget):
             self.communicate9.closeApp.emit()
 
         elif len(self.dataframe) == 0:
-
-            if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
-                self.combo_sheet.addItem(self.tempSheet + '_Reference')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
-
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Journals')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate9.closeApp.emit()
 
         else:
@@ -6298,16 +6323,6 @@ class MyApp(QWidget):
             self.communicate10.closeApp.emit()
 
         elif len(self.dataframe) == 0:
-
-            if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Journals')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate10.closeApp.emit()
 
         else:
@@ -6849,16 +6864,7 @@ class MyApp(QWidget):
                                                                "---Filtered JE  Scenario12---\n" + sql]
 
         if len(self.dataframe) == 0:
-
-            if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Journals')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-
+            self.communicateC.closeApp2.emit(cursortext)
 
         else:
             if self.rbtn1.isChecked():
@@ -6871,7 +6877,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
-        self.communicateC.closeApp2.emit(cursortext)
+            self.communicateC.closeApp2.emit(cursortext)
 
     def extButtonClicked13(self):
 
@@ -7108,16 +7114,6 @@ class MyApp(QWidget):
             self.communicate14.closeApp.emit()
 
         elif len(self.dataframe) == 0:
-
-            if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Journals')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate14.closeApp.emit()
 
         else:
