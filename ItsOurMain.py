@@ -446,13 +446,12 @@ class MyApp(QWidget):
         self.selected_server_name = "--서버 목록--"
         self.dataframe = None
         self.cnxn = None
-        
+
         self.my_query = None
-        
+
         self.selected_scenario_subclass_index = 0
         self.scenario_dic = {}
-        
-        
+
         self.new_calendar = None
         self.new_tree = None
         self.new_prep = None
@@ -599,6 +598,14 @@ class MyApp(QWidget):
         self.alt.setText('T일 이전 및 T일 이후가 선택되어 있지 않습니다.')
         self.alt.exec_()
 
+    def alertbox_open15(self):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('중요성 금액 자리수 오류')
+        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setText('중요성 금액은 6자리로 입력해주세요.')
+        self.alt.exec_()
+
     def init_UI(self):
 
         image = QImage('./dark_gray.png')
@@ -690,7 +697,6 @@ class MyApp(QWidget):
         else:
             self.MessageBox_Open2("프로젝트가 연결되었습니다.")
 
-        
         ## 서버 연결 시 - 기존 저장 정보를 초기화(메모리 관리)
         del self.selected_project_id, self.dataframe, self.scenario_dic, self.my_query
 
@@ -702,7 +708,7 @@ class MyApp(QWidget):
             self.ProjectCombobox.addItem(selected_project_names.iloc[i, 0])
 
         self.combo_sheet.clear()
-        
+
         self.selected_project_id = None
         self.dataframe = None
         self.scenario_dic = {}
@@ -779,12 +785,12 @@ class MyApp(QWidget):
         ##서버 선택 콤보박스
         self.cb_server = QComboBox(self)
         self.cb_server.addItem('--서버 목록--')
-        for i in range(1, 9):
-            self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
+        for server in [1, 2, 3, 4, 6, 7, 8, 9]:
+            self.cb_server.addItem(f'KRSEOVMPPACSQ0{server}\INST1')
 
         ### Scenario 유형 콤보박스 - 소분류 수정
         self.comboScenario = QComboBox(self)
-        
+
         self.comboScenario.addItem('--시나리오 목록--')
         self.comboScenario.addItem('04 : 계정 사용빈도 N번 이하인 계정이 포함된 전표리스트')
         self.comboScenario.addItem('05 : 당기 생성된 계정리스트 추출')
@@ -796,7 +802,7 @@ class MyApp(QWidget):
         self.comboScenario.addItem('11-12 : 특정 계정(A) 상대계정 리스트 검토')
         self.comboScenario.addItem('13 : 연속된 숫자로 끝나는 금액 검토')
         self.comboScenario.addItem('14 : 전표 description에 공란 또는 특정단어(key word)가 입력되어 있는 전표 리스트 (중요성 금액 제시 가능)')
-        
+
         self.ProjectCombobox = QComboBox(self)
 
         ##Engagement code 입력 line
@@ -852,7 +858,6 @@ class MyApp(QWidget):
     def ComboSmall_Selected(self, text):
         self.selected_scenario_subclass_index = self.comboScenario.currentIndex()
 
-
     def connectDialog(self):
         if self.cnxn is None:
             self.MessageBox_Open("SQL 서버가 연결되어 있지 않습니다")
@@ -866,7 +871,6 @@ class MyApp(QWidget):
             self.MessageBox_Open("시나리오가 선택되지 않았습니다")
             return
 
-        
         if self.selected_scenario_subclass_index == 1:
             self.Dialog4()
 
@@ -879,24 +883,24 @@ class MyApp(QWidget):
         elif self.selected_scenario_subclass_index == 4:
             self.Dialog7()
 
-        elif  self.selected_scenario_subclass_index == 5:
+        elif self.selected_scenario_subclass_index == 5:
             self.Dialog8()
 
-        elif  self.selected_scenario_subclass_index == 6:
+        elif self.selected_scenario_subclass_index == 6:
             self.Dialog9()
 
-        elif  self.selected_scenario_subclass_index == 7:
+        elif self.selected_scenario_subclass_index == 7:
             self.Dialog10()
 
-        elif  self.selected_scenario_subclass_index == 8:
+        elif self.selected_scenario_subclass_index == 8:
             self.Dialog12()
 
-        elif  self.selected_scenario_subclass_index == 9:
+        elif self.selected_scenario_subclass_index == 9:
             self.Dialog13()
 
-        elif  self.selected_scenario_subclass_index == 10:
+        elif self.selected_scenario_subclass_index == 10:
             self.Dialog14()
-        
+
         gc.collect()
 
     def Dialog4(self):
@@ -1011,7 +1015,7 @@ class MyApp(QWidget):
         ### LineEdit 2 - 중요성 금액
         self.D4_TE = QLineEdit(self.dialog4)
         self.D4_TE.setStyleSheet('background-color: white;')
-        self.D4_TE.setPlaceholderText('중요성 금액을 입력하세요')
+        self.D4_TE.setPlaceholderText('중요성 금액을 6자리 이상 입력하세요')
 
         ### 라벨 3 - 시트명
         labelSheet = QLabel('시나리오 번호* : ', self.dialog4)
@@ -3670,22 +3674,20 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(
-                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) <= 500:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(
-                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N) + '회 이하인 전표가 '
                                                       + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + self.temp_TE + ')을 적용하였습니다. <br> [전표라인번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             if buttonReply == QMessageBox.Ok: self.dialog4.activateWindow()
@@ -3696,7 +3698,7 @@ class MyApp(QWidget):
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                       + str(
-                    self.temp_TE) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                    str(self.temp_TE)) + ')을 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수 ' + str(self.temp_N)
@@ -4080,7 +4082,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
@@ -4088,7 +4090,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4097,7 +4099,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4109,7 +4111,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) <= 500:
@@ -4117,7 +4119,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4126,7 +4128,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(
                                                           len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액(' + str(
-                                                          self.temp_TE_13)
+                                                          str(self.temp_TE_13))
                                                       + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4355,8 +4357,13 @@ class MyApp(QWidget):
         if self.temp_N == '' or self.tempSheet == '':
             self.alertbox_open()
 
+        elif len(str(self.temp_TE)) < 6:
+            self.alertbox_open15()
+
         ### 예외처리 2 - 시트명 중복 확인 (JE Line)
-        elif self.rbtn1.isChecked() and (self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(self.tempSheet + '_Reference') != -1):
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+                self.tempSheet + '_Reference') != -1):
             self.alertbox_open5()
 
         ### 예외처리 3 - 시트명 중복 확인 (JE)
@@ -4411,12 +4418,10 @@ class MyApp(QWidget):
                 self.dropped_items.append(myItem)
                 # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
 
-            
             ##예외처리 - SKA1 드롭박스에 아무 것도 없는 경우
             if not self.dropped_items:
                 self.alertbox_open()
                 return
-            
 
             ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
             df = pd.DataFrame()  ### dataframe으로 저장
@@ -4656,7 +4661,7 @@ class MyApp(QWidget):
 
         if self.tempDate == '' or self.tempSheet == '':
             ####수정사항 시작###
-            self.alertbox_open() 
+            self.alertbox_open()
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4797,16 +4802,17 @@ class MyApp(QWidget):
         self.temp_TE_13 = self.line_amount.text()
         self.tempSheet = self.D13_Sheet.text()  # 필수
 
-        
-
-        ###예최처리 0 - TE 금액 누락시
+        ###예외처리 0 - TE 금액 누락시
         if self.temp_TE_13 == '':
             self.temp_TE_13 = 0
+
+        elif len(str(self.temp_TE_13)) < 6:
+            self.alertbox_open15()
 
         ### 예외처리 1 - 필수값 누락
         if self.temp_Continuous == '' or self.tempSheet == '':
             self.alertbox_open()
-        
+
         ### 예외처리 2 - 시트명 중복 확인
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
             self.alertbox_open5()
@@ -4864,7 +4870,7 @@ class MyApp(QWidget):
             self.alertbox_open4('Cursor 필드가 존재하지 않습니다')
         elif self.wbC.iloc[:, 12].empty == True:
             self.alertbox_open4('Check된 조건이 없습니다')
-        elif self.wbC.iloc[:, [0,3,5,8]].isnull().any().any() == True:
+        elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
             self.alertbox_open4('필요 조건 필드를 충족하지 않습니다')
         else:
             try:
@@ -5041,12 +5047,12 @@ class MyApp(QWidget):
                     self.alertbox_open4('중요성금액 값을 숫자로만 입력해주시기 바랍니다.')
 
     def Sheet_ComboBox_Selected(self, text):
-        
+
         model = DataFrameModel(self.scenario_dic[text])
         self.viewtable.setModel(model)
-        
+
     def RemoveSheetButton_Clicked(self):
-        
+
         ##예외 처리 - 삭제할 Sheet가 없는 경우
         if not self.scenario_dic:
             self.MessageBox_Open("삭제할 Sheet가 없습니다")
@@ -5067,7 +5073,6 @@ class MyApp(QWidget):
         else:
             model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
             self.viewtable.setModel(model)
-        
 
     def Save_Buttons_Group(self):
         ##GroupBox
@@ -5254,15 +5259,15 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
-                                                        "---Filtered Result_2  Scenario04---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
+                                                             "---Filtered Result_2  Scenario04---\n" + sql_query]
 
-             self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
-                                                           "---Filtered Result_1  Scenario04---\n" + sql_refer]
+            self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
+                                                                "---Filtered Result_1  Scenario04---\n" + sql_refer]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
-                                                          "---Filtered JE  Scenario04---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
+                                                               "---Filtered JE  Scenario04---\n" + sql_query]
 
         ### 차대 오류
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -5275,7 +5280,7 @@ class MyApp(QWidget):
 
         ### 최대 추출 라인수
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate4.closeApp.emit()
 
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(self.temp_N) + ","
@@ -5320,7 +5325,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate4.closeApp.emit()
-        
 
     def extButtonClicked5_SAP(self):
 
@@ -5397,17 +5401,17 @@ class MyApp(QWidget):
                                        Account=checked_account5)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
-                                                            "Scenario05",
-                                                            "---Filtered Result  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
+                                                                 "Scenario05",
+                                                                 "---Filtered Result  Scenario05---\n" + sql_query]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
-                                                              "Scenario05",
-                                                              "---Filtered JE  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
+                                                                   "Scenario05",
+                                                                   "---Filtered JE  Scenario05---\n" + sql_query]
 
         ### DebitCredit 열 생성
         if not self.checkD2.isChecked() and self.checkC2.isChecked():
@@ -5420,7 +5424,7 @@ class MyApp(QWidget):
 
         ### 예외처리 5 - 최대 라인 수 초과
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate5_SAP.closeApp.emit()
 
         ### 조건, 라인 수 추출
         elif len(self.dataframe) == 0:
@@ -5459,7 +5463,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate5_SAP.closeApp.emit()
-            
 
     def extButtonClicked5_Non_SAP(self):
 
@@ -5537,16 +5540,16 @@ class MyApp(QWidget):
                                    Account=checked_account5_NonSAP)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
-                                                               "---Filtered Result  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
+                                                                    "---Filtered Result  Scenario05---\n" + sql_query]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
-                                                                 "Scenario05",
-                                                                 "---Filtered JE  Scenario05---\n" + sql_query]
+            self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
+                                                                      "Scenario05",
+                                                                      "---Filtered JE  Scenario05---\n" + sql_query]
 
         ### DebitCredit 열 생성
         if not self.checkD1.isChecked() and self.checkC1.isChecked():
@@ -5559,7 +5562,7 @@ class MyApp(QWidget):
 
         ### 예외처리 5 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate5_Non_SAP.closeApp.emit()
 
         ### 예외처리 6 - 데이터 미추출
         elif len(self.dataframe) == 0:
@@ -5602,7 +5605,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate5_Non_SAP.closeApp.emit()
-            
 
     def extButtonClicked6(self):
 
@@ -5682,14 +5684,14 @@ class MyApp(QWidget):
                                Preparer=self.checked_preparer6)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
-        
+
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
-                                                        "---Filtered Result  Scenario06---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
+                                                             "---Filtered Result  Scenario06---\n" + sql]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
-                                                          "---Filtered JE  Scenario06---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
+                                                               "---Filtered JE  Scenario06---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -5739,7 +5741,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate6.closeApp.emit()
-            
 
     def extButtonClicked7(self):
 
@@ -5816,15 +5817,15 @@ class MyApp(QWidget):
                               Account=self.checked_account7, Preparer=self.checked_preparer7)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn3.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
-                                                        "---Filtered Result  Scenario07---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
+                                                             "---Filtered Result  Scenario07---\n" + sql]
 
         elif self.rbtn4.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
-                                                          "---Filtered JE  Scenario07---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
+                                                               "---Filtered JE  Scenario07---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -5874,7 +5875,6 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
             self.communicate7.closeApp.emit()
-            
 
     def extButtonClicked8(self):
 
@@ -5955,14 +5955,14 @@ class MyApp(QWidget):
                                        Preparer=self.checked_preparer8, Account=self.checked_account8)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
-        
+
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
-                                                        "---Filtered Result  Scenario08---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
+                                                             "---Filtered Result  Scenario08---\n" + sql]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
-                                                          "---Filtered JE  Scenario08---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
+                                                               "---Filtered JE  Scenario08---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -6012,7 +6012,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate8.closeApp.emit()
-            
 
     def extButtonClicked9(self):
 
@@ -6116,17 +6115,16 @@ class MyApp(QWidget):
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
-        
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
                                                              "---Filtered Result_2  Scenario09---\n" + sql]
             self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
-                                                           "---Filtered Result_1  Scenario09---\n" + sql_refer]
+                                                                "---Filtered Result_1  Scenario09---\n" + sql_refer]
 
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
-                                                          "---Filtered JE  Scenario09---\n" + sql]
+                                                               "---Filtered JE  Scenario09---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -6171,7 +6169,6 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate9.closeApp.emit()
-        
 
     def extButtonClicked10(self):
 
@@ -6252,15 +6249,15 @@ class MyApp(QWidget):
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
-                                                        "---Filtered Result  Scenario10---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
+                                                             "---Filtered Result  Scenario10---\n" + sql]
 
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
-                                                          "---Filtered JE  Scenario10---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
+                                                               "---Filtered JE  Scenario10---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -6302,7 +6299,6 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate10.closeApp.emit()
-        
 
     def extButtonClicked12(self):
 
@@ -6519,7 +6515,7 @@ class MyApp(QWidget):
         self.dataframe['비경상적계정 선택여부'] = ''
 
         self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
-                                                       "---Filtered Result  Scenario12---\n" + sql]
+                                                            "---Filtered Result  Scenario12---\n" + sql]
 
         if len(self.dataframe) > 1048576:
             self.communicate12.closeApp.emit()
@@ -6541,7 +6537,6 @@ class MyApp(QWidget):
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             self.communicate12.closeApp.emit()
-        
 
     def extButtonClickedC(self):
 
@@ -6817,14 +6812,14 @@ class MyApp(QWidget):
             dflist.append(readlist)
 
         self.dataframe = pd.concat(dflist, ignore_index=True)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario12",
-                                                        "---Filtered Result  Scenario12---\n" + sql]
+                                                             "---Filtered Result  Scenario12---\n" + sql]
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                          "---Filtered JE  Scenario12---\n" + sql]
+                                                               "---Filtered JE  Scenario12---\n" + sql]
 
         if len(self.dataframe) == 0:
 
@@ -6850,7 +6845,6 @@ class MyApp(QWidget):
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
         self.communicateC.closeApp2.emit(cursortext)
-        
 
     def extButtonClicked13(self):
 
@@ -6931,14 +6925,14 @@ class MyApp(QWidget):
                                    Account=checked_account13)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
-                                                        "---Filtered Result  Scenario13---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
+                                                             "---Filtered Result  Scenario13---\n" + sql_query]
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                          "---Filtered JE  Scenario13---\n" + sql_query]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                               "---Filtered JE  Scenario13---\n" + sql_query]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -6951,7 +6945,7 @@ class MyApp(QWidget):
 
         ### 예외처리 3 - 최대 추출 라인수
         if len(self.dataframe) > 1048576:
-            self.alertbox_open3()
+            self.communicate13.closeApp.emit()
 
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(self.temp_Continuous) + ','
@@ -6992,7 +6986,6 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
 
             self.communicate13.closeApp.emit()
-            
 
     def extButtonClicked14(self):
 
@@ -7067,14 +7060,14 @@ class MyApp(QWidget):
                            Account=self.checked_account14)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
-        
+
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
-                                                        "---Filtered Result  Scenario14---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
+                                                             "---Filtered Result  Scenario14---\n" + sql]
         elif self.rbtn2.isChecked():
-             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
-                                                          "---Filtered JE  Scenario14---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
+                                                               "---Filtered JE  Scenario14---\n" + sql]
 
         ### DebitCredit 열 생성
         if not self.checkD.isChecked() and self.checkC.isChecked():
@@ -7115,7 +7108,6 @@ class MyApp(QWidget):
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
         self.communicate14.closeApp.emit()
-        
 
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
@@ -7164,7 +7156,7 @@ class MyApp(QWidget):
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
                         self.my_query.to_excel(writer, sheet_name='Query', index=False,
-                                                                       freeze_panes=(1, 0))
+                                               freeze_panes=(1, 0))
                     self.MessageBox_Open("저장을 완료했습니다")
 
 
