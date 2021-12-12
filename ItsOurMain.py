@@ -487,6 +487,9 @@ class MyApp(QWidget):
         self.communicate14.closeApp.connect(self.doneAction14)
         self.communicateC = Communicate()
         self.communicateC.closeApp2.connect(self.doneActionC)
+        self.timerVar = QTimer()
+        self.timerVar.setInterval(1000)
+        self.timerVar.timeout.connect(self.printTime)
 
     def return_print(self, *message):
         self.io = StringIO()
@@ -3645,13 +3648,26 @@ class MyApp(QWidget):
     ###########################
     ####추가하셔야 하는 함수들#####
     ###########################
+    def Timer(self):
+        self.secondTimer = 0
+        self.timerVar.start()
+
+    def printTime(self):
+        self.secondTimer += 1
+        elapsetime = "Elapsed time : " + str(int(self.secondTimer / 3600)) + "h " + str(int(self.secondTimer / 60)) + "m " + str(
+            self.secondTimer) + "s"
+        self.progressLabel.setText(elapsetime)
 
     def doAction(self):
+        self.Timer()
         self.Action = QDialog()
         self.Action.setStyleSheet('background-color : black;')
         lbl_img = QLabel()
         label = QLabel('Now Loading')
-        label.setStyleSheet("font : bold 13pt; color: white;")
+        label.setStyleSheet("font : bold 14pt; color: white;")
+
+        self.progressLabel = QLabel("Elapsed time : 0h 0m 0s")
+        self.progressLabel.setStyleSheet("font : bold 8pt; color: grey;")
         pixmap = QPixmap('./Loading.png')
         lbl_img.setPixmap(pixmap)
         self.progressBar = QProgressBar()
@@ -3662,7 +3678,13 @@ class MyApp(QWidget):
                                        "}")
         sub_layout = QHBoxLayout()
         sub_layout.addWidget(lbl_img)
-        sub_layout.addWidget(label)
+
+        sub_layout2 = QVBoxLayout()
+        sub_layout2.addWidget(label)
+        sub_layout2.addWidget(self.progressLabel)
+        sub_layout2.setAlignment(Qt.AlignCenter)
+
+        sub_layout.addLayout(sub_layout2)
         main_layout = QVBoxLayout()
         main_layout.addLayout(sub_layout)
         main_layout.addWidget(self.progressBar)
@@ -3676,6 +3698,7 @@ class MyApp(QWidget):
     ###Thread End시 로딩창 종료 및 조건 팝업
     def doneAction4(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -3732,6 +3755,7 @@ class MyApp(QWidget):
 
     def doneAction5_SAP(self):
         self.Action.close()
+        self.timerVar.stop()
 
         ### 예외처리 5 - 최대 라인 수 초과
         if len(self.dataframe) > 1048576:
@@ -3794,6 +3818,7 @@ class MyApp(QWidget):
 
     def doneAction5_Non_SAP(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -3855,6 +3880,7 @@ class MyApp(QWidget):
 
     def doneAction6(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -3915,6 +3941,7 @@ class MyApp(QWidget):
 
     def doneAction7(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -3969,6 +3996,7 @@ class MyApp(QWidget):
 
     def doneAction8(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -4029,6 +4057,7 @@ class MyApp(QWidget):
 
     def doneAction12(self):
         self.Action.close()
+        self.timerVar.stop()
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -4048,6 +4077,7 @@ class MyApp(QWidget):
     @pyqtSlot(str)
     def doneActionC(self, cursortext):
         self.Action.close()
+        self.timerVar.stop()
         self.Cursortext.setText(cursortext)
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -4091,6 +4121,7 @@ class MyApp(QWidget):
 
     def doneAction13(self):
         self.Action.close()
+        self.timerVar.stop()
 
         ### 예외처리 3 - 최대 추출 라인수
         if len(self.dataframe) > 1048576:
@@ -4158,6 +4189,7 @@ class MyApp(QWidget):
 
     def doneAction9(self):
         self.Action.close()
+        self.timerVar.stop()
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
@@ -4241,6 +4273,7 @@ class MyApp(QWidget):
 
     def doneAction10(self):
         self.Action.close()
+        self.timerVar.stop()
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
@@ -4325,6 +4358,7 @@ class MyApp(QWidget):
 
     def doneAction14(self):
         self.Action.close()
+        self.timerVar.stop()
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
