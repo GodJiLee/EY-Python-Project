@@ -460,6 +460,10 @@ class MyApp(QWidget):
         self.string_date_list = []
         self.fianlDate = []
         self.clickCount = 0
+        self.dialoglist = set()
+        self.timerVar = QTimer()
+        self.timerVar.setInterval(1000)
+        self.timerVar.timeout.connect(self.printTime)
         ####수정사항 끝####
 
         ##다이얼로그별 시그널 생성
@@ -487,9 +491,6 @@ class MyApp(QWidget):
         self.communicate14.closeApp.connect(self.doneAction14)
         self.communicateC = Communicate()
         self.communicateC.closeApp2.connect(self.doneActionC)
-        self.timerVar = QTimer()
-        self.timerVar.setInterval(1000)
-        self.timerVar.timeout.connect(self.printTime)
 
     def return_print(self, *message):
         self.io = StringIO()
@@ -913,6 +914,7 @@ class MyApp(QWidget):
         gc.collect()
 
     def Dialog4(self):
+        self.dialoglist.add(4)
         self.dialog4 = QDialog()
         self.dialog4.setStyleSheet('background-color: #2E2E38')
         self.dialog4.setWindowIcon(QIcon('./EY_logo.png'))
@@ -1104,6 +1106,7 @@ class MyApp(QWidget):
 
     def Dialog5(self):
         ### 공통 elements================================================================
+        self.dialoglist.add(5)
         self.dialog5 = QDialog()
         self.dialog5.setStyleSheet('background-color: #2E2E38')
         self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
@@ -1472,6 +1475,7 @@ class MyApp(QWidget):
         self.dialog5.show()
 
     def Dialog6(self):
+        self.dialoglist.add(6)
         self.dialog6 = QDialog()
         self.dialog6.setStyleSheet('background-color: #2E2E38')
         self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
@@ -1786,6 +1790,7 @@ class MyApp(QWidget):
         self.dialog6.show()
 
     def Dialog7(self):
+        self.dialoglist.add(7)
         self.dialog7 = QDialog()
         self.dialog7.setStyleSheet('background-color: #2E2E38')
         self.dialog7.setWindowIcon(QIcon("./EY_logo.png"))
@@ -2104,6 +2109,7 @@ class MyApp(QWidget):
         self.dialog7.show()
 
     def Dialog8(self):
+        self.dialoglist.add(8)
         self.dialog8 = QDialog()
         self.dialog8.setStyleSheet('background-color: #2E2E38')
         self.dialog8.setWindowIcon(QIcon("./EY_logo.png"))
@@ -2365,6 +2371,7 @@ class MyApp(QWidget):
         self.dialog8.show()
 
     def Dialog9(self):
+        self.dialoglist.add(9)
         self.dialog9 = QDialog()
         groupbox = QGroupBox('접속 정보')
         cursor = self.cnxn.cursor()
@@ -2551,6 +2558,7 @@ class MyApp(QWidget):
         self.dialog9.show()
 
     def Dialog10(self):
+        self.dialoglist.add(10)
         self.dialog10 = QDialog()
         self.dialog10.setStyleSheet('background-color: #2E2E38')
         self.dialog10.setWindowIcon(QIcon("./EY_logo.png"))
@@ -2896,6 +2904,7 @@ class MyApp(QWidget):
         self.dialog10.activateWindow()
 
     def Dialog12(self):
+        self.dialoglist.add(12)
         self.dialog12 = QDialog()
         self.dialog12.setStyleSheet('background-color: #2E2E38')
         self.dialog12.setWindowIcon(QIcon('./EY_logo.png'))
@@ -3164,6 +3173,7 @@ class MyApp(QWidget):
         self.dialog12.activateWindow()
 
     def Dialog13(self):
+        self.dialoglist.add(13)
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
         self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
@@ -3351,6 +3361,7 @@ class MyApp(QWidget):
         self.dialog13.show()
 
     def Dialog14(self):
+        self.dialoglist.add(14)
         self.dialog14 = QDialog()
         self.dialog14.setStyleSheet('background-color: #2E2E38')
         self.dialog14.setWindowIcon(QIcon("./EY_logo.png"))
@@ -3663,6 +3674,31 @@ class MyApp(QWidget):
             self.secondTimer) + "s"
         self.progressLabel.setText(elapsetime)
 
+    def pClose(self):
+        self.close()
+        self.Action.close()
+        for a in self.dialoglist:
+            if a == 4:
+                self.dialog4.close()
+            elif a == 5:
+                self.dialog5.close()
+            elif a == 6:
+                self.dialog6.close()
+            elif a == 7:
+                self.dialog7.close()
+            elif a == 8:
+                self.dialog8.close()
+            elif a == 9:
+                self.dialog9.close()
+            elif a == 10:
+                self.dialog10.close()
+            elif a == 12:
+                self.dialog12.close()
+            elif a == 13:
+                self.dialog13.close()
+            elif a == 14:
+                self.dialog14.close()
+
     def doAction(self):
         self.Timer()
         self.Action = QDialog()
@@ -3675,6 +3711,11 @@ class MyApp(QWidget):
         self.progressLabel.setStyleSheet("font : bold 8pt; color: grey;")
         pixmap = QPixmap('./Loading.png')
         lbl_img.setPixmap(pixmap)
+
+        self.pclosebtn = QPushButton("Close", self.Action)
+        self.pclosebtn.setStyleSheet('color:white; background-image : url(./bar.png) ;')
+        self.pclosebtn.clicked.connect(self.pClose)
+
         self.progressBar = QProgressBar()
         self.progressBar.setRange(0, 0)
         self.progressBar.setStyleSheet("QProgressBar::chunk "
@@ -3689,10 +3730,15 @@ class MyApp(QWidget):
         sub_layout2.addWidget(self.progressLabel)
         sub_layout2.setAlignment(Qt.AlignCenter)
 
+        sub_layout3 = QHBoxLayout()
+        sub_layout3.addStretch(2)
+        sub_layout3.addWidget(self.pclosebtn)
+
         sub_layout.addLayout(sub_layout2)
         main_layout = QVBoxLayout()
         main_layout.addLayout(sub_layout)
         main_layout.addWidget(self.progressBar)
+        main_layout.addLayout(sub_layout3)
 
         self.Action.setLayout(main_layout)
         self.Action.setGeometry(700, 400, 400, 220)
@@ -4080,6 +4126,7 @@ class MyApp(QWidget):
     @pyqtSlot(str)
     def doneActionC(self, cursortext):
         self.Action.close()
+        self.timerVar.stop()
         self.Cursortext.setText(cursortext)
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -4462,6 +4509,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th4 = Thread(target=self.extButtonClicked4)
+                self.th4.daemon = True
                 self.th4.start()
 
             ### 예외처리 5 - 필수 입력값 타입 오류
@@ -4569,6 +4617,7 @@ class MyApp(QWidget):
 
             self.doAction()
             self.th5_SAP = Thread(target=self.extButtonClicked5_SAP)
+            self.th5_SAP.daemon = True
             self.th5_SAP.start()
         ####수정사항 끝####
 
@@ -4612,6 +4661,7 @@ class MyApp(QWidget):
             else:
                 self.doAction()
                 self.th5_Non_SAP = Thread(target=self.extButtonClicked5_Non_SAP)
+                self.th5_Non_SAP.daemon = True
                 self.th5_Non_SAP.start()
 
     ###extraction버튼 클릭 시 유효성 확인 및 Thread 시작
@@ -4688,6 +4738,7 @@ class MyApp(QWidget):
 
                     self.doAction()
                     self.th6 = Thread(target=self.extButtonClicked6)
+                    self.th6.daemon = True
                     self.th6.start()
 
             except ValueError:
@@ -4793,6 +4844,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th7 = Thread(target=self.extButtonClicked7)
+                self.th7.daemon = True
                 self.th7.start()
 
             except ValueError:
@@ -4842,6 +4894,7 @@ class MyApp(QWidget):
 
                     self.doAction()
                     self.th8 = Thread(target=self.extButtonClicked8)
+                    self.th8.daemon = True
                     self.th8.start()
 
             except ValueError:
@@ -4892,6 +4945,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th12 = Thread(target=self.extButtonClicked12)
+                self.th12.daemon = True
                 self.th12.start()
 
             except ValueError:
@@ -4936,6 +4990,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th13 = Thread(target=self.extButtonClicked13)
+                self.th13.daemon = True
                 self.th13.start()
 
             ### 예외처리 4 - 필수값 타입 오류
@@ -5014,6 +5069,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th9 = Thread(target=self.extButtonClicked9)
+                self.th9.daemon = True
                 self.th9.start()
             except ValueError:
                 try:
@@ -5090,6 +5146,7 @@ class MyApp(QWidget):
                             self.checked_preparer10 = checked_preparer
                         self.doAction()
                         self.th10 = Thread(target=self.extButtonClicked10)
+                        self.th10.daemon = True
                         self.th10.start()
 
                 except:
@@ -5141,6 +5198,7 @@ class MyApp(QWidget):
 
                 self.doAction()
                 self.th14 = Thread(target=self.extButtonClicked14)
+                self.th14.daemon = True
                 self.th14.start()
             except ValueError:
                 try:
