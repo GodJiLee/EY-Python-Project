@@ -444,7 +444,6 @@ class MyApp(QWidget):
         self.init_UI()
 
         ##Initialize Variables
-        ####수정사항 시작####
         self.selected_project_id = None
         self.selected_server_name = "--서버 목록--"
         self.dataframe = None
@@ -464,7 +463,6 @@ class MyApp(QWidget):
         self.timerVar = QTimer()
         self.timerVar.setInterval(1000)
         self.timerVar.timeout.connect(self.printTime)
-        ####수정사항 끝####
 
         ##다이얼로그별 시그널 생성
         self.communicate4 = Communicate()
@@ -657,14 +655,14 @@ class MyApp(QWidget):
 
         # 예외처리 - 서버 선택
         if server == "--서버 목록--":
-            self.MessageBox_Open("서버가 선택되어 있지 않습니다")
+            self.MessageBox_Open("서버가 선택되어 있지 않습니다.")
             return
 
         # 예외처리 - Ecode 이상
         elif ecode.isdigit() is False:
-            self.MessageBox_Open("Engagement Code가 잘못되었습니다")
+            self.MessageBox_Open("Engagement Code가 잘못되었습니다.")
             self.ProjectCombobox.clear()
-            self.ProjectCombobox.addItem("프로젝트가 없습니다")
+            self.ProjectCombobox.addItem("프로젝트가 없습니다.")
             return
 
         server_path = f"DRIVER={{SQL Server}};SERVER={server};uid={user};pwd={password};DATABASE={db};trusted_connection=yes"
@@ -673,7 +671,7 @@ class MyApp(QWidget):
         try:
             self.cnxn = pyodbc.connect(server_path)
         except:
-            QMessageBox.about(self, "Warning", "접속 정보가 잘못되었습니다")
+            QMessageBox.about(self, "Warning", "접속에 실패하였습니다.")
             return
 
         cursor = self.cnxn.cursor()
@@ -717,10 +715,8 @@ class MyApp(QWidget):
 
         self.selected_project_id = None
         self.dataframe = None
-        ####수정사항 시작####
         self.dataframe_refer = None
         self.viewtable.setModel(self.dataframe)
-        ####수정사항 끝####
         self.scenario_dic = {}
         self.string_date_list = []
         self.fianlDate = []
@@ -732,7 +728,6 @@ class MyApp(QWidget):
         self.selected_server_name = text
 
     def Project_ComboBox_Selected(self, text):
-        ####수정사항 시작####
         ## 예외처리 - 서버가 연결되지 않은 상태로 Project name Combo box를 건드리는 경우
         if self.cnxn is None:
             return
@@ -756,7 +751,6 @@ class MyApp(QWidget):
 
         except:
             self.selected_project_id = None
-        ####수정사항 끝####
 
     def Connect_ServerInfo_Group(self):
 
@@ -793,10 +787,8 @@ class MyApp(QWidget):
         ##서버 선택 콤보박스
         self.cb_server = QComboBox(self)
         self.cb_server.addItem('--서버 목록--')
-        ####수정사항 시작####
         for i in [1, 2, 3, 4, 6, 7, 8]:
             self.cb_server.addItem(f'KRSEOVMPPACSQ0{i}\INST1')
-        ####수정사항 끝####
 
         ### Scenario 유형 콤보박스 - 소분류 수정
         self.comboScenario = QComboBox(self)
@@ -870,15 +862,15 @@ class MyApp(QWidget):
 
     def connectDialog(self):
         if self.cnxn is None:
-            self.MessageBox_Open("SQL 서버가 연결되어 있지 않습니다")
+            self.MessageBox_Open("SQL 서버가 연결되어 있지 않습니다.")
             return
 
         elif self.selected_project_id is None:
-            self.MessageBox_Open("프로젝트가 선택되지 않았습니다")
+            self.MessageBox_Open("프로젝트가 선택되지 않았습니다.")
             return
 
         elif self.selected_scenario_subclass_index == 0:
-            self.MessageBox_Open("시나리오가 선택되지 않았습니다")
+            self.MessageBox_Open("시나리오가 선택되지 않았습니다.")
             return
 
         if self.selected_scenario_subclass_index == 1:
@@ -3660,9 +3652,6 @@ class MyApp(QWidget):
 
         return tables
 
-    ###########################
-    ####추가하셔야 하는 함수들#####
-    ###########################
     def Timer(self):
         self.secondTimer = 0
         self.timerVar.start()
@@ -4532,8 +4521,11 @@ class MyApp(QWidget):
                 int(self.temp_N)
                 int(self.temp_TE)
 
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account4 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account4 = checked_account
 
@@ -4557,7 +4549,6 @@ class MyApp(QWidget):
                     except:
                         self.alertbox_open2('계정사용 빈도수와 중요성금액')
 
-    ####수정사항 시작####
     def ChangeInt(self, row):
         try:
             return str(int(row))
@@ -4575,7 +4566,7 @@ class MyApp(QWidget):
 
         ## 예외처리1 - SKA1 드롭박스에 아무 것도 없는 경우
         elif self.listbox_drops.count() == 0:
-            self.MessageBox_Open("파일이 Drop되지 않았습니다")
+            self.MessageBox_Open("파일이 Drop되지 않았습니다.")
 
         ### 예외처리 2 - 필수값 누락
         elif self.tempSheet_SAP == '':
@@ -4595,14 +4586,19 @@ class MyApp(QWidget):
                 myItem = QListWidgetItem(self.listbox_drops.item(i))
                 myItem = str(myItem.text())
                 self.dropped_items.append(myItem)
-                # self.listbox_drops.item(i) = re.sub(r'\'', '/', self.listbox_drops.item(i))
 
             ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
             df = pd.DataFrame()  ### dataframe으로 저장
             count = 0
             for file in self.dropped_items:
                 if 'SKA1' in file:
-                    df = df.append(pd.read_csv(file, sep='|'))
+                    ## 예외처리 - SKA1 파일이 빈 파일인 경우
+                    try:
+                        df = df.append(pd.read_csv(file, sep='|'))
+
+                    except:
+                        self.MessageBox_Open("SKA1 파일이 비어 있습니다.")
+                        return
                 else:
                     count += 1
                     break
@@ -4612,18 +4608,21 @@ class MyApp(QWidget):
                 self.alertbox_open10()
                 return
 
-            ## 예외처리 - SKA1 파일을 읽어들인 결과 빈 파일인 경우
+            ## 예외처리 - 생성일자 혹은 계정코드 필드가 없을 경우
+            if not 'ERDAT' in df.columns.tolist() or not 'SAKNR' in df.columns.tolist():
+                self.alertbox_open11('"ERDAT", "SAKNR" 필드를 찾을 수 없습니다.')
+                return
+
+            ## 예외처리 - SKA1 파일을 읽어들인 결과 Data가 없는 경우
             if len(df) == 0:
                 self.MessageBox_Open("SKA1 파일이 비어있습니다.")
                 return
 
-            ## 예외처리 - 생성일자 혹은 계정코드 필드가 없을 경우
-            if not 'ERDAT' in df.columns.tolist() or not 'SAKNR' in df.columns.tolist():
-                self.alertbox_open11('"ERDAT", "SAKNR" 필드를 찾을 수 없습니다')
-                return
-
+            ##Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.checked_account5_SAP = ''
+                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                return
+            ##Select all이나 일부 체크박스가 선택된 경우
             else:
                 self.checked_account5_SAP = checked_account
 
@@ -4650,7 +4649,6 @@ class MyApp(QWidget):
             self.th5_SAP = Thread(target=self.extButtonClicked5_SAP)
             self.th5_SAP.daemon = True
             self.th5_SAP.start()
-        ####수정사항 끝####
 
     def Thread5_Non_SAP(self):
         ### 예외처리 0 - 차/대 체크 오류
@@ -4658,8 +4656,11 @@ class MyApp(QWidget):
             self.alertbox_open7()
 
         else:
+            ##Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.checked_account5_Non = ''
+                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                return
+            ##Select all이나 일부 체크박스가 선택된 경우
             else:
                 self.checked_account5_Non = checked_account
 
@@ -4720,13 +4721,19 @@ class MyApp(QWidget):
             if self.tempCost == '': self.tempCost = 0
             if self.tempTDate == '': self.tempTDate = 0
 
+            ##Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.checked_account6 = ''
+                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                return
+            ##Select all이나 일부 체크박스가 선택된 경우
             else:
                 self.checked_account6 = checked_account
 
+            ##전표입력자가 Unselect all인 경우
             if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                self.checked_preparer6 = ''
+                self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
+                return
+            ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
             else:
                 self.checked_preparer6 = checked_preparer
 
@@ -4841,9 +4848,7 @@ class MyApp(QWidget):
             self.tempCost = 0
 
         if self.tempDate == '' or self.tempSheet == '':
-            ####수정사항 시작####
             self.alertbox_open()
-            ####수정사항 끝####
 
         elif not (self.checkC.isChecked()) and not (self.checkD.isChecked()):
             self.alertbox_open7()
@@ -4862,13 +4867,19 @@ class MyApp(QWidget):
             try:
                 int(self.tempCost)
 
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account7 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account7 = checked_account
 
+                ##전표입력자가 Unselect all인 경우
                 if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                    self.checked_preparer7 = ''
+                    self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
+                    return
+                ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
                 else:
                     self.checked_preparer7 = checked_preparer
 
@@ -4910,13 +4921,19 @@ class MyApp(QWidget):
 
                 else:
 
+                    ##Unselect all의 경우
                     if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                        self.checked_account8 = ''
+                        self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                        return
+                    ##Select all이나 일부 체크박스가 선택된 경우
                     else:
                         self.checked_account8 = checked_account
 
+                    ##전표입력자가 Unselect all인 경우
                     if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                        self.checked_preparer8 = ''
+                        self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
+                        return
+                    ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
                     else:
                         self.checked_preparer8 = checked_preparer
 
@@ -4968,8 +4985,10 @@ class MyApp(QWidget):
                 elif self.checkD1.isChecked():
                     self.tempState12 = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
 
+                ##Unselect all인 경우
                 if checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
-                    self.checked_account12 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
                 else:
                     self.checked_account12 = checked_account_12
 
@@ -4990,10 +5009,10 @@ class MyApp(QWidget):
         ###예외처리 0 - TE 금액 누락시
         if self.temp_TE_13 == '':
             self.temp_TE_13 = 0
-        ####수정사항 시작####
+
         if self.temp_Continuous != '' and len(str(self.temp_Continuous)) < 6:
             self.alertbox_open15()
-        ####수정사항 끝####
+
         ### 예외처리 1 - 필수값 누락
         elif self.temp_Continuous == '' or self.tempSheet == '':
             self.alertbox_open()
@@ -5013,8 +5032,11 @@ class MyApp(QWidget):
                 int(self.temp_TE_13)
                 int(self.temp_Continuous)
 
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account13 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account13 = checked_account
 
@@ -5052,13 +5074,13 @@ class MyApp(QWidget):
             self.alertbox_open5()
 
         elif os.path.isfile(self.cursorpath) == False:
-            self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다")
+            self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
         elif len(self.wbC.columns) <= 12:
-            self.alertbox_open4('Cursor 필드가 존재하지 않습니다')
+            self.alertbox_open4('Cursor 필드가 존재하지 않습니다.')
         elif self.wbC.iloc[:, 12].empty == True:
-            self.alertbox_open4('Check된 조건이 없습니다')
+            self.alertbox_open4('Check된 조건이 없습니다.')
         elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
-            self.alertbox_open4('필요 조건 필드를 충족하지 않습니다')
+            self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
         else:
             try:
                 self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
@@ -5066,7 +5088,7 @@ class MyApp(QWidget):
                 self.thC = Thread(target=self.extButtonClickedC)
                 self.thC.start()
             except ValueError:
-                self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다')
+                self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다.')
 
     def Thread9(self):
         self.tempN = self.D9_N.text()  # 필수값
@@ -5092,8 +5114,10 @@ class MyApp(QWidget):
                 int(self.tempN)
                 int(self.tempTE)
 
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account9 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
                 else:
                     self.checked_account9 = checked_account
 
@@ -5165,13 +5189,17 @@ class MyApp(QWidget):
                           and (self.tempPoint2[5:7] < '01' and self.tempPoint2[8:10] > '31')):
                         self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                     else:
+                        ##Unselect all의 경우
                         if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                            self.checked_account10 = ''
+                            self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                            return
                         else:
                             self.checked_account10 = checked_account
 
+                        ##전표입력자가 Unselect all인 경우
                         if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                            self.checked_preparer10 = ''
+                            self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
+                            return
                         else:
                             self.checked_preparer10 = checked_preparer
                         self.doAction()
@@ -5220,9 +5248,10 @@ class MyApp(QWidget):
             if self.tempTE == '': self.tempTE = 0
             try:
                 int(self.tempTE)
-
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account14 = ''
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
                 else:
                     self.checked_account14 = checked_account
 
@@ -5245,7 +5274,7 @@ class MyApp(QWidget):
 
         ##예외 처리 - 삭제할 Sheet가 없는 경우
         if not self.scenario_dic:
-            self.MessageBox_Open("삭제할 Sheet가 없습니다")
+            self.MessageBox_Open("삭제할 Sheet가 없습니다.")
             return
 
         ##Sheet 정보 삭제
@@ -5552,7 +5581,6 @@ class MyApp(QWidget):
                                    Account=self.checked_account5_SAP)
 
         elif self.rbtn2.isChecked():
-            ####수정사항 시작####
             sql_query = '''
                                 SELECT
                                     JournalEntries.BusinessUnit
@@ -5578,17 +5606,16 @@ class MyApp(QWidget):
                                         [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
                                 WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN	
                                     (
-                                    SELECT DISTINCT JENumber
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                    WHERE GLAccountNumber IN ({CODE})
+                                    SELECT DISTINCT JournalEntries.JENumber
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                    WHERE JournalEntries.GLAccountNumber IN ({CODE})
                                     {Account}
                                     )
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
                                        Account=self.checked_account5_SAP)
-        ####수정사항 끝####
+
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
-        print(sql_query)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -5690,43 +5717,42 @@ class MyApp(QWidget):
                         """.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
                                    Account=self.checked_account5_Non)
         ### JE
-        ####수정사항 시작####
         elif self.rbtn2.isChecked():
 
             sql_query = '''
-                                SELECT
-                                    JournalEntries.BusinessUnit
-                                    , JournalEntries.JENumber
-                                    , JournalEntries.JELineNumber
-                                    , JournalEntries.EffectiveDate
-                                    , JournalEntries.EntryDate
-                                    , JournalEntries.Period
-                                    , JournalEntries.GLAccountNumber
-                                    , CoA.GLAccountName
-                                    , JournalEntries.Debit
-                                    , JournalEntries.Credit
-                                    , CASE
-                                           WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                           END AS DebitCredit
-                                    , JournalEntries.Amount
-                                    , JournalEntries.FunctionalCurrencyCode
-                                    , JournalEntries.JEDescription
-                                    , JournalEntries.JELineDescription
-                                    , JournalEntries.PreparerID
-                                    , JournalEntries.ApproverID
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
-                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN	
-                                    (
-                                    SELECT DISTINCT JENumber
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                    WHERE GLAccountNumber IN ({CODE})
-                                    {Account}
-                                    )
-                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                        '''.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
-                                   Account=self.checked_account5_Non)
-        ####수정사항 끝####
+                                    SELECT
+                                        JournalEntries.BusinessUnit
+                                        , JournalEntries.JENumber
+                                        , JournalEntries.JELineNumber
+                                        , JournalEntries.EffectiveDate
+                                        , JournalEntries.EntryDate
+                                        , JournalEntries.Period
+                                        , JournalEntries.GLAccountNumber
+                                        , CoA.GLAccountName
+                                        , JournalEntries.Debit
+                                        , JournalEntries.Credit
+                                        , CASE
+                                               WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                               END AS DebitCredit
+                                        , JournalEntries.Amount
+                                        , JournalEntries.FunctionalCurrencyCode
+                                        , JournalEntries.JEDescription
+                                        , JournalEntries.JELineDescription
+                                        , JournalEntries.PreparerID
+                                        , JournalEntries.ApproverID
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
+                                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN	
+                                        (
+                                        SELECT DISTINCT JournalEntries.JENumber
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                        WHERE JournalEntries.GLAccountNumber IN ({CODE})
+                                        {Account}
+                                        )
+                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                    '''.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
+                                               Account=self.checked_account5_Non)
+
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
@@ -7037,9 +7063,9 @@ class MyApp(QWidget):
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
                                     [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
                             WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber 
-                                    AND RIGHT(FLOOR(Amount), 6) IN ({CONTI})
-                                    {Account}
-                                    AND ABS(JournalEntries.Amount) > {TE}
+                            AND RIGHT(FLOOR(Amount), 6) IN ({CONTI})
+                            {Account}
+                            AND ABS(JournalEntries.Amount) > {TE}
                             ORDER BY JENumber, JELineNumber
                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
                                Account=self.checked_account13)
@@ -7067,15 +7093,15 @@ class MyApp(QWidget):
                                 , JournalEntries.JELineDescription
                                 , JournalEntries.PreparerID
                                 , JournalEntries.ApproverID
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
+                                 [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
                             WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber AND JournalEntries.JENumber IN
                             (
-                                SELECT DISTINCT JENumber
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                SELECT DISTINCT JournalEntries.JENumber
+                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
                                 WHERE RIGHT(FLOOR(Amount), 6) IN ({CONTI}) 
-                                        {Account}
-                                        AND ABS(JournalEntries.Amount) > {TE}
+                                {Account}
+                                AND ABS(JournalEntries.Amount) > {TE}
                             )
                             ORDER BY JENumber, JELineNumber
                         '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
@@ -7264,10 +7290,10 @@ class MyApp(QWidget):
 
     def saveFile(self):
         if self.dataframe is None:
-            self.MessageBox_Open("저장할 데이터가 없습니다")
+            self.MessageBox_Open("저장할 데이터가 없습니다.")
             return
         if self.scenario_dic == {}:
-            self.MessageBox_Open("저장할 Sheet가 없습니다")
+            self.MessageBox_Open("저장할 Sheet가 없습니다.")
             return
         else:
             fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
@@ -7296,7 +7322,7 @@ class MyApp(QWidget):
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
-                    self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다")
+                    self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
 
                 else:
                     with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
@@ -7305,7 +7331,7 @@ class MyApp(QWidget):
                                                                        freeze_panes=(1, 0))
                         self.my_query.to_excel(writer, sheet_name='Query', index=False,
                                                freeze_panes=(1, 0))
-                    self.MessageBox_Open("저장을 완료했습니다")
+                    self.MessageBox_Open("저장을 완료했습니다.")
 
 
 if __name__ == '__main__':
