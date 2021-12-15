@@ -4526,796 +4526,781 @@ class MyApp(QWidget):
         self.tempYear_SAP = self.pname_year
 
         ## 예외처리1 - SKA1 드롭박스에 아무 것도 없는 경우
-        elif self.listbox_drops.count() == 0:
-        self.MessageBox_Open("파일이 Drop되지 않았습니다.")
+        if self.listbox_drops.count() == 0:
+            self.MessageBox_Open("파일이 Drop되지 않았습니다.")
 
-    ### 예외처리 2 - 필수값 누락
-    elif self.tempSheet_SAP == '':
-    self.alertbox_open()
+        ### 예외처리 2 - 필수값 누락
+        elif self.tempSheet_SAP == '':
+            self.alertbox_open()
 
-### 예외처리 3 - 시트명 중복 확인
-elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Result') != -1:
-self.alertbox_open5()
+        ### 예외처리 3 - 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Result') != -1:
+            self.alertbox_open5()
 
-elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Journals') != -1:
-self.alertbox_open5()
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_SAP + '_Journals') != -1:
+            self.alertbox_open5()
 
-else:
-self.dropped_items = []  ### ListBox 인풋값 append
+        else:
+            self.dropped_items = []  ### ListBox 인풋값 append
 
-for i in range(self.listbox_drops.count()):
-    myItem = QListWidgetItem(self.listbox_drops.item(i))
-    myItem = str(myItem.text())
-    self.dropped_items.append(myItem)
+            for i in range(self.listbox_drops.count()):
+                myItem = QListWidgetItem(self.listbox_drops.item(i))
+                myItem = str(myItem.text())
+                self.dropped_items.append(myItem)
 
-### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
-df = pd.DataFrame()  ### dataframe으로 저장
-count = 0
-for file in self.dropped_items:
-    if 'SKA1' in file:
-        ## 예외처리 - SKA1 파일이 빈 파일인 경우
-        try:
-            df = df.append(pd.read_csv(file, sep='|'))
+            ### 예외처리 2 - SKA1 파일인지 확인 후 df로 변환
+            df = pd.DataFrame()  ### dataframe으로 저장
+            count = 0
+            for file in self.dropped_items:
+                if 'SKA1' in file:
+                    ## 예외처리 - SKA1 파일이 빈 파일인 경우
+                    try:
+                        df = df.append(pd.read_csv(file, sep='|'))
 
-        except:
-            self.MessageBox_Open("SKA1 파일이 비어 있습니다.")
-            return
-    else:
-        count += 1
-        break
+                    except:
+                        self.MessageBox_Open("SKA1 파일이 비어 있습니다.")
+                        return
+                else:
+                    count += 1
+                    break
 
-## 예외처리 - SKA1 파일 이외의 파일이 드롭된 경우
-if count > 0:
-    self.alertbox_open10()
-    return
+            ## 예외처리 - SKA1 파일 이외의 파일이 드롭된 경우
+            if count > 0:
+                self.alertbox_open10()
+                return
 
-## 예외처리 - 생성일자 혹은 계정코드 필드가 없을 경우
-if not 'ERDAT' in df.columns.tolist() or not 'SAKNR' in df.columns.tolist():
-    self.alertbox_open11('"ERDAT", "SAKNR" 필드를 찾을 수 없습니다.')
-    return
+            ## 예외처리 - 생성일자 혹은 계정코드 필드가 없을 경우
+            if not 'ERDAT' in df.columns.tolist() or not 'SAKNR' in df.columns.tolist():
+                self.alertbox_open11('"ERDAT", "SAKNR" 필드를 찾을 수 없습니다.')
+                return
 
-## 예외처리 - SKA1 파일을 읽어들인 결과 Data가 없는 경우
-if len(df) == 0:
-    self.MessageBox_Open("SKA1 파일이 비어있습니다.")
-    return
+            ## 예외처리 - SKA1 파일을 읽어들인 결과 Data가 없는 경우
+            if len(df) == 0:
+                self.MessageBox_Open("SKA1 파일이 비어있습니다.")
+                return
 
-##Unselect all의 경우
-if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-    return
-##Select all이나 일부 체크박스가 선택된 경우
-else:
-    self.checked_account5_SAP = checked_account
+            ##Unselect all의 경우
+            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                return
+            ##Select all이나 일부 체크박스가 선택된 경우
+            else:
+                self.checked_account5_SAP = checked_account
 
-### 당기 생성된 계정 코드 반환
-df['ERDAT'] = df['ERDAT'].apply(lambda row: str(row))
-df = df[df['ERDAT'].str.slice(start=0, stop=4) == self.tempYear_SAP]
-self.AccCode_SKA1 = df['SAKNR'].apply(lambda row: self.ChangeInt(row))
+            ### 당기 생성된 계정 코드 반환
+            df['ERDAT'] = df['ERDAT'].apply(lambda row: str(row))
+            df = df[df['ERDAT'].str.slice(start=0, stop=4) == self.tempYear_SAP]
+            self.AccCode_SKA1 = df['SAKNR'].apply(lambda row: self.ChangeInt(row))
 
-temp_query = """SELECT GLAccountNumber
+            temp_query = """SELECT GLAccountNumber
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]""".format(
-    field=self.selected_project_id)
-AccCode_GL = pd.read_sql(temp_query, self.cnxn)
+                field=self.selected_project_id)
+            AccCode_GL = pd.read_sql(temp_query, self.cnxn)
 
-mask = AccCode_GL['GLAccountNumber'].apply(lambda row: self.ChangeInt(row) in self.AccCode_SKA1.values)
-AccCode_GL = AccCode_GL[mask]['GLAccountNumber'].apply(lambda row: f"\'{row}\'")
+            mask = AccCode_GL['GLAccountNumber'].apply(lambda row: self.ChangeInt(row) in self.AccCode_SKA1.values)
+            AccCode_GL = AccCode_GL[mask]['GLAccountNumber'].apply(lambda row: f"\'{row}\'")
 
-self.real_Code = ','.join(AccCode_GL)
+            self.real_Code = ','.join(AccCode_GL)
 
-## 예외처리 - 당기 생선된 계정이 없을 시
-if self.real_Code == '':
-    self.readl_Code = "\'\'"
+            ## 예외처리 - 당기 생선된 계정이 없을 시
+            if self.real_Code == '':
+                self.readl_Code = "\'\'"
 
-self.doAction()
-self.th5_SAP = Thread(target=self.extButtonClicked5_SAP)
-self.th5_SAP.daemon = True
-self.th5_SAP.start()
+            self.doAction()
+            self.th5_SAP = Thread(target=self.extButtonClicked5_SAP)
+            self.th5_SAP.daemon = True
+            self.th5_SAP.start()
 
-
-def Thread5_Non_SAP(self):
-    ##Unselect all의 경우
-    if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-        self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-        return
-    ##Select all이나 일부 체크박스가 선택된 경우
-    else:
-        self.checked_account5_Non = checked_account
-
-    self.tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
-    self.tempYear_NonSAP = int(self.pname_year)  # 필수값
-    self.temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
-
-    self.temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", self.temp_Code_Non_SAP_1)
-    self.temp_Code_Non_SAP_1 = re.split(",", self.temp_Code_Non_SAP_1)
-
-    self.temp_Code_Non_SAP = ''
-    for code in self.temp_Code_Non_SAP_1:
-        self.temp_Code_Non_SAP += "'" + str(code) + "', "
-
-    self.temp_Code_Non_SAP = str(self.temp_Code_Non_SAP)
-    self.temp_Code_Non_SAP = self.temp_Code_Non_SAP[:-2]
-
-    ### 예외처리 1 - 필수값 입력 누락
-    if self.temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '':
-        self.alertbox_open()
-
-    ### 예외처리 2 - 시트명 중복 확인
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Result') != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Journals') != -1:
-        self.alertbox_open5()
-
-    else:
-        self.doAction()
-        self.th5_Non_SAP = Thread(target=self.extButtonClicked5_Non_SAP)
-        self.th5_Non_SAP.daemon = True
-        self.th5_Non_SAP.start()
-
-
-###extraction버튼 클릭 시 유효성 확인 및 Thread 시작
-def Thread6(self):
-    self.tempDate = self.D6_Date.text()
-    self.tempTDate = self.D6_Date2.text()
-    self.tempCost = self.D6_Cost.text()
-    self.tempSheet = self.D6_Sheet.text()
-
-    if self.tempDate == '' or self.tempSheet == '' or self.tempTDate == '':
-        self.alertbox_open()
-
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    elif not (self.checkB.isChecked()) and not (self.checkF.isChecked()):
-        self.alertbox_open14()
-
-    else:
-        if self.tempCost == '': self.tempCost = 0
+    def Thread5_Non_SAP(self):
 
         ##Unselect all의 경우
         if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.checked_account6 = ''
-
+            self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+            return
         ##Select all이나 일부 체크박스가 선택된 경우
         else:
-            self.checked_account6 = checked_account
+            self.checked_account5_Non = checked_account
 
-        ##전표입력자가 Unselect all인 경우
-        if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-            self.checked_preparer6 = ''
+        self.tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
+        self.tempYear_NonSAP = int(self.pname_year)  # 필수값
+        self.temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
 
-        ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
+        self.temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", self.temp_Code_Non_SAP_1)
+        self.temp_Code_Non_SAP_1 = re.split(",", self.temp_Code_Non_SAP_1)
+
+        self.temp_Code_Non_SAP = ''
+        for code in self.temp_Code_Non_SAP_1:
+            self.temp_Code_Non_SAP += "'" + str(code) + "', "
+
+        self.temp_Code_Non_SAP = str(self.temp_Code_Non_SAP)
+        self.temp_Code_Non_SAP = self.temp_Code_Non_SAP[:-2]
+
+        ### 예외처리 1 - 필수값 입력 누락
+        if self.temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '':
+            self.alertbox_open()
+
+        ### 예외처리 2 - 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet_NonSAP + '_Journals') != -1:
+            self.alertbox_open5()
+
         else:
-            self.checked_preparer6 = checked_preparer
+            self.doAction()
+            self.th5_Non_SAP = Thread(target=self.extButtonClicked5_Non_SAP)
+            self.th5_Non_SAP.daemon = True
+            self.th5_Non_SAP.start()
 
-        try:
-            int(self.tempTDate)
-            int(self.tempCost)
+    ###extraction버튼 클릭 시 유효성 확인 및 Thread 시작
+    def Thread6(self):
+        self.tempDate = self.D6_Date.text()
+        self.tempTDate = self.D6_Date2.text()
+        self.tempCost = self.D6_Cost.text()
+        self.tempSheet = self.D6_Sheet.text()
 
-            self.tempTDate = int(self.tempTDate)
+        if self.tempDate == '' or self.tempSheet == '' or self.tempTDate == '':
+            self.alertbox_open()
 
-            if self.tempTDate < 0 or self.tempTDate > 700000:
-                self.alertbox_open12()
-                int('False')
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
 
-            else:
-                self.realDate = date.fromisoformat(self.tempDate)
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
 
-                self.first_origin = self.realDate - timedelta(days=int(self.tempTDate))
-                self.second_origin = self.realDate + timedelta(days=int(self.tempTDate))
+        elif not (self.checkB.isChecked()) and not (self.checkF.isChecked()):
+            self.alertbox_open14()
 
-                self.first_mid = str(self.first_origin).split('-')
-                self.second_mid = str(self.second_origin).split('-')
-                self.base_mid = str(self.realDate).split('-')
-
-                self.first_final = "'" + self.first_mid[0] + self.first_mid[1] + self.first_mid[2] + "'"  # 이전
-                self.second_final = "'" + self.second_mid[0] + self.second_mid[1] + self.second_mid[2] + "'"  # 이후
-                self.base_final = "'" + self.base_mid[0] + self.base_mid[1] + self.base_mid[2] + "'"  # 기준
-
-                if self.checkB.isChecked() and self.checkF.isChecked():
-                    self.first = self.first_final
-                    self.second = self.second_final
-
-                elif self.checkB.isChecked():
-                    self.first = self.first_final
-                    self.second = self.base_final
-
-                elif self.checkF.isChecked():
-                    self.first = self.base_final
-                    self.second = self.second_final
-
-                self.doAction()
-                self.th6 = Thread(target=self.extButtonClicked6)
-                self.th6.daemon = True
-                self.th6.start()
-
-        except ValueError:
-            try:
-                int(self.tempTDate)
-                try:
-                    int(self.tempCost)
-                except:
-                    self.alertbox_open2('중요성금액')
-            except:
-                try:
-                    int(self.tempCost)
-                    self.alertbox_open2('T')
-                except:
-                    self.alertbox_open2('T값과 중요성금액')
-
-
-def Thread7(self):
-    self.holiday = []
-    for i in range(2020, 2031):
-        self.holiday.append(pytimekr.holidays(i))
-
-    self.holiday_str = []
-
-    for i in range(len(self.holiday)):
-        for d in range(0, len(self.holiday[i])):
-            self.date_str = self.holiday[i][d].strftime('%Y-%m-%d')
-            self.holiday_str.append(self.date_str)
-
-    for i in self.fianlDate:
-        self.holiday_str.append(i)
-
-    self.start_date = date(2021, 1, 1)
-    self.end_date = date(2023, 12, 31)
-    self.delta = timedelta(days=1)
-    while self.start_date <= self.end_date:
-        if self.start_date.weekday() == 5 or self.start_date.weekday() == 6:  # 주말 추가
-            self.a = self.start_date.strftime('%Y-%m-%d')
-            self.holiday_str.append(self.a)
-        self.start_date += self.delta
-
-    self.fianlDate = []  # 초기화 작업
-
-    self.realDate_List = []  # SQL 쿼리에 들어갈 리스트
-
-    for i in range(0, len(self.holiday_str)):
-        self.tempDate = []
-        self.tempDate = str(self.holiday_str[i]).split('-')
-        self.realDate = self.tempDate[0] + self.tempDate[1] + self.tempDate[2]
-        self.realDate_List.append(self.realDate)
-
-    self.checked_date = ''
-    for i in self.realDate_List:
-        self.checked_date = self.checked_date + ',' + '\'' + i + '\''
-
-    self.checked_date = self.checked_date[1:]
-
-    self.checked_effective = 'AND JournalEntries.EffectiveDate IN (' + self.checked_date + ')'
-    self.checked_entry = 'AND JournalEntries.EntryDate IN (' + self.checked_date + ')'
-
-    self.tempCost = self.D7_Cost.text()
-    self.tempSheet = self.D7_Sheet.text()
-
-    if self.rbtn1.isChecked():  # Effective Date 일 때
-        self.tempState = self.checked_effective
-
-    elif self.rbtn2.isChecked():  # Entry Date 일 때
-        self.tempState = self.checked_entry
-
-    if self.tempCost == '':
-        self.tempCost = 0
-
-    if self.tempDate == '' or self.tempSheet == '':
-        self.alertbox_open()
-
-    elif self.combo_sheet.findText(self.tempSheet) != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn3.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn4.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    else:
-
-        try:
-            int(self.tempCost)
+        else:
+            if self.tempCost == '': self.tempCost = 0
 
             ##Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.checked_account7 = ''
+                self.checked_account6 = ''
 
             ##Select all이나 일부 체크박스가 선택된 경우
             else:
-                self.checked_account7 = checked_account
+                self.checked_account6 = checked_account
 
             ##전표입력자가 Unselect all인 경우
             if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                self.checked_preparer7 = ''
+                self.checked_preparer6 = ''
 
             ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
             else:
-                self.checked_preparer7 = checked_preparer
+                self.checked_preparer6 = checked_preparer
 
-            self.doAction()
-            self.th7 = Thread(target=self.extButtonClicked7)
-            self.th7.daemon = True
-            self.th7.start()
+            try:
+                int(self.tempTDate)
+                int(self.tempCost)
 
-        except ValueError:
-            self.alertbox_open2('중요성 금액')
+                self.tempTDate = int(self.tempTDate)
 
+                if self.tempTDate < 0 or self.tempTDate > 700000:
+                    self.alertbox_open12()
+                    int('False')
 
-def Thread8(self):
-    self.tempN = self.D8_N.text()
-    self.tempCost = self.D8_Cost.text()
-    self.tempSheet = self.D8_Sheet.text()
+                else:
+                    self.realDate = date.fromisoformat(self.tempDate)
 
-    if self.tempN == '' or self.tempSheet == '':
-        self.alertbox_open()
+                    self.first_origin = self.realDate - timedelta(days=int(self.tempTDate))
+                    self.second_origin = self.realDate + timedelta(days=int(self.tempTDate))
 
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
+                    self.first_mid = str(self.first_origin).split('-')
+                    self.second_mid = str(self.second_origin).split('-')
+                    self.base_mid = str(self.realDate).split('-')
 
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
+                    self.first_final = "'" + self.first_mid[0] + self.first_mid[1] + self.first_mid[2] + "'"  # 이전
+                    self.second_final = "'" + self.second_mid[0] + self.second_mid[1] + self.second_mid[2] + "'"  # 이후
+                    self.base_final = "'" + self.base_mid[0] + self.base_mid[1] + self.base_mid[2] + "'"  # 기준
 
-    else:
+                    if self.checkB.isChecked() and self.checkF.isChecked():
+                        self.first = self.first_final
+                        self.second = self.second_final
 
-        if self.tempCost == '': self.tempCost = 0
-        try:
-            int(self.tempN)
-            int(self.tempCost)
+                    elif self.checkB.isChecked():
+                        self.first = self.first_final
+                        self.second = self.base_final
 
-            if int(self.tempN) < 0 or int(self.tempN) > 700000:
-                self.alertbox_open13()
-                int('False')
+                    elif self.checkF.isChecked():
+                        self.first = self.base_final
+                        self.second = self.second_final
 
-            else:
+                    self.doAction()
+                    self.th6 = Thread(target=self.extButtonClicked6)
+                    self.th6.daemon = True
+                    self.th6.start()
+
+            except ValueError:
+                try:
+                    int(self.tempTDate)
+                    try:
+                        int(self.tempCost)
+                    except:
+                        self.alertbox_open2('중요성금액')
+                except:
+                    try:
+                        int(self.tempCost)
+                        self.alertbox_open2('T')
+                    except:
+                        self.alertbox_open2('T값과 중요성금액')
+
+    def Thread7(self):
+        self.holiday = []
+        for i in range(2020, 2031):
+            self.holiday.append(pytimekr.holidays(i))
+
+        self.holiday_str = []
+
+        for i in range(len(self.holiday)):
+            for d in range(0, len(self.holiday[i])):
+                self.date_str = self.holiday[i][d].strftime('%Y-%m-%d')
+                self.holiday_str.append(self.date_str)
+
+        for i in self.fianlDate:
+            self.holiday_str.append(i)
+
+        self.start_date = date(2021, 1, 1)
+        self.end_date = date(2023, 12, 31)
+        self.delta = timedelta(days=1)
+        while self.start_date <= self.end_date:
+            if self.start_date.weekday() == 5 or self.start_date.weekday() == 6:  # 주말 추가
+                self.a = self.start_date.strftime('%Y-%m-%d')
+                self.holiday_str.append(self.a)
+            self.start_date += self.delta
+
+        self.fianlDate = []  # 초기화 작업
+
+        self.realDate_List = []  # SQL 쿼리에 들어갈 리스트
+
+        for i in range(0, len(self.holiday_str)):
+            self.tempDate = []
+            self.tempDate = str(self.holiday_str[i]).split('-')
+            self.realDate = self.tempDate[0] + self.tempDate[1] + self.tempDate[2]
+            self.realDate_List.append(self.realDate)
+
+        self.checked_date = ''
+        for i in self.realDate_List:
+            self.checked_date = self.checked_date + ',' + '\'' + i + '\''
+
+        self.checked_date = self.checked_date[1:]
+
+        self.checked_effective = 'AND JournalEntries.EffectiveDate IN (' + self.checked_date + ')'
+        self.checked_entry = 'AND JournalEntries.EntryDate IN (' + self.checked_date + ')'
+
+        self.tempCost = self.D7_Cost.text()
+        self.tempSheet = self.D7_Sheet.text()
+
+        if self.rbtn1.isChecked():  # Effective Date 일 때
+            self.tempState = self.checked_effective
+
+        elif self.rbtn2.isChecked():  # Entry Date 일 때
+            self.tempState = self.checked_entry
+
+        if self.tempCost == '':
+            self.tempCost = 0
+
+        if self.tempDate == '' or self.tempSheet == '':
+            self.alertbox_open()
+
+        elif self.combo_sheet.findText(self.tempSheet) != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn3.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn4.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+
+            try:
+                int(self.tempCost)
 
                 ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account8 = ''
+                    self.checked_account7 = ''
 
                 ##Select all이나 일부 체크박스가 선택된 경우
                 else:
-                    self.checked_account8 = checked_account
+                    self.checked_account7 = checked_account
 
                 ##전표입력자가 Unselect all인 경우
                 if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                    self.checked_preparer8 = ''
+                    self.checked_preparer7 = ''
 
                 ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
                 else:
-                    self.checked_preparer8 = checked_preparer
-
-                self.realNDate = int(self.tempN)
+                    self.checked_preparer7 = checked_preparer
 
                 self.doAction()
-                self.th8 = Thread(target=self.extButtonClicked8)
-                self.th8.daemon = True
-                self.th8.start()
+                self.th7 = Thread(target=self.extButtonClicked7)
+                self.th7.daemon = True
+                self.th7.start()
 
-        except ValueError:
+            except ValueError:
+                self.alertbox_open2('중요성 금액')
+
+    def Thread8(self):
+        self.tempN = self.D8_N.text()
+        self.tempCost = self.D8_Cost.text()
+        self.tempSheet = self.D8_Sheet.text()
+
+        if self.tempN == '' or self.tempSheet == '':
+            self.alertbox_open()
+
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+
+            if self.tempCost == '': self.tempCost = 0
             try:
                 int(self.tempN)
-                try:
-                    int(self.tempCost)
-                except:
-                    self.alertbox_open2('중요성금액')
-            except:
-                try:
-                    int(self.tempCost)
-                    self.alertbox_open2('N')
-                except:
-                    self.alertbox_open2('N값과 중요성금액')
+                int(self.tempCost)
 
+                if int(self.tempN) < 0 or int(self.tempN) > 700000:
+                    self.alertbox_open13()
+                    int('False')
 
-def Thread12(self):
-    self.tempCost = self.D12_Cost.text()
-    self.tempSheet = self.D12_Sheet12.text()
-    self.tempState12 = ''
-
-    if self.tempCost == '':
-        self.tempCost = 0
-
-    if self.tempSheet == '':
-        self.alertbox_open()
-
-    elif self.combo_sheet.findText(self.tempSheet + '_Reference') != -1:
-        self.alertbox_open5()
-
-    else:
-        try:
-            int(self.tempCost)
-            if ((self.checkC1.isChecked()) and (self.checkD1.isChecked())) or (
-                    not (self.checkC1.isChecked()) and not (self.checkD1.isChecked())):
-                self.tempState12 = 'LVL4.GL_Account_Position IN (' + "'" + 'Credit' + "'" + "," + "'" + 'Debit' + "'" + ')'
-            elif self.checkC1.isChecked():
-                self.tempState12 = 'LVL4.GL_Account_Position =' + "'" + 'Credit' + "'"
-            elif self.checkD1.isChecked():
-                self.tempState12 = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
-
-            ##Unselect all인 경우
-            if checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
-                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                return
-            else:
-                self.checked_account12 = checked_account_12
-
-            self.doAction()
-            self.th12 = Thread(target=self.extButtonClicked12)
-            self.th12.daemon = True
-            self.th12.start()
-
-        except ValueError:
-            self.alertbox_open2('중요성 금액')
-
-
-def Thread13(self):
-    self.temp_Continuous = self.text_continuous.toPlainText()  # 필수
-    self.temp_Continuous = str(self.temp_Continuous)
-    self.temp_TE_13 = self.line_amount.text()
-    self.tempSheet = self.D13_Sheet.text()  # 필수
-
-    ###예외처리 0 - TE 금액 누락시
-    if self.temp_TE_13 == '':
-        self.temp_TE_13 = 0
-
-    if self.temp_Continuous != '' and len(str(self.temp_Continuous)) < 6:
-        self.alertbox_open15()
-
-    ### 예외처리 1 - 필수값 누락
-    elif self.temp_Continuous == '' or self.tempSheet == '':
-        self.alertbox_open()
-
-    ### 예외처리 2 - 시트명 중복 확인
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    else:
-        try:
-            int(self.temp_TE_13)
-            int(self.temp_Continuous)
-
-            ##Unselect all의 경우
-            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                return
-            ##Select all이나 일부 체크박스가 선택된 경우
-            else:
-                self.checked_account13 = checked_account
-
-            self.doAction()
-            self.th13 = Thread(target=self.extButtonClicked13)
-            self.th13.daemon = True
-            self.th13.start()
-
-        ### 예외처리 4 - 필수값 타입 오류
-        except ValueError:
-            try:
-                int(self.temp_Continuous)
-                try:
-                    int(self.temp_TE_13)
-                except:
-                    self.alertbox_open2('중요성금액')
-            except:
-                try:
-                    int(self.temp_TE_13)
-                    self.alertbox_open2('연속된 자릿수')
-                except:
-                    self.alertbox_open2('연속된 자릿수와 중요성금액')
-
-
-def ThreadC(self):
-    self.tempSheet = self.D12_Sheetc.text()
-    self.cursorpath = self.cursorCondition.text()
-    self.wbC = self.wb2.parse(self.listCursor.currentText())
-    if self.tempSheet == '' or self.cursorpath == '':
-        self.alertbox_open()
-        # 시트명 중복 확인
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    elif os.path.isfile(self.cursorpath) == False:
-        self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
-    elif len(self.wbC.columns) <= 12:
-        self.alertbox_open4('Cursor 필드가 존재하지 않습니다.')
-    elif self.wbC.iloc[:, 12].empty == True:
-        self.alertbox_open4('Check된 조건이 없습니다.')
-    elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
-        self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
-    else:
-        try:
-            self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
-            self.doAction()
-            self.thC = Thread(target=self.extButtonClickedC)
-            self.thC.start()
-        except ValueError:
-            self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다.')
-
-
-def Thread9(self):
-    self.tempN = self.D9_N.text()  # 필수값
-    self.tempTE = self.D9_TE.text()
-    self.tempSheet = self.D9_Sheet.text()
-    if self.tempN == '' or self.tempSheet == '':
-        self.alertbox_open()
-    # 시트명 중복 확인
-    elif self.rbtn1.isChecked() and (
-            self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-        self.tempSheet + '_Reference') != -1):
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    else:
-        if self.tempTE == '': self.tempTE = 0
-        try:
-            int(self.tempN)
-            int(self.tempTE)
-
-            ##Unselect all의 경우
-            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                return
-            else:
-                self.checked_account9 = checked_account
-
-            self.doAction()
-            self.th9 = Thread(target=self.extButtonClicked9)
-            self.th9.daemon = True
-            self.th9.start()
-        except ValueError:
-            try:
-                int(self.tempN)
-                try:
-                    int(self.tempTE)
-                except:
-                    self.alertbox_open4('중요성금액을 숫자로만 입력해주시기 바랍니다.')
-            except:
-                try:
-                    int(self.tempTE)
-                    self.alertbox_open4('작성빈도수를 숫자로만 입력해주시기 바랍니다.')
-                except:
-                    self.alertbox_open4('작성빈도수와 중요성금액을 숫자로만 입력해주시기 바랍니다.')
-
-
-def Thread10(self):
-    self.tempTE = self.D10_TE.text()
-    self.tempSheet = self.D10_Sheet.text()  # 필수값
-    self.tempPoint1 = self.D10_Point1.text()
-    self.tempPoint2 = self.D10_Point2.text()
-
-    if self.tempSheet == '':
-        self.alertbox_open()
-
-    # 시트명 중복 확인
-    elif self.rbtn1.isChecked() and (
-            self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
-        self.tempSheet + '_Reference') != -1):
-        self.alertbox_open5()
-
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
-
-    else:
-        if self.tempTE == '': self.tempTE = 0
-        if self.tempPoint1 == '':
-            self.tempPoint1 = '1000-01-01'
-        if self.tempPoint2 == '':
-            self.tempPoint2 = '9999-12-31'
-
-        try:
-            int(self.tempTE)
-            try:
-                int(self.tempPoint1[0:4])
-                int(self.tempPoint1[5:7])
-                int(self.tempPoint1[8:10])
-                int(self.tempPoint2[0:4])
-                int(self.tempPoint2[5:7])
-                int(self.tempPoint2[8:10])
-
-                if len(str(self.tempPoint1)) != 10 or len(str(self.tempPoint2)) != 10:
-                    self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31') and (
-                        self.tempPoint2[5:7] >= '01' and self.tempPoint2[8:10] <= '31')):
-                    self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
-                elif ((self.tempPoint2[5:7] < '01' or self.tempPoint2[8:10] > '31')
-                      and (self.tempPoint1[5:7] >= '01' and self.tempPoint1[8:10] <= '31')):
-                    self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
-                elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31')
-                      and (self.tempPoint2[5:7] < '01' and self.tempPoint2[8:10] > '31')):
-                    self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
                 else:
+
                     ##Unselect all의 경우
                     if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                        self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                        return
+                        self.checked_account8 = ''
+
+                    ##Select all이나 일부 체크박스가 선택된 경우
                     else:
-                        self.checked_account10 = checked_account
+                        self.checked_account8 = checked_account
 
                     ##전표입력자가 Unselect all인 경우
                     if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                        self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
-                        return
+                        self.checked_preparer8 = ''
+
+                    ##전표입력자가 Select all이나 일부 체크박스만 선택된 경우
                     else:
-                        self.checked_preparer10 = checked_preparer
+                        self.checked_preparer8 = checked_preparer
+
+                    self.realNDate = int(self.tempN)
+
                     self.doAction()
-                    self.th10 = Thread(target=self.extButtonClicked10)
-                    self.th10.daemon = True
-                    self.th10.start()
+                    self.th8 = Thread(target=self.extButtonClicked8)
+                    self.th8.daemon = True
+                    self.th8.start()
 
-            except:
-                if self.tempPoint1[5:7] == '' or self.tempPoint1[8:10] == '' or self.tempPoint2[
-                                                                                5:7] == '' or self.tempPoint2[
-                                                                                              8:10] == '':
-                    self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
-                elif self.tempPoint1[5:7] == '00' or self.tempPoint1[8:10] == '00' or self.tempPoint2[
-                                                                                      5:7] == '00' or self.tempPoint2[
-                                                                                                      8:10] == '00':
-                    self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
+            except ValueError:
+                try:
+                    int(self.tempN)
+                    try:
+                        int(self.tempCost)
+                    except:
+                        self.alertbox_open2('중요성금액')
+                except:
+                    try:
+                        int(self.tempCost)
+                        self.alertbox_open2('N')
+                    except:
+                        self.alertbox_open2('N값과 중요성금액')
+
+    def Thread12(self):
+        self.tempCost = self.D12_Cost.text()
+        self.tempSheet = self.D12_Sheet12.text()
+        self.tempState12 = ''
+
+        if self.tempCost == '':
+            self.tempCost = 0
+
+        if self.tempSheet == '':
+            self.alertbox_open()
+
+        elif self.combo_sheet.findText(self.tempSheet + '_Reference') != -1:
+            self.alertbox_open5()
+
+        else:
+            try:
+                int(self.tempCost)
+                if ((self.checkC1.isChecked()) and (self.checkD1.isChecked())) or (
+                        not (self.checkC1.isChecked()) and not (self.checkD1.isChecked())):
+                    self.tempState12 = 'LVL4.GL_Account_Position IN (' + "'" + 'Credit' + "'" + "," + "'" + 'Debit' + "'" + ')'
+                elif self.checkC1.isChecked():
+                    self.tempState12 = 'LVL4.GL_Account_Position =' + "'" + 'Credit' + "'"
+                elif self.checkD1.isChecked():
+                    self.tempState12 = 'LVL4.GL_Account_Position =' + "'" + 'Debit' + "'"
+
+                ##Unselect all인 경우
+                if checked_account_12 == 'AND LVL4.GL_Account_Number IN ()':
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
                 else:
-                    self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
+                    self.checked_account12 = checked_account_12
 
-        except ValueError:
-            self.alertbox_open4("중요성금액 값을 숫자로만 입력해주시기 바랍니다.")
+                self.doAction()
+                self.th12 = Thread(target=self.extButtonClicked12)
+                self.th12.daemon = True
+                self.th12.start()
 
+            except ValueError:
+                self.alertbox_open2('중요성 금액')
 
-def Thread14(self):
-    self.baseKey = self.D14_Key.text().split(',')
-    self.baseKey_clean = []
-    for a in self.baseKey:
-        a = a.strip()
-        self.baseKey_clean.append(a)
-    self.tempKey = str('%'.join(self.baseKey_clean))
-    self.tempTE = self.D14_TE.text()
-    self.tempSheet = self.D14_Sheet.text()
+    def Thread13(self):
+        self.temp_Continuous = self.text_continuous.toPlainText()  # 필수
+        self.temp_Continuous = str(self.temp_Continuous)
+        self.temp_TE_13 = self.line_amount.text()
+        self.tempSheet = self.D13_Sheet.text()  # 필수
 
-    if self.tempSheet == '':
-        self.alertbox_open()
-    # 시트명 중복 확인
-    elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-        self.alertbox_open5()
+        ###예외처리 0 - TE 금액 누락시
+        if self.temp_TE_13 == '':
+            self.temp_TE_13 = 0
 
-    elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-        self.alertbox_open5()
+        if self.temp_Continuous != '' and len(str(self.temp_Continuous)) < 6:
+            self.alertbox_open15()
 
-    else:
-        if self.tempTE == '': self.tempTE = 0
-        try:
-            int(self.tempTE)
-            ##Unselect all의 경우
-            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                return
-            else:
-                self.checked_account14 = checked_account
+        ### 예외처리 1 - 필수값 누락
+        elif self.temp_Continuous == '' or self.tempSheet == '':
+            self.alertbox_open()
 
-            self.doAction()
-            self.th14 = Thread(target=self.extButtonClicked14)
-            self.th14.daemon = True
-            self.th14.start()
-        except ValueError:
+        ### 예외처리 2 - 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+            try:
+                int(self.temp_TE_13)
+                int(self.temp_Continuous)
+
+                ##Unselect all의 경우
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                ##Select all이나 일부 체크박스가 선택된 경우
+                else:
+                    self.checked_account13 = checked_account
+
+                self.doAction()
+                self.th13 = Thread(target=self.extButtonClicked13)
+                self.th13.daemon = True
+                self.th13.start()
+
+            ### 예외처리 4 - 필수값 타입 오류
+            except ValueError:
+                try:
+                    int(self.temp_Continuous)
+                    try:
+                        int(self.temp_TE_13)
+                    except:
+                        self.alertbox_open2('중요성금액')
+                except:
+                    try:
+                        int(self.temp_TE_13)
+                        self.alertbox_open2('연속된 자릿수')
+                    except:
+                        self.alertbox_open2('연속된 자릿수와 중요성금액')
+
+    def ThreadC(self):
+        self.tempSheet = self.D12_Sheetc.text()
+        self.cursorpath = self.cursorCondition.text()
+        self.wbC = self.wb2.parse(self.listCursor.currentText())
+        if self.tempSheet == '' or self.cursorpath == '':
+            self.alertbox_open()
+            # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        elif os.path.isfile(self.cursorpath) == False:
+            self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
+        elif len(self.wbC.columns) <= 12:
+            self.alertbox_open4('Cursor 필드가 존재하지 않습니다.')
+        elif self.wbC.iloc[:, 12].empty == True:
+            self.alertbox_open4('Check된 조건이 없습니다.')
+        elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
+            self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
+        else:
+            try:
+                self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
+                self.doAction()
+                self.thC = Thread(target=self.extButtonClickedC)
+                self.thC.start()
+            except ValueError:
+                self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다.')
+
+    def Thread9(self):
+        self.tempN = self.D9_N.text()  # 필수값
+        self.tempTE = self.D9_TE.text()
+        self.tempSheet = self.D9_Sheet.text()
+        if self.tempN == '' or self.tempSheet == '':
+            self.alertbox_open()
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+            self.tempSheet + '_Reference') != -1):
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+            if self.tempTE == '': self.tempTE = 0
+            try:
+                int(self.tempN)
+                int(self.tempTE)
+
+                ##Unselect all의 경우
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                else:
+                    self.checked_account9 = checked_account
+
+                self.doAction()
+                self.th9 = Thread(target=self.extButtonClicked9)
+                self.th9.daemon = True
+                self.th9.start()
+            except ValueError:
+                try:
+                    int(self.tempN)
+                    try:
+                        int(self.tempTE)
+                    except:
+                        self.alertbox_open4('중요성금액을 숫자로만 입력해주시기 바랍니다.')
+                except:
+                    try:
+                        int(self.tempTE)
+                        self.alertbox_open4('작성빈도수를 숫자로만 입력해주시기 바랍니다.')
+                    except:
+                        self.alertbox_open4('작성빈도수와 중요성금액을 숫자로만 입력해주시기 바랍니다.')
+
+    def Thread10(self):
+        self.tempTE = self.D10_TE.text()
+        self.tempSheet = self.D10_Sheet.text()  # 필수값
+        self.tempPoint1 = self.D10_Point1.text()
+        self.tempPoint2 = self.D10_Point2.text()
+
+        if self.tempSheet == '':
+            self.alertbox_open()
+
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and (
+                self.combo_sheet.findText(self.tempSheet + '_Result') != -1 or self.combo_sheet.findText(
+            self.tempSheet + '_Reference') != -1):
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+            if self.tempTE == '': self.tempTE = 0
+            if self.tempPoint1 == '':
+                self.tempPoint1 = '1000-01-01'
+            if self.tempPoint2 == '':
+                self.tempPoint2 = '9999-12-31'
+
             try:
                 int(self.tempTE)
-            except:
-                self.alertbox_open4('중요성금액 값을 숫자로만 입력해주시기 바랍니다.')
+                try:
+                    int(self.tempPoint1[0:4])
+                    int(self.tempPoint1[5:7])
+                    int(self.tempPoint1[8:10])
+                    int(self.tempPoint2[0:4])
+                    int(self.tempPoint2[5:7])
+                    int(self.tempPoint2[8:10])
 
+                    if len(str(self.tempPoint1)) != 10 or len(str(self.tempPoint2)) != 10:
+                        self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
+                    elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31') and (
+                            self.tempPoint2[5:7] >= '01' and self.tempPoint2[8:10] <= '31')):
+                        self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
+                    elif ((self.tempPoint2[5:7] < '01' or self.tempPoint2[8:10] > '31')
+                          and (self.tempPoint1[5:7] >= '01' and self.tempPoint1[8:10] <= '31')):
+                        self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
+                    elif ((self.tempPoint1[5:7] < '01' or self.tempPoint1[8:10] > '31')
+                          and (self.tempPoint2[5:7] < '01' and self.tempPoint2[8:10] > '31')):
+                        self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
+                    else:
+                        ##Unselect all의 경우
+                        if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                            self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                            return
+                        else:
+                            self.checked_account10 = checked_account
 
-def Sheet_ComboBox_Selected(self, text):
-    model = DataFrameModel(self.scenario_dic[text])
-    self.viewtable.setModel(model)
+                        ##전표입력자가 Unselect all인 경우
+                        if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
+                            self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
+                            return
+                        else:
+                            self.checked_preparer10 = checked_preparer
+                        self.doAction()
+                        self.th10 = Thread(target=self.extButtonClicked10)
+                        self.th10.daemon = True
+                        self.th10.start()
 
+                except:
+                    if self.tempPoint1[5:7] == '' or self.tempPoint1[8:10] == '' or self.tempPoint2[
+                                                                                    5:7] == '' or self.tempPoint2[
+                                                                                                  8:10] == '':
+                        self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
+                    elif self.tempPoint1[5:7] == '00' or self.tempPoint1[8:10] == '00' or self.tempPoint2[
+                                                                                          5:7] == '00' or self.tempPoint2[
+                                                                                                          8:10] == '00':
+                        self.alertbox_open4("해당 월일을 올바르게 입력해주시기 바랍니다.")
+                    else:
+                        self.alertbox_open4("시점은 'yyyy-mm-dd'의 형태로 입력해주시기 바랍니다.")
 
-def RemoveSheetButton_Clicked(self):
-    ##예외 처리 - 삭제할 Sheet가 없는 경우
-    if not self.scenario_dic:
-        self.MessageBox_Open("삭제할 Sheet가 없습니다.")
-        return
+            except ValueError:
+                self.alertbox_open4("중요성금액 값을 숫자로만 입력해주시기 바랍니다.")
 
-    ##Sheet 정보 삭제
-    del self.scenario_dic[self.combo_sheet.currentText()]
-    ##Query 정보 삭제
-    self.my_query.drop(labels=[self.combo_sheet.currentText()], axis=0, inplace=True)
-    ##Sheet name 콤보박스에서 해당 sheet 삭제
-    self.combo_sheet.removeItem(self.combo_sheet.currentIndex())
-    gc.collect()
+    def Thread14(self):
+        self.baseKey = self.D14_Key.text().split(',')
+        self.baseKey_clean = []
+        for a in self.baseKey:
+            a = a.strip()
+            self.baseKey_clean.append(a)
+        self.tempKey = str('%'.join(self.baseKey_clean))
+        self.tempTE = self.D14_TE.text()
+        self.tempSheet = self.D14_Sheet.text()
 
-    if not self.scenario_dic:
-        self.dataframe = pd.DataFrame({'No Sheet': []})
-        model = DataFrameModel(self.dataframe)
+        if self.tempSheet == '':
+            self.alertbox_open()
+        # 시트명 중복 확인
+        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+            self.alertbox_open5()
+
+        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+            self.alertbox_open5()
+
+        else:
+            if self.tempTE == '': self.tempTE = 0
+            try:
+                int(self.tempTE)
+                ##Unselect all의 경우
+                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
+                    return
+                else:
+                    self.checked_account14 = checked_account
+
+                self.doAction()
+                self.th14 = Thread(target=self.extButtonClicked14)
+                self.th14.daemon = True
+                self.th14.start()
+            except ValueError:
+                try:
+                    int(self.tempTE)
+                except:
+                    self.alertbox_open4('중요성금액 값을 숫자로만 입력해주시기 바랍니다.')
+
+    def Sheet_ComboBox_Selected(self, text):
+
+        model = DataFrameModel(self.scenario_dic[text])
         self.viewtable.setModel(model)
-    else:
-        model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
-        self.viewtable.setModel(model)
 
+    def RemoveSheetButton_Clicked(self):
 
-def Save_Buttons_Group(self):
-    ##GroupBox
-    groupbox = QGroupBox("저장")
-    font_groupbox = groupbox.font()
-    font_groupbox.setBold(True)
-    groupbox.setFont(font_groupbox)
-    self.setStyleSheet('QGroupBox  {color: white;}')
+        ##예외 처리 - 삭제할 Sheet가 없는 경우
+        if not self.scenario_dic:
+            self.MessageBox_Open("삭제할 Sheet가 없습니다.")
+            return
 
-    ##RemoveSheet 버튼
-    RemoveSheet_button = QPushButton('Remove Sheet')
-    RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
-    font_RemoveSheet = RemoveSheet_button.font()
-    font_RemoveSheet.setBold(True)
-    RemoveSheet_button.setFont(font_RemoveSheet)
+        ##Sheet 정보 삭제
+        del self.scenario_dic[self.combo_sheet.currentText()]
+        ##Query 정보 삭제
+        self.my_query.drop(labels=[self.combo_sheet.currentText()], axis=0, inplace=True)
+        ##Sheet name 콤보박스에서 해당 sheet 삭제
+        self.combo_sheet.removeItem(self.combo_sheet.currentIndex())
+        gc.collect()
 
-    # label
-    label_sheet = QLabel("Sheet names: ", self)
-    font_sheet = label_sheet.font()
-    font_sheet.setBold(True)
-    label_sheet.setFont(font_sheet)
-    label_sheet.setStyleSheet('color:white;')
+        if not self.scenario_dic:
+            self.dataframe = pd.DataFrame({'No Sheet': []})
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+        else:
+            model = DataFrameModel(self.scenario_dic[self.combo_sheet.currentText()])
+            self.viewtable.setModel(model)
 
-    ##시나리오 Sheet를 표현할 콤보박스
-    self.combo_sheet = QComboBox(self)
+    def Save_Buttons_Group(self):
+        ##GroupBox
+        groupbox = QGroupBox("저장")
+        font_groupbox = groupbox.font()
+        font_groupbox.setBold(True)
+        groupbox.setFont(font_groupbox)
+        self.setStyleSheet('QGroupBox  {color: white;}')
 
-    ## Save 버튼
-    export_file_button = QPushButton("Save", self)
-    export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    font_export_button = export_file_button.font()
-    font_export_button.setBold(True)
-    export_file_button.setFont(font_export_button)
-    export_file_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        ##RemoveSheet 버튼
+        RemoveSheet_button = QPushButton('Remove Sheet')
+        RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        font_RemoveSheet = RemoveSheet_button.font()
+        font_RemoveSheet.setBold(True)
+        RemoveSheet_button.setFont(font_RemoveSheet)
 
-    #########
-    #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
-    RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
-    export_file_button.clicked.connect(self.saveFile)
-    self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
+        # label
+        label_sheet = QLabel("Sheet names: ", self)
+        font_sheet = label_sheet.font()
+        font_sheet.setBold(True)
+        label_sheet.setFont(font_sheet)
+        label_sheet.setStyleSheet('color:white;')
 
-    ##layout 쌓기
-    layout = QHBoxLayout()
-    layout.addWidget(label_sheet, stretch=1)
-    layout.addWidget(self.combo_sheet, stretch=4)
-    layout.addWidget(RemoveSheet_button, stretch=1)
-    layout.addWidget(export_file_button, stretch=1)
-    groupbox.setLayout(layout)
+        ##시나리오 Sheet를 표현할 콤보박스
+        self.combo_sheet = QComboBox(self)
 
-    return groupbox
+        ## Save 버튼
+        export_file_button = QPushButton("Save", self)
+        export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        font_export_button = export_file_button.font()
+        font_export_button.setBold(True)
+        export_file_button.setFont(font_export_button)
+        export_file_button.setStyleSheet('color:white;background-image : url(./bar.png)')
 
+        #########
+        #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
+        RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
+        export_file_button.clicked.connect(self.saveFile)
+        self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
 
-def calendar6(self):
-    self.dialog6.activateWindow()
-    self.new_calendar.show()
-    self.dialog6.activateWindow()
+        ##layout 쌓기
+        layout = QHBoxLayout()
+        layout.addWidget(label_sheet, stretch=1)
+        layout.addWidget(self.combo_sheet, stretch=4)
+        layout.addWidget(RemoveSheet_button, stretch=1)
+        layout.addWidget(export_file_button, stretch=1)
+        groupbox.setLayout(layout)
 
+        return groupbox
 
-def calendar7(self):
-    self.dialog7.activateWindow()
-    self.new_calendar.show()
-    self.dialog7.activateWindow()
+    def calendar6(self):
+        self.dialog6.activateWindow()
+        self.new_calendar.show()
+        self.dialog6.activateWindow()
 
+    def calendar7(self):
+        self.dialog7.activateWindow()
+        self.new_calendar.show()
+        self.dialog7.activateWindow()
 
-def calendar10_1(self):
-    self.dialog10.activateWindow()
-    self.new_calendar1.show()
+    def calendar10_1(self):
+        self.dialog10.activateWindow()
+        self.new_calendar1.show()
 
+    def calendar10_2(self):
+        self.dialog10.activateWindow()
+        self.new_calendar2.show()
 
-def calendar10_2(self):
-    self.dialog10.activateWindow()
-    self.new_calendar2.show()
+    def extButtonClicked4(self):
+        cursor = self.cnxn.cursor()
 
+        ### JE Line - Result
+        if self.rbtn1.isChecked():
 
-def extButtonClicked4(self):
-    cursor = self.cnxn.cursor()
-
-    ### JE Line - Result
-    if self.rbtn1.isChecked():
-
-        sql_refer = """
+            sql_refer = """
                                 SELECT 
                                     JournalEntries.GLAccountNumber
                                     , MAX(CoA.GLAccountName) AS GLAccountName
@@ -5338,8 +5323,8 @@ def extButtonClicked4(self):
                             """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                                        Account=self.checked_account4)
 
-        ### JE Line - Refer
-        sql_query = '''
+            ### JE Line - Refer
+            sql_query = '''
                             SELECT				
                                 JournalEntries.BusinessUnit			
                                 , JournalEntries.JENumber			
@@ -5374,11 +5359,11 @@ def extButtonClicked4(self):
                         '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                                    Account=self.checked_account4)
 
-        self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+            self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
-    ### JE - Journals
-    elif self.rbtn2.isChecked():
-        sql_query = '''
+        ### JE - Journals
+        elif self.rbtn2.isChecked():
+            sql_query = '''
                         SELECT				
                              JournalEntries.BusinessUnit			
                             , JournalEntries.JENumber			
@@ -5419,86 +5404,86 @@ def extButtonClicked4(self):
                 '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                            Account=self.checked_account4)
 
-    self.dataframe = pd.read_sql(sql_query, self.cnxn)
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
-                                                         "---Filtered Result_2  Scenario04---\n" + sql_query]
-
-        self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
-                                                            "---Filtered Result_1  Scenario04---\n" + sql_refer]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
-                                                           "---Filtered JE  Scenario04---\n" + sql_query]
-
-    ### 차대 선택
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    ### 최대 추출 라인수
-    if len(self.dataframe) > 1048576:
-        self.communicate4.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(self.temp_N) + ","
-                                                   + "중요성금액: " + str(self.temp_TE)
-                                                   + '] 라인 수 ' + str(len(self.dataframe)) + '개입니다']})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-        ### JE Line
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.addItem(self.tempSheet + '_Reference')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
+                                                             "---Filtered Result_2  Scenario04---\n" + sql_query]
 
-        ### JE
+            self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
+                                                                "---Filtered Result_1  Scenario04---\n" + sql_refer]
+
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
+                                                               "---Filtered JE  Scenario04---\n" + sql_query]
 
-        self.communicate4.closeApp.emit()
+        ### 차대 선택
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
-        ### JE Line
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.addItem(self.tempSheet + '_Reference')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        ### 최대 추출 라인수
+        if len(self.dataframe) > 1048576:
+            self.communicate4.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[계정사용 빈도수: " + str(self.temp_N) + ","
+                                                       + "중요성금액: " + str(self.temp_TE)
+                                                       + '] 라인 수 ' + str(len(self.dataframe)) + '개입니다']})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
 
-        ### JE
-        elif self.rbtn2.isChecked():
-            ### 시트 콤보박스에 저장
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            ### JE
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate4.closeApp.emit()
+            self.communicate4.closeApp.emit()
 
+        else:
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-def extButtonClicked5_SAP(self):
-    ### 쿼리 연동
-    cursor = self.cnxn.cursor()
+            ### JE
+            elif self.rbtn2.isChecked():
+                ### 시트 콤보박스에 저장
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-    ### JE Line 선택시 - 추출 조건에 해당하는
-    if self.rbtn1.isChecked():
+            self.communicate4.closeApp.emit()
 
-        sql_query = """
+    def extButtonClicked5_SAP(self):
+
+        ### 쿼리 연동
+        cursor = self.cnxn.cursor()
+
+        ### JE Line 선택시 - 추출 조건에 해당하는
+        if self.rbtn1.isChecked():
+
+            sql_query = """
                             SELECT 
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -5528,8 +5513,8 @@ def extButtonClicked5_SAP(self):
                         """.format(field=self.selected_project_id, CODE=self.real_Code,
                                    Account=self.checked_account5_SAP)
 
-    elif self.rbtn2.isChecked():
-        sql_query = '''
+        elif self.rbtn2.isChecked():
+            sql_query = '''
                                 SELECT
                                     JournalEntries.BusinessUnit
                                     , JournalEntries.JENumber
@@ -5563,79 +5548,79 @@ def extButtonClicked5_SAP(self):
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
                                        Account=self.checked_account5_SAP)
 
-    self.dataframe = pd.read_sql(sql_query, self.cnxn)
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
-                                                             "Scenario05",
-                                                             "---Filtered Result  Scenario05---\n" + sql_query]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
-                                                               "Scenario05",
-                                                               "---Filtered JE  Scenario05---\n" + sql_query]
-
-    ### DebitCredit 열 생성
-    if not self.checkD2.isChecked() and self.checkC2.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD2.isChecked() and not self.checkC2.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    ### 예외처리 5 - 최대 라인 수 초과
-    if len(self.dataframe) > 1048576:
-        self.communicate5_SAP.closeApp.emit()
-
-    ### 조건, 라인 수 추출
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ["[계정코드: " + str(self.temp_AccCode) + "," +
-                                                   "연도" + str(self.tempYear_SAP) + "] 라인수 " +
-                                                   str(len(self.dataframe)) + "개 입니다"]})
-
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet_SAP + "_Result"] = [self.tempSheet_SAP + "_Result",
+                                                                 "Scenario05",
+                                                                 "---Filtered Result  Scenario05---\n" + sql_query]
 
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
+                                                                   "Scenario05",
+                                                                   "---Filtered JE  Scenario05---\n" + sql_query]
 
-        self.communicate5_SAP.closeApp.emit()
+        ### DebitCredit 열 생성
+        if not self.checkD2.isChecked() and self.checkC2.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        elif self.checkD2.isChecked() and not self.checkC2.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        ### 예외처리 5 - 최대 라인 수 초과
+        if len(self.dataframe) > 1048576:
+            self.communicate5_SAP.closeApp.emit()
+
+        ### 조건, 라인 수 추출
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[계정코드: " + str(self.temp_AccCode) + "," +
+                                                       "연도" + str(self.tempYear_SAP) + "] 라인수 " +
+                                                       str(len(self.dataframe)) + "개 입니다"]})
+
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
-        elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate5_SAP.closeApp.emit()
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
+            self.communicate5_SAP.closeApp.emit()
 
-def extButtonClicked5_Non_SAP(self):
-    ### 쿼리 연동
-    cursor = self.cnxn.cursor()
+        else:
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet_SAP + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-    ### JE Line
-    if self.rbtn1.isChecked():
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet_SAP + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_SAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-        sql_query = """
+            self.communicate5_SAP.closeApp.emit()
+
+    def extButtonClicked5_Non_SAP(self):
+
+        ### 쿼리 연동
+        cursor = self.cnxn.cursor()
+
+        ### JE Line
+        if self.rbtn1.isChecked():
+
+            sql_query = """
                             SELECT 
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -5664,10 +5649,10 @@ def extButtonClicked5_Non_SAP(self):
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
                         """.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
                                    Account=self.checked_account5_Non)
-    ### JE
-    elif self.rbtn2.isChecked():
+        ### JE
+        elif self.rbtn2.isChecked():
 
-        sql_query = '''
+            sql_query = '''
                                     SELECT
                                         JournalEntries.BusinessUnit
                                         , JournalEntries.JENumber
@@ -5701,79 +5686,79 @@ def extButtonClicked5_Non_SAP(self):
                                     '''.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
                                                Account=self.checked_account5_Non)
 
-    self.dataframe = pd.read_sql(sql_query, self.cnxn)
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
-                                                                "---Filtered Result  Scenario05---\n" + sql_query]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
-                                                                  "Scenario05",
-                                                                  "---Filtered JE  Scenario05---\n" + sql_query]
-
-    ### DebitCredit 열 생성
-    if not self.checkD1.isChecked() and self.checkC1.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD1.isChecked() and not self.checkC1.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    ### 예외처리 5 - 최대 출력 라인 초과
-    if len(self.dataframe) > 1048576:
-        self.communicate5_Non_SAP.closeApp.emit()
-
-    ### 예외처리 6 - 데이터 미추출
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ['[연도: ' + str(self.tempYear_NonSAP) + ','
-                                                   + '계정코드: ' + str(self.temp_Code_Non_SAP) + ','
-                                                   + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
-
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-
-        ### JE Line
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet_NonSAP + "_Result"] = [self.tempSheet_NonSAP + "_Result", "Scenario05",
+                                                                    "---Filtered Result  Scenario05---\n" + sql_query]
 
-        ### JE
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_NoneSAP + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
+                                                                      "Scenario05",
+                                                                      "---Filtered JE  Scenario05---\n" + sql_query]
 
-        self.communicate5_Non_SAP.closeApp.emit()
+        ### DebitCredit 열 생성
+        if not self.checkD1.isChecked() and self.checkC1.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
-        ### JE Line
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        elif self.checkD1.isChecked() and not self.checkC1.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        ### 예외처리 5 - 최대 출력 라인 초과
+        if len(self.dataframe) > 1048576:
+            self.communicate5_Non_SAP.closeApp.emit()
+
+        ### 예외처리 6 - 데이터 미추출
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ['[연도: ' + str(self.tempYear_NonSAP) + ','
+                                                       + '계정코드: ' + str(self.temp_Code_Non_SAP) + ','
+                                                       + '] 라인수 ' + str(len(self.dataframe)) + '개 입니다']})
+
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
-        ### JE
-        elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate5_Non_SAP.closeApp.emit()
+            ### JE
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_NoneSAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
+            self.communicate5_Non_SAP.closeApp.emit()
 
-def extButtonClicked6(self):
-    cursor = self.cnxn.cursor()
+        else:
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet_NonSAP + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-    if self.rbtn1.isChecked():
-        sql = '''
+            ### JE
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet_NonSAP + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet_NonSAP + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            self.communicate5_Non_SAP.closeApp.emit()
+
+    def extButtonClicked6(self):
+
+        cursor = self.cnxn.cursor()
+
+        if self.rbtn1.isChecked():
+            sql = '''
                        SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -5807,8 +5792,8 @@ def extButtonClicked6(self):
                                Preparer=self.checked_preparer6)
 
 
-    elif self.rbtn2.isChecked():
-        sql = '''
+        elif self.rbtn2.isChecked():
+            sql = '''
                        SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -5845,71 +5830,71 @@ def extButtonClicked6(self):
                                first_date=str(self.first), second_date=str(self.second),
                                Preparer=self.checked_preparer6)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
-
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
-                                                         "---Filtered Result  Scenario06---\n" + sql]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
-                                                           "---Filtered JE  Scenario06---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate6.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame(
-            {'No Data': ["[결산일: " + str(self.tempDate) + "," + "T일: " + str(int(self.tempTDate))
-                         + "," + "중요성금액: " + str(self.tempCost)
-                         + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
+                                                             "---Filtered Result  Scenario06---\n" + sql]
 
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
+                                                               "---Filtered JE  Scenario06---\n" + sql]
 
-        self.communicate6.closeApp.emit()
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        if len(self.dataframe) > 1048576:
+            self.communicate6.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame(
+                {'No Data': ["[결산일: " + str(self.tempDate) + "," + "T일: " + str(int(self.tempTDate))
+                             + "," + "중요성금액: " + str(self.tempCost)
+                             + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
-        elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate6.closeApp.emit()
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
+            self.communicate6.closeApp.emit()
 
-def extButtonClicked7(self):
-    cursor = self.cnxn.cursor()
+        else:
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-    if self.rbtn3.isChecked():
-        sql = '''
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            self.communicate6.closeApp.emit()
+
+    def extButtonClicked7(self):
+
+        cursor = self.cnxn.cursor()
+
+        if self.rbtn3.isChecked():
+            sql = '''
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -5942,8 +5927,8 @@ def extButtonClicked7(self):
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7)
 
-    elif self.rbtn4.isChecked():
-        sql = '''
+        elif self.rbtn4.isChecked():
+            sql = '''
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -5978,73 +5963,73 @@ def extButtonClicked7(self):
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn3.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
-                                                         "---Filtered Result  Scenario07---\n" + sql]
-
-    elif self.rbtn4.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
-                                                           "---Filtered JE  Scenario07---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate7.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(self.tempState) + ","
-                                                   + "중요성금액: " + str(self.tempCost)
-                                                   + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn3.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario07",
+                                                             "---Filtered Result  Scenario07---\n" + sql]
 
         elif self.rbtn4.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
+                                                               "---Filtered JE  Scenario07---\n" + sql]
 
-        self.communicate7.closeApp.emit()
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-        if self.rbtn3.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        if len(self.dataframe) > 1048576:
+            self.communicate7.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[EffectiveDate/EntryDate: " + str(self.tempState) + ","
+                                                       + "중요성금액: " + str(self.tempCost)
+                                                       + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
+            if self.rbtn3.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        elif self.rbtn4.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-        self.communicate7.closeApp.emit()
+            elif self.rbtn4.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+
+            self.communicate7.closeApp.emit()
+
+        else:
+
+            if self.rbtn3.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
 
-def extButtonClicked8(self):
-    cursor = self.cnxn.cursor()
+            elif self.rbtn4.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            self.communicate7.closeApp.emit()
 
-    if self.rbtn1.isChecked():
+    def extButtonClicked8(self):
 
-        sql = '''
+        cursor = self.cnxn.cursor()
+
+        if self.rbtn1.isChecked():
+
+            sql = '''
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6077,9 +6062,9 @@ def extButtonClicked8(self):
                         '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
                                    Preparer=self.checked_preparer8, Account=self.checked_account8)
 
-    elif self.rbtn2.isChecked():
+        elif self.rbtn2.isChecked():
 
-        sql = '''
+            sql = '''
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6116,71 +6101,71 @@ def extButtonClicked8(self):
                             '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
                                        Preparer=self.checked_preparer8, Account=self.checked_account8)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
-
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
-                                                         "---Filtered Result  Scenario08---\n" + sql]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
-                                                           "---Filtered JE  Scenario08---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate8.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame(
-            {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(int(self.realNDate))
-                         + "," + "중요성금액: " + str(self.tempCost)
-                         + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
+                                                             "---Filtered Result  Scenario08---\n" + sql]
 
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-        self.communicate8.closeApp.emit()
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
+                                                               "---Filtered JE  Scenario08---\n" + sql]
 
-    else:
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        if len(self.dataframe) > 1048576:
+            self.communicate8.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame(
+                {'No Data': ["[Effective Date와 Entry Date 간 차이: " + str(int(self.realNDate))
+                             + "," + "중요성금액: " + str(self.tempCost)
+                             + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
-        elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate8.closeApp.emit()
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate8.closeApp.emit()
 
+        else:
 
-def extButtonClicked9(self):
-    cursor = self.cnxn.cursor()
-    # sql문 수정
-    if self.rbtn1.isChecked():
-        sql = '''
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            self.communicate8.closeApp.emit()
+
+    def extButtonClicked9(self):
+
+        cursor = self.cnxn.cursor()
+        # sql문 수정
+        if self.rbtn1.isChecked():
+            sql = '''
                            SELECT				
                                   JournalEntries.BusinessUnit			
                                   , JournalEntries.JENumber			
@@ -6214,7 +6199,7 @@ def extButtonClicked9(self):
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9)
 
-        sql_refer = '''
+            sql_refer = '''
                            SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries				
                            WHERE JournalEntries.PreparerID IN				
@@ -6227,10 +6212,10 @@ def extButtonClicked9(self):
                            GROUP BY JournalEntries.PreparerID				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9)
-        self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+            self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
-    elif self.rbtn2.isChecked():
-        sql = '''
+        elif self.rbtn2.isChecked():
+            sql = '''
                            SELECT 				
                                JournalEntries.BusinessUnit			
                                , JournalEntries.JENumber			
@@ -6275,60 +6260,60 @@ def extButtonClicked9(self):
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
-                                                         "---Filtered Result_2  Scenario09---\n" + sql]
-        self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
-                                                            "---Filtered Result_1  Scenario09---\n" + sql_refer]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
-                                                           "---Filtered JE  Scenario09---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate9.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.communicate9.closeApp.emit()
-
-    else:
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.addItem(self.tempSheet + '_Reference')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
+                                                             "---Filtered Result_2  Scenario09---\n" + sql]
+            self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
+                                                                "---Filtered Result_1  Scenario09---\n" + sql_refer]
 
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-        self.communicate9.closeApp.emit()
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
+                                                               "---Filtered JE  Scenario09---\n" + sql]
 
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-def extButtonClicked10(self):
-    cursor = self.cnxn.cursor()
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    # sql문 수정
-    if self.rbtn1.isChecked():
+        if len(self.dataframe) > 1048576:
+            self.communicate9.closeApp.emit()
 
-        sql = '''
+        elif len(self.dataframe) == 0:
+            self.communicate9.closeApp.emit()
+
+        else:
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.addItem(self.tempSheet + '_Reference')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            self.communicate9.closeApp.emit()
+
+    def extButtonClicked10(self):
+
+        cursor = self.cnxn.cursor()
+
+        # sql문 수정
+        if self.rbtn1.isChecked():
+
+            sql = '''
                                  SELECT			
                                        JournalEntries.BusinessUnit		
                                        , JournalEntries.JENumber		
@@ -6360,9 +6345,9 @@ def extButtonClicked10(self):
                                        Preparer=self.checked_preparer10,
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
 
-    elif self.rbtn2.isChecked():
+        elif self.rbtn2.isChecked():
 
-        sql = '''
+            sql = '''
                                    SELECT 			
                                                 JournalEntries.BusinessUnit		
                                                 , JournalEntries.JENumber		
@@ -6399,53 +6384,53 @@ def extButtonClicked10(self):
                                        Preparer=self.checked_preparer10,
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
-                                                         "---Filtered Result  Scenario10---\n" + sql]
-
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
-                                                           "---Filtered JE  Scenario10---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate10.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.communicate10.closeApp.emit()
-
-    else:
-
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario10",
+                                                             "---Filtered Result  Scenario10---\n" + sql]
 
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-        self.communicate10.closeApp.emit()
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
+                                                               "---Filtered JE  Scenario10---\n" + sql]
 
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-def extButtonClicked12(self):
-    cursor = self.cnxn.cursor()
-    sql = '''
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        if len(self.dataframe) > 1048576:
+            self.communicate10.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.communicate10.closeApp.emit()
+
+        else:
+
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            self.communicate10.closeApp.emit()
+
+    def extButtonClicked12(self):
+
+        cursor = self.cnxn.cursor()
+        sql = '''
                        SET NOCOUNT ON;
                        SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
@@ -6546,7 +6531,7 @@ def extButtonClicked12(self):
                    '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
                               TE=self.tempCost, YEAR=self.pname_year)
 
-    sql2 = '''
+        sql2 = '''
                        SET NOCOUNT ON;
                        DROP TABLE #tmp
                        SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
@@ -6648,58 +6633,58 @@ def extButtonClicked12(self):
                    '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
                               TE=self.tempCost, YEAR=self.pname_year)
 
-    if self.clickCount == 0:
-        self.dataframe = pd.read_sql(sql, self.cnxn)
-    else:
-        self.dataframe = pd.read_sql(sql2, self.cnxn)
-    self.clickCount += 1
+        if self.clickCount == 0:
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+        else:
+            self.dataframe = pd.read_sql(sql2, self.cnxn)
+        self.clickCount += 1
 
-    self.dataframe['비경상적계정 선택여부'] = ''
+        self.dataframe['비경상적계정 선택여부'] = ''
 
-    self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
-                                                        "---Filtered Result  Scenario12---\n" + sql]
+        self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario12",
+                                                            "---Filtered Result  Scenario12---\n" + sql]
 
-    if len(self.dataframe) > 1048576:
-        self.communicate12.closeApp.emit()
+        if len(self.dataframe) > 1048576:
+            self.communicate12.closeApp.emit()
 
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
-            self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-        self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
-        self.combo_sheet.addItem(self.tempSheet + '_Reference')
-        self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-        self.communicate12.closeApp.emit()
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
+                self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
+            self.combo_sheet.addItem(self.tempSheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate12.closeApp.emit()
 
-    else:
-        self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
-        self.combo_sheet.addItem(self.tempSheet + '_Reference')
-        self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-        self.communicate12.closeApp.emit()
+        else:
+            self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
+            self.combo_sheet.addItem(self.tempSheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.communicate12.closeApp.emit()
 
+    def extButtonClickedC(self):
 
-def extButtonClickedC(self):
-    index = self.wbC[self.wbC.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
-    cursorindex = []
-    dflist = []
-    cursortext = ''
-    for i in range(len(index)):
-        cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
-                           "'" + index.iloc[i, 1] + "'" + ',' +
-                           "'" + str(index.iloc[i, 2]) + "'" + ',' +
-                           "'" + index.iloc[i, 3] + "'")
+        index = self.wbC[self.wbC.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
+        cursorindex = []
+        dflist = []
+        cursortext = ''
+        for i in range(len(index)):
+            cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
+                               "'" + index.iloc[i, 1] + "'" + ',' +
+                               "'" + str(index.iloc[i, 2]) + "'" + ',' +
+                               "'" + index.iloc[i, 3] + "'")
 
-    for tempcursor in cursorindex:
-        cursor = self.cnxn.cursor()
-        cursortext = cursortext + tempcursor + '\n'
+        for tempcursor in cursorindex:
+            cursor = self.cnxn.cursor()
+            cursortext = cursortext + tempcursor + '\n'
 
-        if self.rbtn1.isChecked():
+            if self.rbtn1.isChecked():
 
-            # sql문 수정
-            sql = '''
+                # sql문 수정
+                sql = '''
                         SET NOCOUNT ON
                         --****************************************************Filter Table***************************************************							
                         CREATE TABLE #filter							
@@ -6821,8 +6806,8 @@ def extButtonClickedC(self):
                         DROP TABLE #filter, #JEData,#result,#COAData				
                            '''.format(field=self.selected_project_id, cursor=tempcursor)
 
-        elif self.rbtn2.isChecked():
-            sql = '''
+            elif self.rbtn2.isChecked():
+                sql = '''
                         SET NOCOUNT ON
                     -- Filtered JE				
                         --****************************************************Filter Table***************************************************			
@@ -6950,44 +6935,44 @@ def extButtonClickedC(self):
                         DROP TABLE #filter, #JEData,#result,#COAData	
                             '''.format(field=self.selected_project_id, cursor=tempcursor)
 
-        readlist = pd.read_sql(sql, self.cnxn)
-        dflist.append(readlist)
+            readlist = pd.read_sql(sql, self.cnxn)
+            dflist.append(readlist)
 
-    self.dataframe = pd.concat(dflist, ignore_index=True)
+        self.dataframe = pd.concat(dflist, ignore_index=True)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario12",
-                                                         "---Filtered Result  Scenario12---\n" + sql]
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                           "---Filtered JE  Scenario12---\n" + sql]
-
-    if len(self.dataframe) == 0:
-        self.communicateC.closeApp2.emit(cursortext)
-
-    else:
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario12",
+                                                             "---Filtered Result  Scenario12---\n" + sql]
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-        self.communicateC.closeApp2.emit(cursortext)
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                               "---Filtered JE  Scenario12---\n" + sql]
 
+        if len(self.dataframe) == 0:
+            self.communicateC.closeApp2.emit(cursortext)
 
-def extButtonClicked13(self):
-    ### 쿼리 연동
-    cursor = self.cnxn.cursor()
+        else:
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            model = DataFrameModel(self.dataframe)
+            self.viewtable.setModel(model)
+            self.communicateC.closeApp2.emit(cursortext)
 
-    ### JE Line
-    if self.rbtn1.isChecked():
+    def extButtonClicked13(self):
 
-        sql_query = '''
+        ### 쿼리 연동
+        cursor = self.cnxn.cursor()
+
+        ### JE Line
+        if self.rbtn1.isChecked():
+
+            sql_query = '''
                             SELECT
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -7017,10 +7002,10 @@ def extButtonClicked13(self):
                             ORDER BY JENumber, JELineNumber
                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
                                Account=self.checked_account13)
-    ### JE - Journals
-    elif self.rbtn2.isChecked():
+        ### JE - Journals
+        elif self.rbtn2.isChecked():
 
-        sql_query = '''
+            sql_query = '''
                             SELECT
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -7056,77 +7041,77 @@ def extButtonClicked13(self):
                                    CONTI=self.temp_Continuous,
                                    Account=self.checked_account13)
 
-    self.dataframe = pd.read_sql(sql_query, self.cnxn)
+        self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
-                                                         "---Filtered Result  Scenario13---\n" + sql_query]
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
-                                                           "---Filtered JE  Scenario13---\n" + sql_query]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    ### 예외처리 3 - 최대 추출 라인수
-    if len(self.dataframe) > 1048576:
-        self.communicate13.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(self.temp_Continuous) + ','
-                                                   + '중요성금액: ' + str(self.temp_TE_13)
-                                                   + '] 라인수 ' + str(len(self.dataframe)) + '개입니다']})
-        model = DataFrameModel(self.dataframe)
-        self.viewtable.setModel(model)
-
-        ### JE Line
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-
-        ### JE
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario13",
+                                                             "---Filtered Result  Scenario13---\n" + sql_query]
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
+                                                               "---Filtered JE  Scenario13---\n" + sql_query]
 
-        self.communicate13.closeApp.emit()
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-    else:
-        ### JE Line
-        if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
+
+        ### 예외처리 3 - 최대 추출 라인수
+        if len(self.dataframe) > 1048576:
+            self.communicate13.closeApp.emit()
+
+        elif len(self.dataframe) == 0:
+            self.dataframe = pd.DataFrame({'No Data': ["[연속된 숫자: " + str(self.temp_Continuous) + ','
+                                                       + '중요성금액: ' + str(self.temp_TE_13)
+                                                       + '] 라인수 ' + str(len(self.dataframe)) + '개입니다']})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
 
-        ### JE
-        elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
-        self.communicate13.closeApp.emit()
+            ### JE
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
+            self.communicate13.closeApp.emit()
 
-def extButtonClicked14(self):
-    cursor = self.cnxn.cursor()
+        else:
+            ### JE Line
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-    # sql 문 수정
-    if self.rbtn1.isChecked():
+            ### JE
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-        sql = '''
+            self.communicate13.closeApp.emit()
+
+    def extButtonClicked14(self):
+
+        cursor = self.cnxn.cursor()
+
+        # sql 문 수정
+        if self.rbtn1.isChecked():
+
+            sql = '''
                    SELECT 		
                         JournalEntries.BusinessUnit	
                         , JournalEntries.JENumber	
@@ -7156,9 +7141,9 @@ def extButtonClicked14(self):
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14)
 
-    elif self.rbtn2.isChecked():
+        elif self.rbtn2.isChecked():
 
-        sql = '''
+            sql = '''
                    SELECT 			
                         JournalEntries.BusinessUnit		
                         , JournalEntries.JENumber		
@@ -7191,97 +7176,95 @@ def extButtonClicked14(self):
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14)
 
-    self.dataframe = pd.read_sql(sql, self.cnxn)
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
-    ### 마지막 시트 쿼리 내역 추가
-    if self.rbtn1.isChecked():
-        self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
-                                                         "---Filtered Result  Scenario14---\n" + sql]
-    elif self.rbtn2.isChecked():
-        self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
-                                                           "---Filtered JE  Scenario14---\n" + sql]
-
-    ### DebitCredit 열 생성
-    if not self.checkD.isChecked() and self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    elif self.checkD.isChecked() and not self.checkC.isChecked():
-        self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-        self.dataframe.reset_index(drop=True, inplace=True)
-
-    if len(self.dataframe) > 1048576:
-        self.communicate14.closeApp.emit()
-
-    elif len(self.dataframe) == 0:
-        self.communicate14.closeApp.emit()
-
-    else:
+        ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Result')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario14",
+                                                             "---Filtered Result  Scenario14---\n" + sql]
         elif self.rbtn2.isChecked():
-            self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-            self.combo_sheet.addItem(self.tempSheet + '_Journals')
-            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe)
-            self.viewtable.setModel(model)
-        self.communicate14.closeApp.emit()
+            self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
+                                                               "---Filtered JE  Scenario14---\n" + sql]
 
+        ### DebitCredit 열 생성
+        if not self.checkD.isChecked() and self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
-@pyqtSlot(QModelIndex)
-def slot_clicked_item(self, QModelIndex):
-    self.stk_w.setCurrentIndex(QModelIndex.row())
+        elif self.checkD.isChecked() and not self.checkC.isChecked():
+            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+            self.dataframe.reset_index(drop=True, inplace=True)
 
+        if len(self.dataframe) > 1048576:
+            self.communicate14.closeApp.emit()
 
-def saveFile(self):
-    if self.dataframe is None:
-        self.MessageBox_Open("저장할 데이터가 없습니다.")
-        return
-    if self.scenario_dic == {}:
-        self.MessageBox_Open("저장할 Sheet가 없습니다.")
-        return
-    else:
-        fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
-                                               self.tr("xlsx(*.xlsx);; All Files(*.*)"))
-        path = fileName[0]
-
-        if path == '':
-            pass
+        elif len(self.dataframe) == 0:
+            self.communicate14.closeApp.emit()
 
         else:
+            if self.rbtn1.isChecked():
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
 
-            if os.path.isfile(path):
-                changecount = 0
-                addcount = 0
-                wb = openpyxl.load_workbook(path)
-                wb.create_sheet('Scenario Updated>>>')
-                ws_names = wb.get_sheet_names()
-                for temp in list(self.scenario_dic.keys()):
-                    if temp in ws_names:
-                        changecount += 1
-                        wb.remove(wb['' + temp + ''])
-                    else:
-                        addcount += 1
-                wb.save(path)
-                with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
-                    for temp in self.scenario_dic:
-                        self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
-                                                                   freeze_panes=(1, 0))
-                self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
+            elif self.rbtn2.isChecked():
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+                model = DataFrameModel(self.dataframe)
+                self.viewtable.setModel(model)
+            self.communicate14.closeApp.emit()
+
+    @pyqtSlot(QModelIndex)
+    def slot_clicked_item(self, QModelIndex):
+        self.stk_w.setCurrentIndex(QModelIndex.row())
+
+    def saveFile(self):
+        if self.dataframe is None:
+            self.MessageBox_Open("저장할 데이터가 없습니다.")
+            return
+        if self.scenario_dic == {}:
+            self.MessageBox_Open("저장할 Sheet가 없습니다.")
+            return
+        else:
+            fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
+                                                   self.tr("xlsx(*.xlsx);; All Files(*.*)"))
+            path = fileName[0]
+
+            if path == '':
+                pass
 
             else:
-                with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
-                    for temp in self.scenario_dic:
-                        self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
-                                                                   freeze_panes=(1, 0))
-                    self.my_query.to_excel(writer, sheet_name='Query', index=False,
-                                           freeze_panes=(1, 0))
-                self.MessageBox_Open("저장을 완료했습니다.")
+
+                if os.path.isfile(path):
+                    changecount = 0
+                    addcount = 0
+                    wb = openpyxl.load_workbook(path)
+                    wb.create_sheet('Scenario Updated>>>')
+                    ws_names = wb.get_sheet_names()
+                    for temp in list(self.scenario_dic.keys()):
+                        if temp in ws_names:
+                            changecount += 1
+                            wb.remove(wb['' + temp + ''])
+                        else:
+                            addcount += 1
+                    wb.save(path)
+                    with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
+                        for temp in self.scenario_dic:
+                            self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
+                                                                       freeze_panes=(1, 0))
+                    self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
+
+                else:
+                    with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
+                        for temp in self.scenario_dic:
+                            self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
+                                                                       freeze_panes=(1, 0))
+                        self.my_query.to_excel(writer, sheet_name='Query', index=False,
+                                               freeze_panes=(1, 0))
+                    self.MessageBox_Open("저장을 완료했습니다.")
 
 
 if __name__ == '__main__':
