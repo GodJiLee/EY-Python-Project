@@ -2469,7 +2469,7 @@ class MyApp(QWidget):
         self.D9_Sheet.setStyleSheet("background-color: white;")
         self.D9_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        labelDC = QLabel('차변/대변* : ', self.dialog9)
+        labelDC = QLabel('차변/대변 : ', self.dialog9)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
         font1.setBold(True)
@@ -2618,7 +2618,7 @@ class MyApp(QWidget):
 
         self.new_prep.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
-        labelDC = QLabel('차변/대변* : ', self.dialog10)
+        labelDC = QLabel('차변/대변 : ', self.dialog10)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
         font1.setBold(True)
@@ -3129,12 +3129,15 @@ class MyApp(QWidget):
     def CursorFileOpen(self):
         self.listCursor.clear()
         fname = QFileDialog.getOpenFileName(self)
-        self.cursorCondition.setText(fname[0])
-        self.wb2 = pd.ExcelFile(fname[0])
-        wbname = self.wb2.sheet_names
-        for name in wbname:
-            self.listCursor.addItem(str(name))
-        self.dialog12.activateWindow()
+        if fname[0] == '':
+            self.dialog12.activateWindow()
+        else:
+            self.cursorCondition.setText(fname[0])
+            self.wb2 = pd.ExcelFile(fname[0])
+            wbname = self.wb2.sheet_names
+            for name in wbname:
+                self.listCursor.addItem(str(name))
+            self.dialog12.activateWindow()
 
     def Dialog13(self):
         self.dialoglist.add(13)
@@ -3420,7 +3423,7 @@ class MyApp(QWidget):
 
         self.D14_Key = QLineEdit(self.dialog14)
         self.D14_Key.setStyleSheet("background-color: white;")
-        self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요')
+        self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요, "," 구분자로 여러 단어 동시 검색이 가능합니다')
 
         labelTE = QLabel('중요성 금액 : ', self.dialog14)
         labelTE.setStyleSheet("color: white;")
@@ -3450,7 +3453,7 @@ class MyApp(QWidget):
         self.D14_Sheet.setStyleSheet("background-color: white;")
         self.D14_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        labelDC = QLabel('차변/대변* : ', self.dialog14)
+        labelDC = QLabel('차변/대변 : ', self.dialog14)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
         font1.setBold(True)
@@ -3559,14 +3562,17 @@ class MyApp(QWidget):
 
     def IndexFileOpen(self):
         fname = QFileDialog.getOpenFileName(self)
-        self.loadCondition.setText(fname[0])
-        wb = pd.ExcelFile(fname[0])
-        sheetnames = wb.sheet_names
-        namelist = 'Sheet List\n-------------------------------------------------------------'
-        for name in sheetnames:
-            namelist = namelist + '\n' + name
-        self.loadtext.setText(namelist)
-        self.dialogIndex.activateWindow()
+        if fname[0] == '':
+            self.dialogIndex.activateWindow()
+        else:
+            self.loadCondition.setText(fname[0])
+            wb = pd.ExcelFile(fname[0])
+            sheetnames = wb.sheet_names
+            namelist = 'Sheet List\n-------------------------------------------------------------'
+            for name in sheetnames:
+                namelist = namelist + '\n' + name
+            self.loadtext.setText(namelist)
+            self.dialogIndex.activateWindow()
 
     def dialog_close4(self):
         self.dialog4.close()
@@ -3628,7 +3634,7 @@ class MyApp(QWidget):
         self.secondTimer += 1
         elapsetime = "Elapsed time : " + str(int(self.secondTimer / 3600)) + "h " + str(
             int(self.secondTimer / 60)) + "m " + str(
-            self.secondTimer) + "s"
+            self.secondTimer%60) + "s"
         self.progressLabel.setText(elapsetime)
 
     def pClose(self):
@@ -3699,7 +3705,7 @@ class MyApp(QWidget):
 
         self.Action.setLayout(main_layout)
         self.Action.setGeometry(700, 400, 400, 220)
-        self.Action.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        self.Action.setWindowFlags(Qt.FramelessWindowHint)
         self.Action.setWindowModality(Qt.NonModal)
         self.Action.show()
 
@@ -4106,7 +4112,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                       + str(len(self.dataframe) - 1)
-                                                      + "건 추출되었습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                      + "건 추출되었습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
@@ -4114,7 +4120,7 @@ class MyApp(QWidget):
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                       + str(len(self.dataframe) - 1)
-                                                      + "건 추출되었습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
 
             if buttonReply == QMessageBox.Ok:
@@ -4239,16 +4245,14 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                       + "회 이하인 작성자에 의해 생성된 전표가 "
                                                       + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액("
-                                                      + str(
-                    self.tempTE) + ")을 적용하였습니다.<br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                      + str(self.tempTE) + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             else:
 
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
                                                       + "회 이하인 작성자에 의해 생성된 전표가 "
                                                       + str(len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액("
-                                                      + str(
-                    self.tempTE) + ")을 적용하였습니다.<br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + str(self.tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             if buttonReply == QMessageBox.Ok:
                 self.dialog9.activateWindow()
@@ -4327,7 +4331,7 @@ class MyApp(QWidget):
                     len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액: "
                                                       + str(self.tempTE) + "<br> - 시작시점: " + str(
                     self.tempPoint1) + "<br> - 종료시점: " + str(
-                    self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
+                    self.tempPoint2) + "을 적용하였습니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             else:
 
@@ -4336,7 +4340,7 @@ class MyApp(QWidget):
                     len(self.dataframe) - 1) + "건 추출되었습니다. <br> - 중요성금액: "
                                                       + str(self.tempTE) + "<br> - 시작시점: " + str(
                     self.tempPoint1) + "<br> - 종료시점: " + str(
-                    self.tempPoint2) + "을 적용하였습니다.<br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                    self.tempPoint2) + "을 적용하였습니다.<br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             if buttonReply == QMessageBox.Ok:
                 self.dialog10.activateWindow()
@@ -4409,14 +4413,14 @@ class MyApp(QWidget):
                                                       + str(self.baseKey) + "이/가 포함된 전표가 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
-                                                      + ")을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]"
+                                                      + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
                                                       + str(self.baseKey) + "이/가 포함된 전표가 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
-                                                      + ")을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
 
             if buttonReply == QMessageBox.Ok:
@@ -5055,8 +5059,9 @@ class MyApp(QWidget):
 
                 ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                    return
+                    self.checked_account9 = ''
+
+                ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account9 = checked_account
 
@@ -5085,6 +5090,8 @@ class MyApp(QWidget):
         self.tempPoint2 = self.D10_Point2.text()
 
         if self.tempSheet == '':
+            self.alertbox_open()
+        elif checked_preparer == 'AND JournalEntries.PreparerID IN ()':
             self.alertbox_open()
 
         # 시트명 중복 확인
@@ -5127,17 +5134,11 @@ class MyApp(QWidget):
                     else:
                         ##Unselect all의 경우
                         if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                            self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                            return
+                            self.checked_account10 = ''
+                        ##Select all이나 일부 체크박스가 선택된 경우
                         else:
                             self.checked_account10 = checked_account
-
-                        ##전표입력자가 Unselect all인 경우
-                        if checked_preparer == 'AND JournalEntries.PreparerID IN ()':
-                            self.MessageBox_Open("전표입력자가 선택되어 있지 않습니다.")
-                            return
-                        else:
-                            self.checked_preparer10 = checked_preparer
+                        self.checked_preparer10 = checked_preparer
                         self.doAction()
                         self.th10 = Thread(target=self.extButtonClicked10)
                         self.th10.daemon = True
@@ -5168,7 +5169,7 @@ class MyApp(QWidget):
         self.tempTE = self.D14_TE.text()
         self.tempSheet = self.D14_Sheet.text()
 
-        if self.tempSheet == '':
+        if self.tempSheet == '' or self.baseKey_clean == ['']:
             self.alertbox_open()
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
@@ -5182,9 +5183,11 @@ class MyApp(QWidget):
             try:
                 int(self.tempTE)
                 ##Unselect all의 경우
+                ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                    return
+                    self.checked_account14 = ''
+
+                ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account14 = checked_account
 
@@ -7220,6 +7223,13 @@ class MyApp(QWidget):
     @pyqtSlot(QModelIndex)
     def slot_clicked_item(self, QModelIndex):
         self.stk_w.setCurrentIndex(QModelIndex.row())
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Quit', '정말 종료하시겠습니까?\n현재 ' + str(len(self.combo_sheet)) + '개의 시트가 있습니다', QMessageBox.No | QMessageBox.Yes)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
     def saveFile(self):
         if self.dataframe is None:
