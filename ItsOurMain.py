@@ -19,6 +19,9 @@ import openpyxl
 from threading import Thread
 
 
+
+
+
 class Communicate(QObject):
     closeApp = pyqtSignal()
     closeApp2 = pyqtSignal(str)
@@ -817,20 +820,12 @@ class MyApp(QWidget):
         btn_condition.setFont(font_btn_condition)
         btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
-        ##Index 버튼 생성 및 스타일 지정
-        btn_index = QPushButton('   Sheet Index', self)
-        font_btn_index = btn_index.font()
-        font_btn_index.setBold(True)
-        btn_index.setFont(font_btn_index)
-        btn_index.setStyleSheet('color:white;  background-image : url(./bar.png)')
-
         ### Signal 함수들
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
         btn_connect.clicked.connect(self.connectButtonClicked)
         self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
         btn_condition.clicked.connect(self.connectDialog)
-        btn_index.clicked.connect(self.DialogIndex)
 
         ##layout 쌓기
         grid = QGridLayout()
@@ -844,7 +839,6 @@ class MyApp(QWidget):
         grid.addWidget(btn_condition, 3, 2)
         grid.addWidget(self.line_ecode, 1, 1)
         grid.addWidget(self.ProjectCombobox, 2, 1)
-        grid.addWidget(btn_index, 4, 2)
 
         groupbox.setLayout(grid)
         return groupbox
@@ -3510,70 +3504,6 @@ class MyApp(QWidget):
         self.dialog14.setWindowModality(Qt.NonModal)
         self.dialog14.show()
 
-    def DialogIndex(self):
-        self.dialogIndex = QDialog()
-        self.dialogIndex.setStyleSheet('background-color: #2E2E38')
-        self.dialogIndex.setWindowIcon(QIcon("./EY_logo.png"))
-        self.dialogIndex.setWindowFlags(Qt.WindowCloseButtonHint)
-
-        ##파일 불러오기
-        filelabel = QLabel('파일 위치 : ', self.dialogIndex)
-        filelabel.setStyleSheet("color: white;")
-        font2 = filelabel.font()
-        font2.setBold(True)
-        filelabel.setFont(font2)
-
-        self.loadCondition = QLineEdit(self.dialogIndex)
-        self.loadCondition.setStyleSheet("background-color: white;")
-        self.loadCondition.setReadOnly(True)
-        self.loadCondition.setPlaceholderText('파일을 넣어주세요')
-
-        self.loadFile = QPushButton('File Open')
-        self.loadFile.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.loadFile.clicked.connect(self.IndexFileOpen)
-        font3 = self.loadFile.font()
-        font3.setBold(True)
-        self.loadFile.setFont(font3)
-
-        ## sheet 목록
-        loadlabel = QLabel('Sheet List : ', self.dialogIndex)
-        loadlabel.setStyleSheet("color: white;")
-        font1 = loadlabel.font()
-        font1.setBold(True)
-        loadlabel.setFont(font1)
-
-        self.loadtext = QTextEdit(self.dialogIndex)
-        self.loadtext.setPlaceholderText('Sheet 목록이 표시됩니다\n메모장으로 사용하실 수 있습니다')
-        self.loadtext.setStyleSheet("background-color: white;")
-
-        main_layout = QGridLayout()
-        main_layout.addWidget(filelabel, 0, 0)
-        main_layout.addWidget(self.loadCondition, 0, 1)
-        main_layout.addWidget(self.loadFile, 0, 2)
-        main_layout.addWidget(loadlabel, 1, 0)
-        main_layout.addWidget(self.loadtext, 1, 1)
-
-        self.dialogIndex.setLayout(main_layout)
-        self.dialogIndex.setGeometry(300, 300, 550, 350)
-
-        self.dialogIndex.setWindowTitle("Dialog Index")
-        self.dialogIndex.setWindowModality(Qt.NonModal)
-        self.dialogIndex.show()
-
-    def IndexFileOpen(self):
-        fname = QFileDialog.getOpenFileName(self)
-        if fname[0] == '':
-            self.dialogIndex.activateWindow()
-        else:
-            self.loadCondition.setText(fname[0])
-            wb = pd.ExcelFile(fname[0])
-            sheetnames = wb.sheet_names
-            namelist = 'Sheet List\n-------------------------------------------------------------'
-            for name in sheetnames:
-                namelist = namelist + '\n' + name
-            self.loadtext.setText(namelist)
-            self.dialogIndex.activateWindow()
-
     def dialog_close4(self):
         self.dialog4.close()
 
@@ -3669,7 +3599,6 @@ class MyApp(QWidget):
         lbl_img = QLabel()
         label = QLabel('Now Loading')
         label.setStyleSheet("font : bold 14pt; color: white;")
-
         self.progressLabel = QLabel("Elapsed time : 0h 0m 0s")
         self.progressLabel.setStyleSheet("font : bold 8pt; color: grey;")
         pixmap = QPixmap('./Loading.png')
@@ -5164,8 +5093,9 @@ class MyApp(QWidget):
         self.baseKey_clean = []
         for a in self.baseKey:
             a = a.strip()
-            self.baseKey_clean.append(a)
-        self.tempKey = str('%'.join(self.baseKey_clean))
+            b = "JournalEntries.JEDescription LIKE N'%" + a + "%' OR JournalEntries.JELineDescription LIKE N'%" + a + "%'"
+            self.baseKey_clean.append(b)
+        self.tempKey = str(' OR '.join(self.baseKey_clean))
         self.tempTE = self.D14_TE.text()
         self.tempSheet = self.D14_Sheet.text()
 
@@ -6212,13 +6142,14 @@ class MyApp(QWidget):
                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.PreparerID IN 				
                                   (			
                                   SELECT DISTINCT PreparerID			
-                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                  WHERE Year = {year}		
                                   GROUP BY PreparerID			
                                   HAVING COUNT(GLAccountNumber) <= {N}			
-                                  )	AND ABS(JournalEntries.Amount) > {TE} {Account}		
+                                  )	AND ABS(JournalEntries.Amount) > {TE} {Account}	AND JournalEntries.Year = {year}	
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=self.checked_account9)
+                                   Account=self.checked_account9,year=self.pname_year)
 
             sql_refer = '''
                            SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt, SUM(Debit) Sum_of_Debit, SUM(Credit) Sum_of_Credit				
@@ -6226,13 +6157,14 @@ class MyApp(QWidget):
                            WHERE JournalEntries.PreparerID IN				
                                   (			
                                   SELECT DISTINCT PreparerID			
-                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                  WHERE Year = {year}			
                                   GROUP BY PreparerID			
                                   HAVING COUNT(GLAccountNumber) <= {N}			
-                                  ) AND ABS(JournalEntries.Amount) > {TE} {Account}			
+                                  ) AND ABS(JournalEntries.Amount) > {TE} {Account}	AND JournalEntries.Year = {year}		
                            GROUP BY JournalEntries.PreparerID				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=self.checked_account9)
+                                   Account=self.checked_account9,year=self.pname_year)
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
         elif self.rbtn2.isChecked():
@@ -6271,15 +6203,16 @@ class MyApp(QWidget):
                                            (
                                            SELECT JournalEntries.PreparerID, COUNT(JournalEntries.PreparerID) AS User_Cnt
                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                           WHERE  Year = {year}
                                            GROUP BY JournalEntries.PreparerID
                                            HAVING COUNT(GLAccountNumber) <= {N}
                                            ) AS LVL1
                                        WHERE LVL1.PreparerID = JournalEntries.PreparerID	
-                                       ) AND ABS(JournalEntries.Amount) > {TE}	
-                                   ) {Account} 		
+                                       ) AND ABS(JournalEntries.Amount) > {TE} AND JournalEntries.Year = {year}	{Account} 
+                                   ) AND JournalEntries.Year = {year}	
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=self.checked_account9)
+                                   Account=self.checked_account9,year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -6360,11 +6293,12 @@ class MyApp(QWidget):
                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 			
                                            {Preparer}
                                            AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'			        	
-                                           AND ABS(JournalEntries.Amount) > {TE} {Account}	
+                                           AND ABS(JournalEntries.Amount) > {TE} {Account}
+                                           AND JournalEntries.Year = {year}	
                                ORDER BY JENumber,JELineNumber			
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
-                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
+                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
 
@@ -6397,13 +6331,14 @@ class MyApp(QWidget):
                                                     SELECT DISTINCT JENumber	
                                                     FROM  [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
                                                     WHERE ABS(JournalEntries.Amount) > {TE}	
-                                                        AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'
-                                                        {Preparer}
-                                                    ) {Account}	
+                                                    AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'
+                                                    {Preparer} AND JournalEntries.Year = {year} {Account}
+                                                    ) 
+                                                    AND JournalEntries.Year = {year}
                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
-                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2)
+                                       Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2,year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -6732,7 +6667,8 @@ class MyApp(QWidget):
                             JELineDescription,						
                             PreparerID,						
                             ApproverID  INTO #JEData						
-                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE							
+                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                        WHERE JE.Year = {year}
                         SELECT * INTO #COAData							
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
                         --****************************************************Result Table***************************************************							
@@ -6829,7 +6765,7 @@ class MyApp(QWidget):
                         LEFT JOIN #COAData COA							
                         ON #result.GLAccountNumber = COA.GLAccountNumber
                         DROP TABLE #filter, #JEData,#result,#COAData				
-                           '''.format(field=self.selected_project_id, cursor=tempcursor)
+                           '''.format(field=self.selected_project_id, cursor=tempcursor,year=self.pname_year)
 
             elif self.rbtn2.isChecked():
                 sql = '''
@@ -6856,7 +6792,8 @@ class MyApp(QWidget):
                             JELineDescription,		
                             PreparerID,		
                             ApproverID  INTO #JEData		
-                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE			
+                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                        WHERE JE.Year = {year}
                         SELECT * INTO #COAData			
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]			
                         --****************************************************Result Table***************************************************			
@@ -6958,7 +6895,7 @@ class MyApp(QWidget):
                             )		
                         ORDER BY JENumber,JELineNumber			
                         DROP TABLE #filter, #JEData,#result,#COAData	
-                            '''.format(field=self.selected_project_id, cursor=tempcursor)
+                            '''.format(field=self.selected_project_id, cursor=tempcursor,year=self.pname_year)
 
             readlist = pd.read_sql(sql, self.cnxn)
             dflist.append(readlist)
@@ -7162,11 +7099,12 @@ class MyApp(QWidget):
                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,		
                           [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA	
                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 		
-                          AND (JournalEntries.JEDescription LIKE N'%{KEY}%' OR JournalEntries.JELineDescription LIKE N'%{KEY}%')	
+                          AND ({KEY})	
                           AND ABS(JournalEntries.Amount) > {TE} {Account}
+                          AND JournalEntries.Year = {year}
                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
-                           Account=self.checked_account14)
+                           Account=self.checked_account14, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
 
@@ -7197,11 +7135,11 @@ class MyApp(QWidget):
                          (		
                             SELECT DISTINCT JournalEntries.JENumber		
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries		
-                            WHERE (JournalEntries.JEDescription LIKE N'%{KEY}%' OR JournalEntries.JELineDescription LIKE N'%{KEY}%')		
-                         )  AND ABS(JournalEntries.Amount) > {TE} {Account}
+                            WHERE ({KEY})  AND Year = {year} AND ABS(JournalEntries.Amount) > {TE} {Account}		
+                         )   AND JournalEntries.Year = {year}
                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
-                           Account=self.checked_account14)
+                           Account=self.checked_account14,year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
