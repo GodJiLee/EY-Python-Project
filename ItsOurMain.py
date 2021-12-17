@@ -1032,7 +1032,7 @@ class MyApp(QWidget):
         label_tree.setFont(font4)
 
         # 차변/대변 체크박스로 구현
-        labelDC = QLabel('차변/대변* : ', self.dialog4)
+        labelDC = QLabel('차변/대변 : ', self.dialog4)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
         font1.setBold(True)
@@ -1175,7 +1175,7 @@ class MyApp(QWidget):
         self.new_tree2.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         # 차변/대변 체크박스로 구현
-        labelDC1 = QLabel('차변/대변* : ', self.dialog5)
+        labelDC1 = QLabel('차변/대변 : ', self.dialog5)
         labelDC1.setStyleSheet("color: white;")
         font1 = labelDC1.font()
         font1.setBold(True)
@@ -1306,7 +1306,7 @@ class MyApp(QWidget):
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         ### 라벨 0 - 차/대변
-        labelDC2 = QLabel('차변/대변* : ', self.dialog5)
+        labelDC2 = QLabel('차변/대변 : ', self.dialog5)
         labelDC2.setStyleSheet("color: white;")
         font1 = labelDC2.font()
         font1.setBold(True)
@@ -3272,7 +3272,7 @@ class MyApp(QWidget):
         self.D13_Sheet.setStyleSheet("background-color: white;")
         self.D13_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        labelDC = QLabel('차변/대변* : ', self.dialog13)
+        labelDC = QLabel('차변/대변 : ', self.dialog13)
         labelDC.setStyleSheet("color: white;")
         font1 = labelDC.font()
         font1.setBold(True)
@@ -3634,7 +3634,7 @@ class MyApp(QWidget):
         self.secondTimer += 1
         elapsetime = "Elapsed time : " + str(int(self.secondTimer / 3600)) + "h " + str(
             int(self.secondTimer / 60)) + "m " + str(
-            self.secondTimer%60) + "s"
+            self.secondTimer % 60) + "s"
         self.progressLabel.setText(elapsetime)
 
     def pClose(self):
@@ -3723,7 +3723,7 @@ class MyApp(QWidget):
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                       + str(
-                    self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                    self.temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) > 300:
@@ -3748,7 +3748,7 @@ class MyApp(QWidget):
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
                                                       + str(
-                    self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                    self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
@@ -3783,7 +3783,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
                                                       + '건 추출되었습니다. <br> - SKA1(' + str(self.dropped_items)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) > 300:
@@ -3809,7 +3809,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
                                                       + '건 추출되었습니다. <br> - SKA1(' + str(self.dropped_items)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) > 300:
@@ -3845,7 +3845,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.temp_Code_Non_SAP)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) > 300:
@@ -3872,7 +3872,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.temp_Code_Non_SAP)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
@@ -4169,7 +4169,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액('
                                                       + str(
-                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출',
@@ -4194,7 +4194,7 @@ class MyApp(QWidget):
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액('
                                                       + str(
-                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출',
@@ -4492,8 +4492,8 @@ class MyApp(QWidget):
 
                 ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                    return
+                    self.checked_account4 = ''
+
                 ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account4 = checked_account
@@ -4585,8 +4585,8 @@ class MyApp(QWidget):
 
             ##Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                return
+                self.checked_account5_SAP = ''
+
             ##Select all이나 일부 체크박스가 선택된 경우
             else:
                 self.checked_account5_SAP = checked_account
@@ -4980,8 +4980,8 @@ class MyApp(QWidget):
 
                 ##Unselect all의 경우
                 if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-                    return
+                    self.checked_account13 = ''
+
                 ##Select all이나 일부 체크박스가 선택된 경우
                 else:
                     self.checked_account13 = checked_account
@@ -5317,14 +5317,16 @@ class MyApp(QWidget):
                                 (			
                                     SELECT DISTINCT GLAccountNumber			
                                     FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                    WHERE Year = {year}
                                     GROUP BY GLAccountNumber
                                     HAVING COUNT(GLAccountNumber) <= {N}
                                 ) AND ABS(JournalEntries.Amount) > {TE}
                                 {Account}
+                                AND JournalEntries.Year = {year}
                                 GROUP BY JournalEntries.GLAccountNumber	
                                 ORDER BY JournalEntries.GLAccountNumber
                             """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                       Account=self.checked_account4)
+                                       Account=self.checked_account4, year=self.pname_year)
 
             ### JE Line - Refer
             sql_query = '''
@@ -5353,14 +5355,16 @@ class MyApp(QWidget):
                             WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.GLAccountNumber IN 				
                                 (			
                                 SELECT DISTINCT GLAccountNumber			
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                WHERE Year = {year}
                                 GROUP BY GLAccountNumber			
                                 HAVING COUNT(GLAccountNumber) <= {N}			
                                 ) AND ABS(JournalEntries.Amount) > {TE}
-                                {Account}			
+                                {Account}
+                                AND JournalEntries.Year = {year}
                             ORDER BY JENumber,JELineNumber				
                         '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                   Account=self.checked_account4)
+                                   Account=self.checked_account4, year=self.pname_year)
 
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
@@ -5397,15 +5401,17 @@ class MyApp(QWidget):
                                     SELECT DISTINCT JournalEntries.GLAccountNumber	
                                     FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,	
                                         [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
-                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber	
+                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+                                        AND JournalEntries.Year = {year}
                                     GROUP BY JournalEntries.GLAccountNumber	
                                     HAVING COUNT(JournalEntries.GLAccountNumber) <= {N}	
                                     ) AND ABS(JournalEntries.Amount) > {TE}
-                                    {Account}	
-                                )		
+                                    {Account}
+                                    AND JournalEntries.Year = {year}
+                                ) AND JournalEntries.Year = {year}		
                         ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
                 '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                           Account=self.checked_account4)
+                           Account=self.checked_account4, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5512,9 +5518,10 @@ class MyApp(QWidget):
                             WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                     AND JournalEntries.GLAccountNumber IN ({CODE})
                                     {Account}
+                                    AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
                         """.format(field=self.selected_project_id, CODE=self.real_Code,
-                                   Account=self.checked_account5_SAP)
+                                   Account=self.checked_account5_SAP, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
             sql_query = '''
@@ -5546,10 +5553,11 @@ class MyApp(QWidget):
                                     FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
                                     WHERE JournalEntries.GLAccountNumber IN ({CODE})
                                     {Account}
-                                    )
+                                    AND Year = {year}
+                                    ) AND JournalEntries.Year = {year}
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
-                                       Account=self.checked_account5_SAP)
+                                       Account=self.checked_account5_SAP, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5649,9 +5657,10 @@ class MyApp(QWidget):
                             WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
                                     AND JournalEntries.GLAccountNumber IN ({CODE})
                                     {Account}
+                                    AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
                         """.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
-                                   Account=self.checked_account5_Non)
+                                   Account=self.checked_account5_Non, year=self.pname_year)
         ### JE
         elif self.rbtn2.isChecked():
 
@@ -5684,10 +5693,11 @@ class MyApp(QWidget):
                                         FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
                                         WHERE JournalEntries.GLAccountNumber IN ({CODE})
                                         {Account}
-                                        )
+                                        AND Year = {year}
+                                        ) AND JournalEntries.Year = {year}
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                                     '''.format(field=self.selected_project_id, CODE=self.temp_Code_Non_SAP,
-                                               Account=self.checked_account5_Non)
+                                               Account=self.checked_account5_Non, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5789,10 +5799,11 @@ class MyApp(QWidget):
                                AND ABS(JournalEntries.Amount) > {TE}
                                {Preparer}
                                {Account}
+                               AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                     '''.format(field=self.selected_project_id, Account=self.checked_account6, TE=self.tempCost,
                                first_date=str(self.first), second_date=str(self.second),
-                               Preparer=self.checked_preparer6)
+                               Preparer=self.checked_preparer6, year=self.pname_year)
 
 
         elif self.rbtn2.isChecked():
@@ -5827,11 +5838,12 @@ class MyApp(QWidget):
                                     {Account}
                                     {Preparer}
                                     AND ABS(JournalEntries.Amount) > {TE}
-                        )
+                                    AND Year = {year}
+                        ) AND JournalEntries.Year = {year}
                         ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
                     '''.format(field=self.selected_project_id, Account=self.checked_account6, TE=self.tempCost,
                                first_date=str(self.first), second_date=str(self.second),
-                               Preparer=self.checked_preparer6)
+                               Preparer=self.checked_preparer6, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -5926,9 +5938,10 @@ class MyApp(QWidget):
                             {Account}
                             {Preparer}
                             AND ABS(JournalEntries.Amount) > {TE}
+                            AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
-                              Account=self.checked_account7, Preparer=self.checked_preparer7)
+                              Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
         elif self.rbtn4.isChecked():
             sql = '''
@@ -5961,10 +5974,12 @@ class MyApp(QWidget):
                            WHERE ABS(JournalEntries.Amount) > {TE}
                                 {Account}
                                 {Preparer}
-                                {Date})
+                                {Date}
+                                AND Year = {year})
+                                AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
-                              Account=self.checked_account7, Preparer=self.checked_preparer7)
+                              Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -6061,9 +6076,10 @@ class MyApp(QWidget):
                                 {Preparer}
                                 AND ABS(JournalEntries.Amount) > {TE}
                                 {Account}
+                                AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                         '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
-                                   Preparer=self.checked_preparer8, Account=self.checked_account8)
+                                   Preparer=self.checked_preparer8, Account=self.checked_account8, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
 
@@ -6099,10 +6115,12 @@ class MyApp(QWidget):
                                     {Preparer}
                                     AND ABS(JournalEntries.Amount) > {TE}
                                     {Account}
-                                )
+                                    AND Year = {year}
+                                ) AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                             '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
-                                       Preparer=self.checked_preparer8, Account=self.checked_account8)
+                                       Preparer=self.checked_preparer8, Account=self.checked_account8,
+                                       year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql, self.cnxn)
 
@@ -6437,10 +6455,12 @@ class MyApp(QWidget):
                        SET NOCOUNT ON;
                        SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                       WHERE JENumber IN (
+                       WHERE Year = {YEAR}
+                       AND JENumber IN (
                                           SELECT DISTINCT JENumber
                                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                          WHERE ABS(Amount) > {TE} AND Year = {YEAR}
+                                          WHERE ABS(Amount) > {TE}
+                                          AND Year = {YEAR}
                                           )
                                          SELECT *                                                                                                       														
                                          FROM                                                                                                    														
@@ -6539,10 +6559,12 @@ class MyApp(QWidget):
                        DROP TABLE #tmp
                        SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                       WHERE JENumber IN (
+                       WHERE Year = {YEAR}
+                       AND JENumber IN (
                                           SELECT DISTINCT JENumber
                                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                          WHERE ABS(Amount) > {TE} AND Year = {YEAR}
+                                          WHERE ABS(Amount) > {TE}
+                                          AND Year = {YEAR}
                                           )
                                          SELECT *                                                                                                       														
                                          FROM                                                                                                    														
@@ -7002,9 +7024,10 @@ class MyApp(QWidget):
                             AND RIGHT(FLOOR(Amount), 6) IN ({CONTI})
                             {Account}
                             AND ABS(JournalEntries.Amount) > {TE}
+                            AND JournalEntries.Year = {year}
                             ORDER BY JENumber, JELineNumber
                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
-                               Account=self.checked_account13)
+                               Account=self.checked_account13, year=self.pname_year)
         ### JE - Journals
         elif self.rbtn2.isChecked():
 
@@ -7038,11 +7061,12 @@ class MyApp(QWidget):
                                 WHERE RIGHT(FLOOR(Amount), 6) IN ({CONTI}) 
                                 {Account}
                                 AND ABS(JournalEntries.Amount) > {TE}
-                            )
+                                AND Year = {year}
+                            ) AND JournalEntries.Year = {year}
                             ORDER BY JENumber, JELineNumber
                         '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                    CONTI=self.temp_Continuous,
-                                   Account=self.checked_account13)
+                                   Account=self.checked_account13, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -7225,7 +7249,8 @@ class MyApp(QWidget):
         self.stk_w.setCurrentIndex(QModelIndex.row())
 
     def closeEvent(self, event):
-        reply = QMessageBox.question(self, 'Quit', '정말 종료하시겠습니까?\n현재 ' + str(len(self.combo_sheet)) + '개의 시트가 있습니다', QMessageBox.No | QMessageBox.Yes)
+        reply = QMessageBox.question(self, 'Quit', '정말 종료하시겠습니까?\n현재 ' + str(len(self.combo_sheet)) + '개의 시트가 있습니다',
+                                     QMessageBox.No | QMessageBox.Yes)
         if reply == QMessageBox.Yes:
             event.accept()
         else:
@@ -7265,15 +7290,58 @@ class MyApp(QWidget):
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
+
+                            ws = writer.sheets[temp]
+                            fontStyle = Font(size="10", name="맑은 고딕")
+                            fontStyle_h = Font(size="10", name="맑은 고딕", bold=True)
+
+                            for row in ws:
+                                for cell in row:
+                                    cell.font = fontStyle
+
+                            for col in range(1, 50):
+                                ws.cell(row=1, column=col).font = fontStyle_h
+
                     self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
 
                 else:
-                    with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
+                    with pd.ExcelWriter('' + path + '', mode='w', engine='xlsxwriter') as writer:
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
-                        self.my_query.to_excel(writer, sheet_name='Query', index=False,
-                                               freeze_panes=(1, 0))
+
+                            wb = writer.book
+                            cell_format = wb.add_format()
+                            cell_format.set_font_name('맑은 고딕')
+                            cell_format.set_font_size(10)
+                            worksheet = writer.sheets[temp]
+                            worksheet.set_column('A:XFD', None, cell_format)
+
+                            header_format = wb.add_format()
+                            header_format.set_font_name('맑은 고딕')
+                            header_format.set_font_size(10)
+                            header_format.set_bold()
+
+                            for col_num, value in enumerate(self.scenario_dic['' + temp + ''].columns.values):
+                                worksheet.write(0, col_num, value, header_format)
+
+                        self.my_query.to_excel(writer, sheet_name='Query', index=False, freeze_panes=(1, 0))
+
+                        wb_q = writer.book
+                        cell_format_q = wb_q.add_format()
+                        cell_format_q.set_font_name('맑은 고딕')
+                        cell_format_q.set_font_size(10)
+                        worksheet = writer.sheets['Query']
+                        worksheet.set_column('A:XFD', None, cell_format_q)  # 추가
+
+                        header_format = wb_q.add_format()
+                        header_format.set_font_name('맑은 고딕')
+                        header_format.set_font_size(10)
+                        header_format.set_bold()
+
+                        for col_num, value in enumerate(self.my_query.columns.values):
+                            worksheet.write(0, col_num, value, header_format)
+
                     self.MessageBox_Open("저장을 완료했습니다.")
 
 
