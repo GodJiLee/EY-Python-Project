@@ -18,10 +18,6 @@ import numpy as np
 import openpyxl
 from threading import Thread
 
-
-
-
-
 class Communicate(QObject):
     def resource_path(self, relative_path):
         try:
@@ -487,6 +483,10 @@ class ListBoxWidget(QListWidget):
             event.ignore()
 
 
+
+
+
+
 class MyApp(QWidget):
     # Resource
     def resource_path(self, relative_path):
@@ -862,19 +862,22 @@ class MyApp(QWidget):
         self.line_ecode.setText("")
 
         ##Project Connect 버튼 생성 및 스타일 지정
-        btn_connect = QPushButton('   Project Connect', self)
-        font_btn_connect = btn_connect.font()
-        font_btn_connect.setBold(True)
-        btn_connect.setFont(font_btn_connect)
-        barUrl = self.resource_path('./bar.png')
-        btn_connect.setStyleSheet('color:white;  background-image : url(barUrl)')
+        btn_connect = QPushButton('', self)
+        pixmap_bar = QPixmap(self.resource_path('./project_connect.png'))
+        icon_bar = QIcon(pixmap_bar)
+        btn_connect.setIcon(icon_bar)
+        btn_connect.setIconSize(pixmap_bar.size())
+        btn_connect.resize(126, 25)
+        btn_connect.setStyleSheet('border : 0; background: transparent;')
 
         ##Input Conditions 버튼 생성 및 스타일 지정
-        btn_condition = QPushButton('   Input Conditions', self)
-        font_btn_condition = btn_condition.font()
-        font_btn_condition.setBold(True)
-        btn_condition.setFont(font_btn_condition)
-        btn_condition.setStyleSheet('color:white;  background-image : url(barUrl)')
+        btn_condition = QPushButton('', self)
+        pixmap_bar2 = QPixmap(self.resource_path('./input_conditions.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        btn_condition.setIcon(icon_bar2)
+        btn_condition.setIconSize(pixmap_bar2.size())
+        btn_condition.resize(126, 25)
+        btn_condition.setStyleSheet('border : 0; background: transparent;')
 
         ### Signal 함수들
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
@@ -1005,8 +1008,13 @@ class MyApp(QWidget):
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         ### 버튼 1 - Extract Data
-        self.btn2 = QPushButton('   Extract Data', self.dialog4)
-        self.btn2.setStyleSheet('color:white; background-image : url(barUrl)')
+        self.btn2 = QPushButton('', self.dialog4)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread4)
 
         font9 = self.btn2.font()
@@ -1014,13 +1022,14 @@ class MyApp(QWidget):
         self.btn2.setFont(font9)
 
         ### 버튼 2 - Close
-        self.btnDialog = QPushButton('   Close', self.dialog4)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(barUrl)')
+        self.btnDialog = QPushButton('', self.dialog4)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
+        self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
         self.btnDialog.clicked.connect(self.dialog_close4)
-
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog4)
@@ -1159,8 +1168,13 @@ class MyApp(QWidget):
 
         ### Non-SAP======================================================================
         ### 버튼 1 - Extract Data (Non-SAP)
-        self.btn2 = QPushButton('   Extract Data', self.dialog5)
-        self.btn2.setStyleSheet('color:white;  background-image : url(barUrl)')
+        self.btn2 = QPushButton('', self.dialog5)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread5_Non_SAP)
 
         font9 = self.btn2.font()
@@ -1169,14 +1183,14 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
 
         ### 버튼 2 - Close (Non-SAP)
-        self.btnDialog1 = QPushButton('Close', self.dialog5)
-        self.btnDialog1.setStyleSheet('color:white;  background-image : url(barUrl)')
-        self.btnDialog1.clicked.connect(self.dialog_close5)
-
-        font11 = self.btnDialog1.font()
-        font11.setBold(True)
-        self.btnDialog1.setFont(font11)
+        self.btnDialog1 = QPushButton('', self.dialog5)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog1.setIcon(icon_bar2)
+        self.btnDialog1.setIconSize(pixmap_bar2.size())
         self.btnDialog1.resize(110, 30)
+        self.btnDialog1.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog1.clicked.connect(self.dialog_close5)
 
         ### 계정 트리
         cursor2 = self.cnxn.cursor()
@@ -1287,8 +1301,13 @@ class MyApp(QWidget):
         self.gbtn.resize(110, 30)
 
         ### 버튼 2 - Extract Data
-        self.btn3 = QPushButton('   Extract Data', self.dialog5)
-        self.btn3.setStyleSheet('color:white;  background-image : url(barUrl)')
+        self.btn3 = QPushButton('', self.dialog5)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn3.setIcon(icon_bar)
+        self.btn3.setIconSize(pixmap_bar.size())
+        self.btn3.resize(110, 30)
+        self.btn3.setStyleSheet('border : 0; background: transparent;')
         self.btn3.clicked.connect(self.Thread5_SAP)
 
         font11 = self.btn3.font()
@@ -1297,14 +1316,14 @@ class MyApp(QWidget):
         self.btn3.resize(110, 30)
 
         ### 버튼 3 - Close
-        self.btnDialog = QPushButton('Close', self.dialog5)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(barUrl)')
-        self.btnDialog.clicked.connect(self.dialog_close5)
-
-        font9 = self.btnDialog.font()
-        font9.setBold(True)
-        self.btnDialog.setFont(font9)
+        self.btnDialog = QPushButton('', self.dialog5)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog.clicked.connect(self.dialog_close5)
 
         ### 계정 트리
         cursor = self.cnxn.cursor()
@@ -1625,22 +1644,25 @@ class MyApp(QWidget):
 
         self.new_prep.get_selected_leaves()
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog6)
-        self.btn2.setStyleSheet('color:white;  background-image : url(barUrl)')
+        self.btn2 = QPushButton('', self.dialog6)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
+
         self.btn2.clicked.connect(self.Thread6)
 
-        font9 = self.btn2.font()
-        font9.setBold(True)
-        self.btn2.setFont(font9)
-        self.btnDialog = QPushButton("   Close", self.dialog6)
-        self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(barUrl)')
-        self.btnDialog.clicked.connect(self.dialog_close6)
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
-        self.btn2.resize(110, 30)
+        self.btnDialog = QPushButton("", self.dialog6)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+
+        self.btnDialog.clicked.connect(self.dialog_close6)
 
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog6)
         self.rbtn1.setStyleSheet("color: white;")
@@ -1684,24 +1706,29 @@ class MyApp(QWidget):
         self.D6_Date.setStyleSheet("background-color: white;")
         self.D6_Date.setPlaceholderText('날짜를 선택하세요')
 
-        self.btnDate = QPushButton("Date", self.dialog6)
-        self.btnDate.resize(65, 22)
+        self.btnDate = QPushButton("", self.dialog6)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
         self.new_calendar.closebtn.clicked.connect(self.closeCalendar6)
-        self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDate.clicked.connect(self.calendar6)
-        font11 = self.btnDate.font()
-        font11.setBold(True)
-        self.btnDate.setFont(font11)
 
-        self.btnDelete = QPushButton("Delete", self.dialog6)
+        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDate.setIcon(icon_bar2)
+        self.btnDate.setIconSize(pixmap_bar2.size())
+        self.btnDate.resize(65, 22)
+        self.btnDate.setStyleSheet('border : 0; background: transparent;')
+
+        self.btnDate.clicked.connect(self.calendar6)
+
+
+        self.btnDelete = QPushButton("", self.dialog6)
+        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDelete.setIcon(icon_bar2)
+        self.btnDelete.setIconSize(pixmap_bar2.size())
         self.btnDelete.resize(65, 22)
-        self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete.setStyleSheet('border : 0; background: transparent;')
         self.btnDelete.clicked.connect(self.delete_date6)
-        font12 = self.btnDelete.font()
-        font12.setBold(True)
-        self.btnDelete.setFont(font12)
 
         labelDate2 = QLabel('T일* : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
@@ -1946,24 +1973,23 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog7)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog7)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread7)
 
-        font9 = self.btn2.font()
-        font9.setBold(True)
-        self.btn2.setFont(font9)
-
-        self.btnDialog = QPushButton("   Close", self.dialog7)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close7)
-
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
-
-        self.btn2.resize(110, 30)
+        self.btnDialog = QPushButton("", self.dialog7)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog.clicked.connect(self.dialog_close7)
 
         self.rbtn3 = QRadioButton('JE Line             ', self.dialog7)
         self.rbtn3.setStyleSheet("color: white;")
@@ -2001,17 +2027,27 @@ class MyApp(QWidget):
         self.D7_Date.setStyleSheet("background-color: white;")
         self.D7_Date.setPlaceholderText('날짜를 추가해주세요\n법정 공휴일 및 주말은 포함되어 있습니다')
 
-        self.btnDate = QPushButton("Add Date", self.dialog7)
-        self.btnDate.resize(65, 22)
+        self.btnDate = QPushButton("", self.dialog7)
+        pixmap_bar2 = QPixmap(self.resource_path('./add_date.png'))
+        self.btnDate.resize(80, 22)
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDate.setIcon(icon_bar2)
+        self.btnDate.setIconSize(pixmap_bar2.size())
+        self.btnDate.setStyleSheet('border : 0; background: transparent;')
         self.new_calendar = Calendar(self)
         self.new_calendar.closebtn.clicked.connect(self.closeCalendar7)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
-        self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
+
         self.btnDate.clicked.connect(self.calendar7)
 
-        self.btnDelete = QPushButton("Delete All", self.dialog7)
-        self.btnDelete.resize(65, 22)
-        self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete = QPushButton("", self.dialog7)
+        pixmap_bar2 = QPixmap(self.resource_path('./delete_all.png'))
+        self.btnDelete.resize(80, 22)
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDelete.setIcon(icon_bar2)
+        self.btnDelete.setIconSize(pixmap_bar2.size())
+        self.btnDelete.setStyleSheet('border : 0; background: transparent;')
+
         self.btnDelete.clicked.connect(self.delete_date7)
 
         font11 = self.btnDate.font()
@@ -2255,25 +2291,27 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog8)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog8)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread8)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("   Close", self.dialog8)
-        self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close8)
-
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
-
-        self.btn2.resize(110, 30)
+        self.btnDialog = QPushButton("", self.dialog8)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog.clicked.connect(self.dialog_close8)
 
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog8)
         self.rbtn1.setStyleSheet("color: white;")
@@ -2448,21 +2486,28 @@ class MyApp(QWidget):
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog9)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog9)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread9)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("  Close", self.dialog9)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close9)
+        self.btnDialog = QPushButton("", self.dialog9)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
+        self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
 
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
+        self.btnDialog.clicked.connect(self.dialog_close9)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog9)
@@ -2680,25 +2725,28 @@ class MyApp(QWidget):
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog10)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog10)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread10)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("   Close", self.dialog10)
-        self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close10)
-
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
-
-        self.btn2.resize(110, 30)
+        self.btnDialog = QPushButton("", self.dialog10)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+
+        self.btnDialog.clicked.connect(self.dialog_close10)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog10)
@@ -2721,27 +2769,31 @@ class MyApp(QWidget):
         labelKeyword.setFont(font1)
 
         ## 캘린더 버튼 추가
-        self.btnDate1 = QPushButton("Date", self.dialog10)
-        self.btnDate1.resize(65, 22)
+        self.btnDate1 = QPushButton("", self.dialog10)
         self.new_calendar1 = Calendar(self)
         self.new_calendar1.closebtn.clicked.connect(self.closeCalendar10_1)
         self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
-        self.btnDate1.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDate1.clicked.connect(self.calendar10_1)
-        font11 = self.btnDate1.font()
-        font11.setBold(True)
-        self.btnDate1.setFont(font11)
 
-        self.btnDate2 = QPushButton("Date", self.dialog10)
-        self.btnDate2.resize(65, 22)
+        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDate1.setIcon(icon_bar2)
+        self.btnDate1.setIconSize(pixmap_bar2.size())
+        self.btnDate1.resize(65, 22)
+        self.btnDate1.setStyleSheet('border : 0; background: transparent;')
+
+        self.btnDate1.clicked.connect(self.calendar10_1)
+
+        self.btnDate2 = QPushButton("", self.dialog10)
         self.new_calendar2 = Calendar(self)
         self.new_calendar2.closebtn.clicked.connect(self.closeCalendar10_2)
         self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
-        self.btnDate2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDate2.setIcon(icon_bar2)
+        self.btnDate2.setIconSize(pixmap_bar2.size())
+        self.btnDate2.resize(65, 22)
+        self.btnDate2.setStyleSheet('border : 0; background: transparent;')
         self.btnDate2.clicked.connect(self.calendar10_2)
-        font11 = self.btnDate1.font()
-        font11.setBold(True)
-        self.btnDate2.setFont(font11)
 
         labelPoint1 = QLabel('시작시점 : ', self.dialog10)
         labelPoint2 = QLabel('종료시점 : ', self.dialog10)
@@ -2794,21 +2846,23 @@ class MyApp(QWidget):
         self.D10_Sheet.setStyleSheet("background-color: white;")
         self.D10_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        self.btnDelete1 = QPushButton("Delete", self.dialog10)
+        self.btnDelete1 = QPushButton("", self.dialog10)
+        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDelete1.setIcon(icon_bar2)
+        self.btnDelete1.setIconSize(pixmap_bar2.size())
         self.btnDelete1.resize(65, 22)
-        self.btnDelete1.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete1.setStyleSheet('border : 0; background: transparent;')
         self.btnDelete1.clicked.connect(self.delete_date101)
-        font12 = self.btnDelete1.font()
-        font12.setBold(True)
-        self.btnDelete1.setFont(font12)
 
-        self.btnDelete2 = QPushButton("Delete", self.dialog10)
+        self.btnDelete2 = QPushButton("", self.dialog10)
+        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDelete2.setIcon(icon_bar2)
+        self.btnDelete2.setIconSize(pixmap_bar2.size())
         self.btnDelete2.resize(65, 22)
-        self.btnDelete2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDelete2.setStyleSheet('border : 0; background: transparent;')
         self.btnDelete2.clicked.connect(self.delete_date102)
-        font12 = self.btnDelete2.font()
-        font12.setBold(True)
-        self.btnDelete2.setFont(font12)
 
         self.D10_Point1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Point2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -2974,21 +3028,24 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
         self.new_tree.get_selected_leaves()
 
-        self.btn = QPushButton('   Extract Data', self.dialog12)
-        self.btn.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btn.clicked.connect(self.Thread12)
-        font9 = self.btn.font()
-        font9.setBold(True)
-        self.btn.setFont(font9)
-
-        self.btnDialog = QPushButton("   Close", self.dialog12)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close12)
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
+        self.btn = QPushButton('', self.dialog12)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn.setIcon(icon_bar)
+        self.btn.setIconSize(pixmap_bar.size())
         self.btn.resize(110, 30)
+        self.btn.setStyleSheet('border : 0; background: transparent;')
+
+        self.btn.clicked.connect(self.Thread12)
+
+        self.btnDialog = QPushButton("", self.dialog12)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog.clicked.connect(self.dialog_close12)
 
         labelAccount = QLabel('특정 계정명/계정 코드* : ', self.dialog12)
         labelAccount.setStyleSheet("color: white;")
@@ -3059,21 +3116,24 @@ class MyApp(QWidget):
         main_layout1.addLayout(sublayout2)
 
         ### Cursor문
-        self.btn2 = QPushButton('   Extract Data', self.dialog12)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btn2.clicked.connect(self.ThreadC)
-        font9 = self.btn2.font()
-        font9.setBold(True)
-        self.btn2.setFont(font9)
-
-        self.btnDialog2 = QPushButton("   Close", self.dialog12)
-        self.btnDialog2.setStyleSheet('color:white;  background-image : url(./bar.png)')
-        self.btnDialog2.clicked.connect(self.dialog_close12)
-        font10 = self.btnDialog2.font()
-        font10.setBold(True)
-        self.btnDialog2.setFont(font10)
+        self.btn2 = QPushButton('', self.dialog12)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
         self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2.clicked.connect(self.ThreadC)
+
+        self.btnDialog2 = QPushButton("", self.dialog12)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog2.setIcon(icon_bar2)
+        self.btnDialog2.setIconSize(pixmap_bar2.size())
         self.btnDialog2.resize(110, 30)
+        self.btnDialog2.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog2.clicked.connect(self.dialog_close12)
+
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog12)
@@ -3259,22 +3319,24 @@ class MyApp(QWidget):
         self.rbtn2.setFont(font12)
 
         ### 버튼 1 - Extract Data
-        self.btn2 = QPushButton('   Extract Data', self.dialog13)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog13)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread13)
 
-        font9 = self.btn2.font()
-        font9.setBold(True)
-        self.btn2.setFont(font9)
-
         ### 버튼 2 - Close
-        self.btnDialog = QPushButton('Close', self.dialog13)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog = QPushButton('', self.dialog13)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
+        self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
         self.btnDialog.clicked.connect(self.dialog_close13)
-
-        font9 = self.btnDialog.font()
-        font9.setBold(True)
-        self.btnDialog.setFont(font9)
 
         ### 라벨 1 - 연속된 자릿수
         label_Continuous = QLabel('연속된 자릿수* : ', self.dialog13)
@@ -3431,25 +3493,27 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
-        self.btn2 = QPushButton('   Extract Data', self.dialog14)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2 = QPushButton('', self.dialog14)
+        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
+        icon_bar = QIcon(pixmap_bar)
+        self.btn2.setIcon(icon_bar)
+        self.btn2.setIconSize(pixmap_bar.size())
+        self.btn2.resize(110, 30)
+        self.btn2.setStyleSheet('border : 0; background: transparent;')
         self.btn2.clicked.connect(self.Thread14)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("   Close", self.dialog14)
-        self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
-        self.btnDialog.clicked.connect(self.dialog_close14)
-
-        font10 = self.btnDialog.font()
-        font10.setBold(True)
-        self.btnDialog.setFont(font10)
-
-        self.btn2.resize(110, 30)
+        self.btnDialog = QPushButton("", self.dialog14)
+        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
+        icon_bar2 = QIcon(pixmap_bar2)
+        self.btnDialog.setIcon(icon_bar2)
+        self.btnDialog.setIconSize(pixmap_bar2.size())
         self.btnDialog.resize(110, 30)
+        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog.clicked.connect(self.dialog_close14)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog14)
@@ -4602,30 +4666,22 @@ class MyApp(QWidget):
 
     def Thread5_Non_SAP(self):
 
-        ##Unselect all의 경우
-        if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-            self.MessageBox_Open("계정트리가 선택되어 있지 않습니다.")
-            return
-        ##Select all이나 일부 체크박스가 선택된 경우
-        else:
-            self.checked_account5_Non = checked_account
-
         self.tempSheet_NonSAP = self.D5_Sheet2.text()  # 필수값
         self.tempYear_NonSAP = int(self.pname_year)  # 필수값
-        self.temp_Code_Non_SAP_1 = self.MyInput.toPlainText()  # 필수값 (계정코드)
+        self.temp_Code_Non_SAP_1 = self.MyInput.toPlainText().strip()  # 필수값 (계정코드)
 
-        self.temp_Code_Non_SAP_1 = re.sub(r"[:,|\s]", ",", self.temp_Code_Non_SAP_1)
+        self.temp_Code_Non_SAP_1 = re.sub(r"[,|\s]+", ",", self.temp_Code_Non_SAP_1)
         self.temp_Code_Non_SAP_1 = re.split(",", self.temp_Code_Non_SAP_1)
 
-        self.temp_Code_Non_SAP = ''
-        for code in self.temp_Code_Non_SAP_1:
-            self.temp_Code_Non_SAP += "'" + str(code) + "', "
+        for i in range(len(self.temp_Code_Non_SAP_1)):
+            if self.temp_Code_Non_SAP_1[i] == '':
+                del self.temp_Code_Non_SAP_1[i]
 
-        self.temp_Code_Non_SAP = str(self.temp_Code_Non_SAP)
-        self.temp_Code_Non_SAP = self.temp_Code_Non_SAP[:-2]
+        for i in range(len(self.temp_Code_Non_SAP_1)):
+            self.temp_Code_Non_SAP_1[i] = self.ChangeInt(self.temp_Code_Non_SAP_1[i])
 
         ### 예외처리 1 - 필수값 입력 누락
-        if self.temp_Code_Non_SAP == '' or self.tempSheet_NonSAP == '':
+        if self.temp_Code_Non_SAP_1 == [] or self.tempSheet_NonSAP == '':
             self.alertbox_open()
 
         ### 예외처리 2 - 시트명 중복 확인
@@ -4636,6 +4692,19 @@ class MyApp(QWidget):
             self.alertbox_open5()
 
         else:
+            self.temp_Code_Non_SAP = ''
+            for code in self.temp_Code_Non_SAP_1:
+                self.temp_Code_Non_SAP += "'" + str(code) + "', "
+
+            self.temp_Code_Non_SAP = self.temp_Code_Non_SAP[:-2]
+
+            ##Unselect all의 경우
+            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.checked_account5_Non = ''
+            ##Select all이나 일부 체크박스가 선택된 경우
+            else:
+                self.checked_account5_Non = checked_account
+
             self.doAction()
             self.th5_Non_SAP = Thread(target=self.extButtonClicked5_Non_SAP)
             self.th5_Non_SAP.daemon = True
@@ -4936,7 +5005,7 @@ class MyApp(QWidget):
 
     def Thread13(self):
         self.temp_Continuous = self.text_continuous.toPlainText()  # 필수
-        self.temp_Continuous = str(self.temp_Continuous)
+        self.temp_Continuous = str(self.temp_Continuous).strip()
         self.temp_TE_13 = self.line_amount.text()
         self.tempSheet = self.D13_Sheet.text()  # 필수
 
@@ -4944,11 +5013,8 @@ class MyApp(QWidget):
         if self.temp_TE_13 == '':
             self.temp_TE_13 = 0
 
-        if self.temp_Continuous != '' and len(str(self.temp_Continuous)) < 6:
-            self.alertbox_open15()
-
         ### 예외처리 1 - 필수값 누락
-        elif self.temp_Continuous == '' or self.tempSheet == '':
+        if self.temp_Continuous == '' or self.tempSheet == '':
             self.alertbox_open()
 
         ### 예외처리 2 - 시트명 중복 확인
@@ -4960,36 +5026,42 @@ class MyApp(QWidget):
 
         else:
             try:
-                int(self.temp_TE_13)
-                int(self.temp_Continuous)
+                self.temp_Continuous = re.sub(r"[,|\s]+", ',', self.temp_Continuous)
+            except:
+                self.MessageBox_Open("연속된 자릿수 입력이 잘못되었습니다.")
+                return
 
-                ##Unselect all의 경우
-                if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
-                    self.checked_account13 = ''
+            self.temp_Continuous = self.temp_Continuous.split(',')
 
-                ##Select all이나 일부 체크박스가 선택된 경우
-                else:
-                    self.checked_account13 = checked_account
+            for i in range(len(self.temp_Continuous)):
+                if self.temp_Continuous[i].isdigit() is False:
+                    self.alertbox_open2("연속된 자릿수")
+                    return
+                elif len(str(self.temp_Continuous[i])) < 6:
+                    self.alertbox_open15()
+                    return
 
-                self.doAction()
-                self.th13 = Thread(target=self.extButtonClicked13)
-                self.th13.daemon = True
-                self.th13.start()
+            if str(self.temp_TE_13).isdigit() is False:
+                self.alertbox_open2("중요성금액")
+                return
 
-            ### 예외처리 4 - 필수값 타입 오류
-            except ValueError:
-                try:
-                    int(self.temp_Continuous)
-                    try:
-                        int(self.temp_TE_13)
-                    except:
-                        self.alertbox_open2('중요성금액')
-                except:
-                    try:
-                        int(self.temp_TE_13)
-                        self.alertbox_open2('연속된 자릿수')
-                    except:
-                        self.alertbox_open2('연속된 자릿수와 중요성금액')
+            ##Unselect all의 경우
+            if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
+                self.checked_account13 = ''
+
+            ##Select all이나 일부 체크박스가 선택된 경우
+            else:
+                self.checked_account13 = checked_account
+
+            self.filter_Continuous = ""
+            for x in self.temp_Continuous:
+                self.filter_Continuous += f"OR RIGHT(FLOOR(Amount), {len(x)}) IN (\'{x}\')"
+            self.filter_Continuous = 'AND (' + self.filter_Continuous[3:] + ')'
+
+            self.doAction()
+            self.th13 = Thread(target=self.extButtonClicked13)
+            self.th13.daemon = True
+            self.th13.start()
 
     def ThreadC(self):
         self.tempSheet = self.D12_Sheetc.text()
@@ -5224,12 +5296,15 @@ class MyApp(QWidget):
         self.setStyleSheet('QGroupBox  {color: white;}')
 
         ##RemoveSheet 버튼
-        RemoveSheet_button = QPushButton('Remove Sheet')
-        RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
-        font_RemoveSheet = RemoveSheet_button.font()
-        font_RemoveSheet.setBold(True)
-        RemoveSheet_button.setFont(font_RemoveSheet)
+        RemoveSheet_button = QPushButton('')
+        #RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        pixmap_bar3 = QPixmap(self.resource_path('./remove_sheets.png'))
+        icon_bar3 = QIcon(pixmap_bar3)
+        RemoveSheet_button.setIcon(icon_bar3)
+        RemoveSheet_button.setIconSize(pixmap_bar3.size())
+        RemoveSheet_button.resize(135, 25)
+        RemoveSheet_button.setStyleSheet('border : 0; background: transparent;')
+
 
         # label
         label_sheet = QLabel("Sheet names: ", self)
@@ -5242,12 +5317,15 @@ class MyApp(QWidget):
         self.combo_sheet = QComboBox(self)
 
         ## Save 버튼
-        export_file_button = QPushButton("Save", self)
-        export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        font_export_button = export_file_button.font()
-        font_export_button.setBold(True)
-        export_file_button.setFont(font_export_button)
-        export_file_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        export_file_button = QPushButton("", self)
+        #export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        pixmap_bar4 = QPixmap(self.resource_path('./save.png'))
+        icon_bar4 = QIcon(pixmap_bar4)
+        export_file_button.setIcon(icon_bar4)
+        export_file_button.setIconSize(pixmap_bar4.size())
+        export_file_button.resize(130, 25)
+        export_file_button.setStyleSheet('border : 0; background: transparent;')
+
 
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
@@ -6989,77 +7067,79 @@ class MyApp(QWidget):
 
         ### JE Line
         if self.rbtn1.isChecked():
-
             sql_query = '''
-                            SELECT
-                                JournalEntries.BusinessUnit
-                                , JournalEntries.JENumber
-                                , JournalEntries.JELineNumber
-                                , JournalEntries.EffectiveDate
-                                , JournalEntries.EntryDate
-                                , JournalEntries.Period
-                                , JournalEntries.GLAccountNumber
-                                , COA.GLAccountName
-                                , JournalEntries.Debit
-                                , JournalEntries.Credit
-                                , CASE
-                                    WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                    END AS DebitCredit
-                                , JournalEntries.Amount
-                                , JournalEntries.FunctionalCurrencyCode
-                                , JournalEntries.JEDescription
-                                , JournalEntries.JELineDescription
-                                , JournalEntries.PreparerID
-                                , JournalEntries.ApproverID
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                            WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber 
-                            AND RIGHT(FLOOR(Amount), 6) IN ({CONTI})
-                            {Account}
-                            AND ABS(JournalEntries.Amount) > {TE}
-                            AND JournalEntries.Year = {year}
-                            ORDER BY JENumber, JELineNumber
-                    '''.format(field=self.selected_project_id, TE=self.temp_TE_13, CONTI=self.temp_Continuous,
-                               Account=self.checked_account13, year=self.pname_year)
-        ### JE - Journals
+                                        SELECT
+                                            JournalEntries.BusinessUnit
+                                            , JournalEntries.JENumber
+                                            , JournalEntries.JELineNumber
+                                            , JournalEntries.EffectiveDate
+                                            , JournalEntries.EntryDate
+                                            , JournalEntries.Period
+                                            , JournalEntries.GLAccountNumber
+                                            , COA.GLAccountName
+                                            , JournalEntries.Debit
+                                            , JournalEntries.Credit
+                                            , CASE
+                                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                END AS DebitCredit
+                                            , JournalEntries.Amount
+                                            , JournalEntries.FunctionalCurrencyCode
+                                            , JournalEntries.JEDescription
+                                            , JournalEntries.JELineDescription
+                                            , JournalEntries.PreparerID
+                                            , JournalEntries.ApproverID
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
+                                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
+                                        WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber 
+                                        {CONTI}
+                                        {Account}
+                                        AND ABS(JournalEntries.Amount) > {TE}
+                                        AND JournalEntries.Year = {year}
+                                        ORDER BY JENumber, JELineNumber
+                                '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
+                                           CONTI=self.filter_Continuous,
+                                           Account=self.checked_account13, year=self.pname_year)
+            ### JE - Journals
         elif self.rbtn2.isChecked():
 
             sql_query = '''
-                            SELECT
-                                JournalEntries.BusinessUnit
-                                , JournalEntries.JENumber
-                                , JournalEntries.JELineNumber
-                                , JournalEntries.EffectiveDate
-                                , JournalEntries.EntryDate
-                                , JournalEntries.Period
-                                , JournalEntries.GLAccountNumber
-                                , COA.GLAccountName
-                                , JournalEntries.Debit
-                                , JournalEntries.Credit
-                                , CASE
-                                    WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                    END AS DebitCredit
-                                , JournalEntries.Amount
-                                , JournalEntries.FunctionalCurrencyCode
-                                , JournalEntries.JEDescription
-                                , JournalEntries.JELineDescription
-                                , JournalEntries.PreparerID
-                                , JournalEntries.ApproverID
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
-                                 [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
-                            WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber AND JournalEntries.JENumber IN
-                            (
-                                SELECT DISTINCT JournalEntries.JENumber
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
-                                WHERE RIGHT(FLOOR(Amount), 6) IN ({CONTI}) 
-                                {Account}
-                                AND ABS(JournalEntries.Amount) > {TE}
-                                AND Year = {year}
-                            ) AND JournalEntries.Year = {year}
-                            ORDER BY JENumber, JELineNumber
-                        '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
-                                   CONTI=self.temp_Continuous,
-                                   Account=self.checked_account13, year=self.pname_year)
+                                        SELECT
+                                            JournalEntries.BusinessUnit
+                                            , JournalEntries.JENumber
+                                            , JournalEntries.JELineNumber
+                                            , JournalEntries.EffectiveDate
+                                            , JournalEntries.EntryDate
+                                            , JournalEntries.Period
+                                            , JournalEntries.GLAccountNumber
+                                            , COA.GLAccountName
+                                            , JournalEntries.Debit
+                                            , JournalEntries.Credit
+                                            , CASE
+                                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                END AS DebitCredit
+                                            , JournalEntries.Amount
+                                            , JournalEntries.FunctionalCurrencyCode
+                                            , JournalEntries.JEDescription
+                                            , JournalEntries.JELineDescription
+                                            , JournalEntries.PreparerID
+                                            , JournalEntries.ApproverID
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
+                                             [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
+                                        WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber AND JournalEntries.JENumber IN
+                                        (
+                                            SELECT DISTINCT JournalEntries.JENumber
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                            WHERE 1=1 
+                                            {CONTI} 
+                                            {Account}
+                                            AND ABS(JournalEntries.Amount) > {TE}
+                                            AND Year = {year}
+                                        ) AND JournalEntries.Year = {year}
+                                        ORDER BY JENumber, JELineNumber
+                                    '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
+                                               CONTI=self.filter_Continuous,
+                                               Account=self.checked_account13, year=self.pname_year)
+        ####수정사항 끝####
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
