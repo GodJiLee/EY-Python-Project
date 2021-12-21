@@ -34,7 +34,7 @@ class Calendar(QDialog):
 
         self.setGeometry(1050, 400, 400, 200)
         self.setWindowTitle("Calendar")
-        self.setWindowIcon(QIcon("./EY_logo.png"))
+        self.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.setWindowModality(Qt.NonModal)
         self.setWindowFlag(Qt.FramelessWindowHint)
 
@@ -502,7 +502,7 @@ class MyApp(QWidget):
         self.msg = QMessageBox()
         self.msg.setIcon(QMessageBox.Information)
         self.msg.setWindowTitle("Warning")
-        self.msg.setWindowIcon(QIcon('./EY_logo.png'))
+        self.msg.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.msg.setText(text)
         self.msg.exec_()
 
@@ -510,7 +510,7 @@ class MyApp(QWidget):
         self.msg = QMessageBox()
         self.msg.setIcon(QMessageBox.Information)
         self.msg.setWindowTitle("Project Connected")
-        self.msg.setWindowIcon(QIcon('./EY_logo.png'))
+        self.msg.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.msg.setText(text)
         self.msg.exec_()
 
@@ -518,7 +518,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('필수 입력값 누락')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText('필수 입력값이 누락되었습니다.')
         self.alt.exec_()
 
@@ -527,7 +527,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         txt = state
         self.alt.setWindowTitle('필수 입력값 타입 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText(txt + ' 값을 숫자로만 입력해주시기 바랍니다.')
         self.alt.exec_()
 
@@ -535,7 +535,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('최대 라인 수 초과 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText('최대 라인 수가 초과 되었습니다.')
         self.alt.exec_()
 
@@ -544,7 +544,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         txt = state
         self.alt.setWindowTitle('입력값 타입 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText(txt)
         self.alt.exec_()
 
@@ -552,7 +552,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('시트명 중복')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText('이미 해당 시트명이 존재합니다.')
         self.alt.exec_()
 
@@ -560,7 +560,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('SKA1 파일 선택 오류')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText('SKA1 파일만을 드롭하세요.')
         self.alt.exec_()
 
@@ -569,7 +569,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         txt = state
         self.alt.setWindowTitle('SKA1 파일 내부 필드값 부재')
-        self.alt.setWindowIcon(QIcon('./EY_logo.png'))
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
         self.alt.setText(txt)
         self.alt.exec_()
 
@@ -577,7 +577,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('필수 입력값 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.alt.setText('T일은 0이상 70만 미만의 정수로만 입력 바랍니다.')
         self.alt.exec_()
 
@@ -585,7 +585,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('필수 입력값 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.alt.setText('N일은 0이상 70만 미만의 정수로만 입력 바랍니다.')
         self.alt.exec_()
 
@@ -593,7 +593,7 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('전 후 선택 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.alt.setText('T일 이전 및 T일 이후가 선택되어 있지 않습니다.')
         self.alt.exec_()
 
@@ -601,19 +601,19 @@ class MyApp(QWidget):
         self.alt = QMessageBox()
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('자릿수 포맷 오류')
-        self.alt.setWindowIcon(QIcon("./EY_logo.png"))
+        self.alt.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.alt.setText('연속된 자릿수는 6자리 이상으로 입력해주세요.')
         self.alt.exec_()
 
     def init_UI(self):
 
-        image = QImage('./dark_gray.png')
+        image = QImage(self.resource_path('./dark_gray.png'))
         scaledImg = image.scaled(QSize(1000, 900))
         palette = QPalette()
         palette.setBrush(10, QBrush(scaledImg))
         self.setPalette(palette)
 
-        pixmap = QPixmap('./title.png')
+        pixmap = QPixmap(self.resource_path('./title.png'))
         lbl_img = QLabel()
         lbl_img.setPixmap(pixmap)
         lbl_img.setStyleSheet("background-color:#000000")
@@ -634,7 +634,7 @@ class MyApp(QWidget):
         widget_layout.addWidget(self.splitter_layout)
         self.setLayout(widget_layout)
 
-        self.setWindowIcon(QIcon("./EY_logo.png"))
+        self.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
         self.setWindowTitle('Scenario')
 
         self.setGeometry(300, 100, 1000, 900)
@@ -811,14 +811,15 @@ class MyApp(QWidget):
         font_btn_connect = btn_connect.font()
         font_btn_connect.setBold(True)
         btn_connect.setFont(font_btn_connect)
-        btn_connect.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        barUrl = self.resource_path('./bar.png')
+        btn_connect.setStyleSheet('color:white;  background-image : url(barUrl)')
 
         ##Input Conditions 버튼 생성 및 스타일 지정
         btn_condition = QPushButton('   Input Conditions', self)
         font_btn_condition = btn_condition.font()
         font_btn_condition.setBold(True)
         btn_condition.setFont(font_btn_condition)
-        btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        btn_condition.setStyleSheet('color:white;  background-image : url(barUrl)')
 
         ### Signal 함수들
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
@@ -895,7 +896,7 @@ class MyApp(QWidget):
         self.dialoglist.add(4)
         self.dialog4 = QDialog()
         self.dialog4.setStyleSheet('background-color: #2E2E38')
-        self.dialog4.setWindowIcon(QIcon('./EY_logo.png'))
+        self.dialog4.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
 
         # 트리 작업
         cursor = self.cnxn.cursor()
@@ -950,7 +951,7 @@ class MyApp(QWidget):
 
         ### 버튼 1 - Extract Data
         self.btn2 = QPushButton('   Extract Data', self.dialog4)
-        self.btn2.setStyleSheet('color:white; background-image : url(./bar.png)')
+        self.btn2.setStyleSheet('color:white; background-image : url(barUrl)')
         self.btn2.clicked.connect(self.Thread4)
 
         font9 = self.btn2.font()
@@ -959,7 +960,7 @@ class MyApp(QWidget):
 
         ### 버튼 2 - Close
         self.btnDialog = QPushButton('   Close', self.dialog4)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btnDialog.clicked.connect(self.dialog_close4)
 
         font10 = self.btnDialog.font()
@@ -1085,7 +1086,7 @@ class MyApp(QWidget):
         self.dialoglist.add(5)
         self.dialog5 = QDialog()
         self.dialog5.setStyleSheet('background-color: #2E2E38')
-        self.dialog5.setWindowIcon(QIcon('./EY_logo.png'))
+        self.dialog5.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
 
         ### JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog5)  # 간격 유지를 위한 공백 13개
@@ -1104,7 +1105,7 @@ class MyApp(QWidget):
         ### Non-SAP======================================================================
         ### 버튼 1 - Extract Data (Non-SAP)
         self.btn2 = QPushButton('   Extract Data', self.dialog5)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btn2.clicked.connect(self.Thread5_Non_SAP)
 
         font9 = self.btn2.font()
@@ -1114,7 +1115,7 @@ class MyApp(QWidget):
 
         ### 버튼 2 - Close (Non-SAP)
         self.btnDialog1 = QPushButton('Close', self.dialog5)
-        self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog1.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btnDialog1.clicked.connect(self.dialog_close5)
 
         font11 = self.btnDialog1.font()
@@ -1222,7 +1223,7 @@ class MyApp(QWidget):
         ### SAP=============================================================================
         ### 버튼 1 - Clear Files
         self.gbtn = QPushButton('Clear Files', self.dialog5)
-        self.gbtn.setStyleSheet('color:white; background-image: url(./bar.png)')
+        self.gbtn.setStyleSheet('color:white; background-image: url(barUrl)')
         self.gbtn.clicked.connect(self.dropFiles)
 
         font90 = self.gbtn.font()
@@ -1232,7 +1233,7 @@ class MyApp(QWidget):
 
         ### 버튼 2 - Extract Data
         self.btn3 = QPushButton('   Extract Data', self.dialog5)
-        self.btn3.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn3.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btn3.clicked.connect(self.Thread5_SAP)
 
         font11 = self.btn3.font()
@@ -1242,7 +1243,7 @@ class MyApp(QWidget):
 
         ### 버튼 3 - Close
         self.btnDialog = QPushButton('Close', self.dialog5)
-        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btnDialog.clicked.connect(self.dialog_close5)
 
         font9 = self.btnDialog.font()
@@ -1449,7 +1450,7 @@ class MyApp(QWidget):
         self.dialoglist.add(6)
         self.dialog6 = QDialog()
         self.dialog6.setStyleSheet('background-color: #2E2E38')
-        self.dialog6.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog6.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         groupbox0 = QGroupBox('')
         groupbox0.setStyleSheet('QGroupBox  {border:0;}')
@@ -1570,7 +1571,7 @@ class MyApp(QWidget):
         self.new_prep.get_selected_leaves()
 
         self.btn2 = QPushButton('   Extract Data', self.dialog6)
-        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn2.setStyleSheet('color:white;  background-image : url(barUrl)')
         self.btn2.clicked.connect(self.Thread6)
 
         font9 = self.btn2.font()
@@ -1578,7 +1579,7 @@ class MyApp(QWidget):
         self.btn2.setFont(font9)
         self.btnDialog = QPushButton("   Close", self.dialog6)
         self.btnDialog.setStyleSheet(
-            'color:white;  background-image : url(./bar.png)')
+            'color:white;  background-image : url(barUrl)')
         self.btnDialog.clicked.connect(self.dialog_close6)
         font10 = self.btnDialog.font()
         font10.setBold(True)
@@ -1762,7 +1763,7 @@ class MyApp(QWidget):
         self.dialoglist.add(7)
         self.dialog7 = QDialog()
         self.dialog7.setStyleSheet('background-color: #2E2E38')
-        self.dialog7.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog7.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         groupbox1 = QGroupBox('')
         groupbox1.setStyleSheet('QGroupBox  {border:0;}')
@@ -2079,7 +2080,7 @@ class MyApp(QWidget):
         self.dialoglist.add(8)
         self.dialog8 = QDialog()
         self.dialog8.setStyleSheet('background-color: #2E2E38')
-        self.dialog8.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog8.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         groupbox0 = QGroupBox('')
         groupbox0.setStyleSheet('QGroupBox  {border:0;}')
@@ -2390,7 +2391,7 @@ class MyApp(QWidget):
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         self.dialog9.setStyleSheet('background-color: #2E2E38')
-        self.dialog9.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog9.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         self.btn2 = QPushButton('   Extract Data', self.dialog9)
         self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
@@ -2524,7 +2525,7 @@ class MyApp(QWidget):
         self.dialoglist.add(10)
         self.dialog10 = QDialog()
         self.dialog10.setStyleSheet('background-color: #2E2E38')
-        self.dialog10.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog10.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         cursor = self.cnxn.cursor()
 
@@ -2868,7 +2869,7 @@ class MyApp(QWidget):
         self.dialoglist.add(12)
         self.dialog12 = QDialog()
         self.dialog12.setStyleSheet('background-color: #2E2E38')
-        self.dialog12.setWindowIcon(QIcon('./EY_logo.png'))
+        self.dialog12.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
 
         # 시나리오12
         cursor = self.cnxn.cursor()
@@ -3137,7 +3138,7 @@ class MyApp(QWidget):
         self.dialoglist.add(13)
         self.dialog13 = QDialog()
         self.dialog13.setStyleSheet('background-color: #2E2E38')
-        self.dialog13.setWindowIcon(QIcon('./EY_logo.png'))
+        self.dialog13.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
 
         cursor = self.cnxn.cursor()
 
@@ -3323,7 +3324,7 @@ class MyApp(QWidget):
         self.dialoglist.add(14)
         self.dialog14 = QDialog()
         self.dialog14.setStyleSheet('background-color: #2E2E38')
-        self.dialog14.setWindowIcon(QIcon("./EY_logo.png"))
+        self.dialog14.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
         cursor = self.cnxn.cursor()
 
@@ -3601,7 +3602,7 @@ class MyApp(QWidget):
         label.setStyleSheet("font : bold 14pt; color: white;")
         self.progressLabel = QLabel("Elapsed time : 0h 0m 0s")
         self.progressLabel.setStyleSheet("font : bold 8pt; color: grey;")
-        pixmap = QPixmap('./Loading.png')
+        pixmap = QPixmap(self.resource_path('./Loading.png'))
         lbl_img.setPixmap(pixmap)
 
         self.pclosebtn = QPushButton("Close", self.Action)
