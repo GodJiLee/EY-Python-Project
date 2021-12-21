@@ -7230,56 +7230,15 @@ class MyApp(QWidget):
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
 
-                            ws = writer.sheets[temp]
-                            fontStyle = Font(size="10", name="맑은 고딕")
-                            fontStyle_h = Font(size="10", name="맑은 고딕", bold=True)
-
-                            for row in ws:
-                                for cell in row:
-                                    cell.font = fontStyle
-
-                            for col in range(1, 50):
-                                ws.cell(row=1, column=col).font = fontStyle_h
-
                     self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
 
                 else:
-                    with pd.ExcelWriter('' + path + '', mode='w', engine='xlsxwriter') as writer:
+                    with pd.ExcelWriter('' + path + '', mode='w', engine='openpyxl') as writer:
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
 
-                            wb = writer.book
-                            cell_format = wb.add_format()
-                            cell_format.set_font_name('맑은 고딕')
-                            cell_format.set_font_size(10)
-                            worksheet = writer.sheets[temp]
-                            worksheet.set_column('A:XFD', None, cell_format)
-
-                            header_format = wb.add_format()
-                            header_format.set_font_name('맑은 고딕')
-                            header_format.set_font_size(10)
-                            header_format.set_bold()
-
-                            for col_num, value in enumerate(self.scenario_dic['' + temp + ''].columns.values):
-                                worksheet.write(0, col_num, value, header_format)
-
                         self.my_query.to_excel(writer, sheet_name='Query', index=False, freeze_panes=(1, 0))
-
-                        wb_q = writer.book
-                        cell_format_q = wb_q.add_format()
-                        cell_format_q.set_font_name('맑은 고딕')
-                        cell_format_q.set_font_size(10)
-                        worksheet = writer.sheets['Query']
-                        worksheet.set_column('A:XFD', None, cell_format_q)  # 추가
-
-                        header_format = wb_q.add_format()
-                        header_format.set_font_name('맑은 고딕')
-                        header_format.set_font_size(10)
-                        header_format.set_bold()
-
-                        for col_num, value in enumerate(self.my_query.columns.values):
-                            worksheet.write(0, col_num, value, header_format)
 
                     self.MessageBox_Open("저장을 완료했습니다.")
 
