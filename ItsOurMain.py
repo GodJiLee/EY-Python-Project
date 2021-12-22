@@ -867,22 +867,18 @@ class MyApp(QWidget):
         self.line_ecode.setText("")
 
         ##Project Connect 버튼 생성 및 스타일 지정
-        btn_connect = QPushButton('', self)
-        pixmap_bar = QPixmap(self.resource_path('./project_connect.png'))
-        icon_bar = QIcon(pixmap_bar)
-        btn_connect.setIcon(icon_bar)
-        btn_connect.setIconSize(pixmap_bar.size())
-        btn_connect.resize(126, 25)
-        btn_connect.setStyleSheet('border : 0; background: transparent;')
+        btn_connect = QPushButton('   Project Connect', self)
+        font_btn_connect = btn_connect.font()
+        font_btn_connect.setBold(True)
+        btn_connect.setFont(font_btn_connect)
+        btn_connect.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         ##Input Conditions 버튼 생성 및 스타일 지정
-        btn_condition = QPushButton('', self)
-        pixmap_bar2 = QPixmap(self.resource_path('./input_conditions.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        btn_condition.setIcon(icon_bar2)
-        btn_condition.setIconSize(pixmap_bar2.size())
-        btn_condition.resize(126, 25)
-        btn_condition.setStyleSheet('border : 0; background: transparent;')
+        btn_condition = QPushButton('   Input Conditions', self)
+        font_btn_condition = btn_condition.font()
+        font_btn_condition.setBold(True)
+        btn_condition.setFont(font_btn_condition)
+        btn_condition.setStyleSheet('color:white;  background-image : url(./bar.png)')
 
         ### Signal 함수들
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
@@ -1013,13 +1009,8 @@ class MyApp(QWidget):
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
         ### 버튼 1 - Extract Data
-        self.btn2 = QPushButton('', self.dialog4)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog4)
+        self.btn2.setStyleSheet('color:white; background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread4)
 
         font9 = self.btn2.font()
@@ -1027,14 +1018,13 @@ class MyApp(QWidget):
         self.btn2.setFont(font9)
 
         ### 버튼 2 - Close
-        self.btnDialog = QPushButton('', self.dialog4)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton('   Close', self.dialog4)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close4)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog4)
@@ -1160,6 +1150,7 @@ class MyApp(QWidget):
         ### JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog5)  # 간격 유지를 위한 공백 13개
         self.rbtn1.setStyleSheet("color: white;")
+
         font11 = self.rbtn1.font()
         font11.setBold(True)
         self.rbtn1.setFont(font11)
@@ -1173,13 +1164,8 @@ class MyApp(QWidget):
 
         ### Non-SAP======================================================================
         ### 버튼 1 - Extract Data (Non-SAP)
-        self.btn2 = QPushButton('', self.dialog5)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog5)
+        self.btn2.setStyleSheet('color:white; background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread5_Non_SAP)
 
         font9 = self.btn2.font()
@@ -1188,14 +1174,14 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
 
         ### 버튼 2 - Close (Non-SAP)
-        self.btnDialog1 = QPushButton('', self.dialog5)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog1.setIcon(icon_bar2)
-        self.btnDialog1.setIconSize(pixmap_bar2.size())
-        self.btnDialog1.resize(110, 30)
-        self.btnDialog1.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog1 = QPushButton('Close', self.dialog5)
+        self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog1.clicked.connect(self.dialog_close5)
+
+        font11 = self.btnDialog1.font()
+        font11.setBold(True)
+        self.btnDialog1.setFont(font11)
+        self.btnDialog1.resize(110, 30)
 
         ### 계정 트리
         cursor2 = self.cnxn.cursor()
@@ -1297,7 +1283,7 @@ class MyApp(QWidget):
         ### SAP=============================================================================
         ### 버튼 1 - Clear Files
         self.gbtn = QPushButton('Clear Files', self.dialog5)
-        self.gbtn.setStyleSheet('color:white; background-image: url(barUrl)')
+        self.gbtn.setStyleSheet('color:white; background-image: url(./bar.png)')
         self.gbtn.clicked.connect(self.dropFiles)
 
         font90 = self.gbtn.font()
@@ -1306,13 +1292,8 @@ class MyApp(QWidget):
         self.gbtn.resize(110, 30)
 
         ### 버튼 2 - Extract Data
-        self.btn3 = QPushButton('', self.dialog5)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn3.setIcon(icon_bar)
-        self.btn3.setIconSize(pixmap_bar.size())
-        self.btn3.resize(110, 30)
-        self.btn3.setStyleSheet('border : 0; background: transparent;')
+        self.btn3 = QPushButton('   Extract Data', self.dialog5)
+        self.btn3.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn3.clicked.connect(self.Thread5_SAP)
 
         font11 = self.btn3.font()
@@ -1321,14 +1302,14 @@ class MyApp(QWidget):
         self.btn3.resize(110, 30)
 
         ### 버튼 3 - Close
-        self.btnDialog = QPushButton('', self.dialog5)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton('Close', self.dialog5)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close5)
+
+        font9 = self.btnDialog.font()
+        font9.setBold(True)
+        self.btnDialog.setFont(font9)
+        self.btnDialog.resize(110, 30)
 
         ### 계정 트리
         cursor = self.cnxn.cursor()
@@ -1649,25 +1630,23 @@ class MyApp(QWidget):
 
         self.new_prep.get_selected_leaves()
 
-        self.btn2 = QPushButton('', self.dialog6)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
-
+        self.btn2 = QPushButton('   Extract Data', self.dialog6)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread6)
 
-        self.btnDialog = QPushButton("", self.dialog6)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
 
+        self.btnDialog = QPushButton("   Close", self.dialog6)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close6)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+        self.btn2.resize(110, 30)
+        self.btnDialog.resize(110, 30)
 
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog6)
         self.rbtn1.setStyleSheet("color: white;")
@@ -1711,28 +1690,24 @@ class MyApp(QWidget):
         self.D6_Date.setStyleSheet("background-color: white;")
         self.D6_Date.setPlaceholderText('날짜를 선택하세요')
 
-        self.btnDate = QPushButton("", self.dialog6)
+        self.btnDate = QPushButton("Date", self.dialog6)
+        self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked)
         self.new_calendar.closebtn.clicked.connect(self.closeCalendar6)
-
-        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDate.setIcon(icon_bar2)
-        self.btnDate.setIconSize(pixmap_bar2.size())
-        self.btnDate.resize(65, 22)
-        self.btnDate.setStyleSheet('border : 0; background: transparent;')
-
+        self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar6)
+        font11 = self.btnDate.font()
+        font11.setBold(True)
+        self.btnDate.setFont(font11)
 
-        self.btnDelete = QPushButton("", self.dialog6)
-        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDelete.setIcon(icon_bar2)
-        self.btnDelete.setIconSize(pixmap_bar2.size())
+        self.btnDelete = QPushButton("Delete", self.dialog6)
         self.btnDelete.resize(65, 22)
-        self.btnDelete.setStyleSheet('border : 0; background: transparent;')
+        self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDelete.clicked.connect(self.delete_date6)
+        font12 = self.btnDelete.font()
+        font12.setBold(True)
+        self.btnDelete.setFont(font12)
 
         labelDate2 = QLabel('T일* : ', self.dialog6)
         labelDate2.setStyleSheet("color: white;")
@@ -1977,23 +1952,24 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btn2 = QPushButton('', self.dialog7)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog7)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread7)
 
-        self.btnDialog = QPushButton("", self.dialog7)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
+
+        self.btnDialog = QPushButton("   Close", self.dialog7)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close7)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+
+        self.btn2.resize(110, 30)
+        self.btnDialog.resize(110, 30)
 
         self.rbtn3 = QRadioButton('JE Line             ', self.dialog7)
         self.rbtn3.setStyleSheet("color: white;")
@@ -2031,27 +2007,17 @@ class MyApp(QWidget):
         self.D7_Date.setStyleSheet("background-color: white;")
         self.D7_Date.setPlaceholderText('날짜를 추가해주세요 (법정 공휴일 및 주말은 포함되어 있습니다) \nex) 창립기념일, 근로자의 날')
 
-        self.btnDate = QPushButton("", self.dialog7)
-        pixmap_bar2 = QPixmap(self.resource_path('./add_date.png'))
-        self.btnDate.resize(80, 22)
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDate.setIcon(icon_bar2)
-        self.btnDate.setIconSize(pixmap_bar2.size())
-        self.btnDate.setStyleSheet('border : 0; background: transparent;')
+        self.btnDate = QPushButton("Add Date", self.dialog7)
+        self.btnDate.resize(65, 22)
         self.new_calendar = Calendar(self)
         self.new_calendar.closebtn.clicked.connect(self.closeCalendar7)
         self.new_calendar.calendar.clicked.connect(self.handle_date_clicked2)
-
+        self.btnDate.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate.clicked.connect(self.calendar7)
 
-        self.btnDelete = QPushButton("", self.dialog7)
-        pixmap_bar2 = QPixmap(self.resource_path('./delete_all.png'))
-        self.btnDelete.resize(80, 22)
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDelete.setIcon(icon_bar2)
-        self.btnDelete.setIconSize(pixmap_bar2.size())
-        self.btnDelete.setStyleSheet('border : 0; background: transparent;')
-
+        self.btnDelete = QPushButton("Delete All", self.dialog7)
+        self.btnDelete.resize(65, 22)
+        self.btnDelete.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDelete.clicked.connect(self.delete_date7)
 
         font11 = self.btnDate.font()
@@ -2295,27 +2261,25 @@ class MyApp(QWidget):
         font1.setBold(True)
         labelDC.setFont(font1)
 
-        self.btn2 = QPushButton('', self.dialog8)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog8)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread8)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("", self.dialog8)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton("   Close", self.dialog8)
+        self.btnDialog.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close8)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+
+        self.btn2.resize(110, 30)
+        self.btnDialog.resize(110, 30)
 
         self.rbtn1 = QRadioButton('JE Line             ', self.dialog8)
         self.rbtn1.setStyleSheet("color: white;")
@@ -2490,28 +2454,21 @@ class MyApp(QWidget):
         self.dialog9.setStyleSheet('background-color: #2E2E38')
         self.dialog9.setWindowIcon(QIcon(self.resource_path("./EY_logo.png")))
 
-        self.btn2 = QPushButton('', self.dialog9)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog9)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread9)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("", self.dialog9)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
-
+        self.btnDialog = QPushButton("  Close", self.dialog9)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close9)
+
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog9)
@@ -2729,30 +2686,27 @@ class MyApp(QWidget):
         self.checkC.setStyleSheet("color: white;")
         self.checkD.setStyleSheet("color: white;")
 
-        self.btn2 = QPushButton('', self.dialog10)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog10)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread10)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("", self.dialog10)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
-
+        self.btnDialog = QPushButton("   Close", self.dialog10)
+        self.btnDialog.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close10)
 
-        # JE Line / JE 라디오 버튼
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+
+        self.btn2.resize(110, 30)
+        self.btnDialog.resize(110, 30)
+
+        ### JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog10)
         self.rbtn1.setStyleSheet("color: white;")
         font11 = self.rbtn1.font()
@@ -2773,31 +2727,27 @@ class MyApp(QWidget):
         labelKeyword.setFont(font1)
 
         ## 캘린더 버튼 추가
-        self.btnDate1 = QPushButton("", self.dialog10)
+        self.btnDate1 = QPushButton("Date", self.dialog10)
+        self.btnDate1.resize(65, 22)
         self.new_calendar1 = Calendar(self)
         self.new_calendar1.closebtn.clicked.connect(self.closeCalendar10_1)
         self.new_calendar1.calendar.clicked.connect(self.handle_date_clicked3)
-
-        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDate1.setIcon(icon_bar2)
-        self.btnDate1.setIconSize(pixmap_bar2.size())
-        self.btnDate1.resize(65, 22)
-        self.btnDate1.setStyleSheet('border : 0; background: transparent;')
-
+        self.btnDate1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate1.clicked.connect(self.calendar10_1)
+        font11 = self.btnDate1.font()
+        font11.setBold(True)
+        self.btnDate1.setFont(font11)
 
-        self.btnDate2 = QPushButton("", self.dialog10)
+        self.btnDate2 = QPushButton("Date", self.dialog10)
+        self.btnDate2.resize(65, 22)
         self.new_calendar2 = Calendar(self)
         self.new_calendar2.closebtn.clicked.connect(self.closeCalendar10_2)
         self.new_calendar2.calendar.clicked.connect(self.handle_date_clicked4)
-        pixmap_bar2 = QPixmap(self.resource_path('./date.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDate2.setIcon(icon_bar2)
-        self.btnDate2.setIconSize(pixmap_bar2.size())
-        self.btnDate2.resize(65, 22)
-        self.btnDate2.setStyleSheet('border : 0; background: transparent;')
+        self.btnDate2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDate2.clicked.connect(self.calendar10_2)
+        font11 = self.btnDate1.font()
+        font11.setBold(True)
+        self.btnDate2.setFont(font11)
 
         labelPoint1 = QLabel('시작시점 : ', self.dialog10)
         labelPoint2 = QLabel('종료시점 : ', self.dialog10)
@@ -2850,23 +2800,21 @@ class MyApp(QWidget):
         self.D10_Sheet.setStyleSheet("background-color: white;")
         self.D10_Sheet.setPlaceholderText('※ 입력 예시 : F01')
 
-        self.btnDelete1 = QPushButton("", self.dialog10)
-        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDelete1.setIcon(icon_bar2)
-        self.btnDelete1.setIconSize(pixmap_bar2.size())
+        self.btnDelete1 = QPushButton("Delete", self.dialog10)
         self.btnDelete1.resize(65, 22)
-        self.btnDelete1.setStyleSheet('border : 0; background: transparent;')
+        self.btnDelete1.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDelete1.clicked.connect(self.delete_date101)
+        font12 = self.btnDelete1.font()
+        font12.setBold(True)
+        self.btnDelete1.setFont(font12)
 
-        self.btnDelete2 = QPushButton("", self.dialog10)
-        pixmap_bar2 = QPixmap(self.resource_path('./delete.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDelete2.setIcon(icon_bar2)
-        self.btnDelete2.setIconSize(pixmap_bar2.size())
+        self.btnDelete2 = QPushButton("Delete", self.dialog10)
         self.btnDelete2.resize(65, 22)
-        self.btnDelete2.setStyleSheet('border : 0; background: transparent;')
+        self.btnDelete2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDelete2.clicked.connect(self.delete_date102)
+        font12 = self.btnDelete2.font()
+        font12.setBold(True)
+        self.btnDelete2.setFont(font12)
 
         self.D10_Point1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D10_Point2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
@@ -3032,24 +2980,21 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
         self.new_tree.get_selected_leaves()
 
-        self.btn = QPushButton('', self.dialog12)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn.setIcon(icon_bar)
-        self.btn.setIconSize(pixmap_bar.size())
-        self.btn.resize(110, 30)
-        self.btn.setStyleSheet('border : 0; background: transparent;')
-
+        self.btn = QPushButton('   Extract Data', self.dialog12)
+        self.btn.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn.clicked.connect(self.Thread12)
+        font9 = self.btn.font()
+        font9.setBold(True)
+        self.btn.setFont(font9)
 
-        self.btnDialog = QPushButton("", self.dialog12)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton("   Close", self.dialog12)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+        self.btn.resize(110, 30)
+        self.btnDialog.resize(110, 30)
 
         labelAccount = QLabel('특정 계정명/계정 코드* : ', self.dialog12)
         labelAccount.setStyleSheet("color: white;")
@@ -3137,23 +3082,21 @@ class MyApp(QWidget):
         main_layout1.addLayout(sublayout2)
 
         ### Cursor문
-        self.btn2 = QPushButton('', self.dialog12)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog12)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.ThreadC)
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
 
-        self.btnDialog2 = QPushButton("", self.dialog12)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog2.setIcon(icon_bar2)
-        self.btnDialog2.setIconSize(pixmap_bar2.size())
-        self.btnDialog2.resize(110, 30)
-        self.btnDialog2.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog2 = QPushButton("   Close", self.dialog12)
+        self.btnDialog2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog2.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog2.font()
+        font10.setBold(True)
+        self.btnDialog2.setFont(font10)
+        self.btn2.resize(110, 30)
+        self.btnDialog2.resize(110, 30)
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog12)
@@ -3339,24 +3282,22 @@ class MyApp(QWidget):
         self.rbtn2.setFont(font12)
 
         ### 버튼 1 - Extract Data
-        self.btn2 = QPushButton('', self.dialog13)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog13)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread13)
 
+        font9 = self.btn2.font()
+        font9.setBold(True)
+        self.btn2.setFont(font9)
+
         ### 버튼 2 - Close
-        self.btnDialog = QPushButton('', self.dialog13)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton('Close', self.dialog13)
+        self.btnDialog.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close13)
+
+        font9 = self.btnDialog.font()
+        font9.setBold(True)
+        self.btnDialog.setFont(font9)
 
         ### 라벨 1 - 연속된 자릿수
         label_Continuous = QLabel('연속된 자릿수* : ', self.dialog13)
@@ -3513,29 +3454,27 @@ class MyApp(QWidget):
                         self.new_tree.grandgrandchild.setCheckState(0, Qt.Unchecked)
         self.new_tree.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
-        self.btn2 = QPushButton('', self.dialog14)
-        pixmap_bar = QPixmap(self.resource_path('./extract_data.png'))
-        icon_bar = QIcon(pixmap_bar)
-        self.btn2.setIcon(icon_bar)
-        self.btn2.setIconSize(pixmap_bar.size())
-        self.btn2.resize(110, 30)
-        self.btn2.setStyleSheet('border : 0; background: transparent;')
+        self.btn2 = QPushButton('   Extract Data', self.dialog14)
+        self.btn2.setStyleSheet('color:white;  background-image : url(./bar.png)')
         self.btn2.clicked.connect(self.Thread14)
 
         font9 = self.btn2.font()
         font9.setBold(True)
         self.btn2.setFont(font9)
 
-        self.btnDialog = QPushButton("", self.dialog14)
-        pixmap_bar2 = QPixmap(self.resource_path('./close.png'))
-        icon_bar2 = QIcon(pixmap_bar2)
-        self.btnDialog.setIcon(icon_bar2)
-        self.btnDialog.setIconSize(pixmap_bar2.size())
-        self.btnDialog.resize(110, 30)
-        self.btnDialog.setStyleSheet('border : 0; background: transparent;')
+        self.btnDialog = QPushButton("   Close", self.dialog14)
+        self.btnDialog.setStyleSheet(
+            'color:white;  background-image : url(./bar.png)')
         self.btnDialog.clicked.connect(self.dialog_close14)
 
-        # JE Line / JE 라디오 버튼
+        font10 = self.btnDialog.font()
+        font10.setBold(True)
+        self.btnDialog.setFont(font10)
+
+        self.btn2.resize(110, 30)
+        self.btnDialog.resize(110, 30)
+
+        ### JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog14)
         self.rbtn1.setStyleSheet("color: white;")
         font11 = self.rbtn1.font()
@@ -5260,15 +5199,13 @@ class MyApp(QWidget):
         groupbox.setFont(font_groupbox)
         self.setStyleSheet('QGroupBox  {color: white;}')
 
-        ##RemoveSheet 버튼
-        RemoveSheet_button = QPushButton('')
-        # RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        pixmap_bar3 = QPixmap(self.resource_path('./remove_sheets.png'))
-        icon_bar3 = QIcon(pixmap_bar3)
-        RemoveSheet_button.setIcon(icon_bar3)
-        RemoveSheet_button.setIconSize(pixmap_bar3.size())
-        RemoveSheet_button.resize(135, 25)
-        RemoveSheet_button.setStyleSheet('border : 0; background: transparent;')
+        ### RemoveSheet 버튼
+        RemoveSheet_button = QPushButton('Remove Sheet')
+        RemoveSheet_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        RemoveSheet_button.setStyleSheet('color:white;background-image : url(./bar.png)')
+        font_RemoveSheet = RemoveSheet_button.font()
+        font_RemoveSheet.setBold(True)
+        RemoveSheet_button.setFont(font_RemoveSheet)
 
         # label
         label_sheet = QLabel("Sheet names: ", self)
@@ -5281,14 +5218,12 @@ class MyApp(QWidget):
         self.combo_sheet = QComboBox(self)
 
         ## Save 버튼
-        export_file_button = QPushButton("", self)
-        # export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        pixmap_bar4 = QPixmap(self.resource_path('./save.png'))
-        icon_bar4 = QIcon(pixmap_bar4)
-        export_file_button.setIcon(icon_bar4)
-        export_file_button.setIconSize(pixmap_bar4.size())
-        export_file_button.resize(130, 25)
-        export_file_button.setStyleSheet('border : 0; background: transparent;')
+        export_file_button = QPushButton("Save", self)
+        export_file_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        font_export_button = export_file_button.font()
+        font_export_button.setBold(True)
+        export_file_button.setFont(font_export_button)
+        export_file_button.setStyleSheet('color:white;background-image : url(./bar.png)')
 
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
@@ -5331,6 +5266,7 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql_refer = """
+            
                                 SELECT 
                                     JournalEntries.GLAccountNumber
                                     , MAX(CoA.GLAccountName) AS GLAccountName
