@@ -3004,7 +3004,6 @@ class MyApp(QWidget):
                                  SELECT 											
                                         *
                                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
                             '''.format(field=self.selected_project_id)
 
         accountsname1 = pd.read_sql(sql1, self.cnxn)
@@ -3052,7 +3051,6 @@ class MyApp(QWidget):
                                  SELECT 											
                                         *
                                  FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-
                             '''.format(field=self.selected_project_id)
 
         accountsname2 = pd.read_sql(sql2, self.cnxn)
@@ -4002,10 +4000,9 @@ class MyApp(QWidget):
         elif self.rbtn1.isChecked():
 
             if 'No Data' in self.dataframe.columns.tolist():
-                buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
-                                                      + '회 이하인 작성자에 의해 생성된 전표가 '
+                buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N) + '회 이하인 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             elif len(self.dataframe) > 300:
@@ -4025,25 +4022,23 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog4.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(
-                    self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                      + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(
-                    self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
-                                                      + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - TE 금액('
+                                                      + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
                                                       + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4085,7 +4080,7 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog5.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
@@ -4096,7 +4091,7 @@ class MyApp(QWidget):
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - SKA1(' + str(self.dropped_items)
                                                       + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
@@ -4104,7 +4099,7 @@ class MyApp(QWidget):
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - SKA1(' + str(self.dropped_items)
                                                       + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
@@ -4125,7 +4120,7 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
-                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
+                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(self.temp_Code_Non_SAP)
                                                       + ')를 적용하였습니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4148,17 +4143,17 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog5.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe) - 1)
-                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
+                                                      + '건 추출되었습니다. <br> - 계정코드(' + str(self.temp_Code_Non_SAP)
                                                       + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
                                                       + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
@@ -4166,7 +4161,7 @@ class MyApp(QWidget):
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
                                                       + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
@@ -4209,7 +4204,7 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog6.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, "라인수 추출",
                                                       "- 결산일(" + str(self.tempDate) + ") 전후" + str(int(self.tempTDate))
                                                       + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
@@ -4220,14 +4215,14 @@ class MyApp(QWidget):
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, "라인수 추출",
                                                       "- 결산일(" + str(self.tempDate) + ") 전후" + str(int(self.tempTDate))
-                                                      + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                      + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출",
                                                       "- 결산일(" + str(self.tempDate) + ") 전후" + str(int(self.tempTDate))
-                                                      + "일에 입력된 전표가 " + str(len(self.dataframe) - 1)
+                                                      + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4266,7 +4261,7 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog7.activateWindow()
 
         elif self.rbtn4.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일에 전기된 or 입력된 전표가 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
@@ -4275,13 +4270,13 @@ class MyApp(QWidget):
 
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일에 전기된 or 입력된 전표가 "
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일에 전기된 or 입력된 전표가 "
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4324,7 +4319,7 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog8.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                       + str(int(self.realNDate)) + "인 전표가 "
                                                       + str(len(self.dataframe) - 1)
@@ -4335,14 +4330,14 @@ class MyApp(QWidget):
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                       + str(int(self.realNDate)) + "인 전표가 "
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
                                                       + str(int(self.realNDate)) + "인 전표가 "
-                                                      + str(len(self.dataframe) - 1)
+                                                      + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
                                                       + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4357,6 +4352,7 @@ class MyApp(QWidget):
 
         if len(self.dataframe_refer) > 1048576:
             self.alertbox_open3()
+
 
         elif 'No Data' in self.dataframe_refer.columns.tolist():
             buttonReply = QMessageBox.information(self, "라인수 추출",
@@ -4500,25 +4496,23 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog13.activateWindow()
 
         elif self.rbtn2.isChecked():
-            if len(self.dataframe) == 0:
+            if 'No Data' in self.dataframe.columns.tolist():
                 buttonReply = QMessageBox.information(self, '라인수 추출',
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액('
-                                                      + str(
-                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> [전표번호 기준]'
+                                                      + str(self.temp_TE_13) + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출',
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
-                                                      + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액('
-                                                      + str(
-                                                          self.temp_TE_13) + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 중요성 금액('
+                                                      + str(self.temp_TE_13) + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
                 buttonReply = QMessageBox.information(self, '라인수 추출',
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
-                                                      + str(len(self.dataframe) - 1) + '건 추출되었습니다. <br> - 중요성 금액('
+                                                      + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 중요성 금액('
                                                       + str(self.temp_TE_13) + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
@@ -4540,11 +4534,11 @@ class MyApp(QWidget):
             model_refer = DataFrameModel(self.dataframe_refer)
             self.viewtable.setModel(model)
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Reference')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             elif self.rbtn2.isChecked():
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
@@ -4622,7 +4616,7 @@ class MyApp(QWidget):
                 {'No Data': ["[시작시점: " + str(
                     self.tempPoint1) + " 종료시점: " + str(self.tempPoint2) + " 중요성금액: " + str(
                     self.tempTE) + "] 라인수 " + str(
-                    len(self.dataframe) - 1) + "개입니다"]})
+                    len(self.dataframe)) + "개입니다"]})
 
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
@@ -5711,7 +5705,6 @@ class MyApp(QWidget):
                                 SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                 GROUP BY CoA.GLAccountNumber
-
                                         SELECT 
                                             JournalEntries.GLAccountNumber
                                             , MAX(#TMPCOA.GLAccountName) AS GLAccountName
@@ -5742,7 +5735,6 @@ class MyApp(QWidget):
                                 SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                 GROUP BY CoA.GLAccountNumber
-
                                     SELECT				
                                         JournalEntries.BusinessUnit			
                                         , JournalEntries.JENumber			
@@ -5788,7 +5780,6 @@ class MyApp(QWidget):
                                 SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                 GROUP BY CoA.GLAccountNumber
-
                                 SELECT				
                                      JournalEntries.BusinessUnit			
                                     , JournalEntries.JENumber			
@@ -5834,12 +5825,11 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
-                                                             "---Filtered Result_2  Scenario04---\n" + sql_query]
-
             self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario04",
                                                                 "---Filtered Result_1  Scenario04---\n" + sql_refer]
 
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario04",
+                                                             "---Filtered Result_2  Scenario04---\n" + sql_query]
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
                                                                "---Filtered JE  Scenario04---\n" + sql_query]
@@ -5865,11 +5855,11 @@ class MyApp(QWidget):
             self.viewtable.setModel(model)
             ### JE Line
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Reference')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
 
             ### JE
             elif self.rbtn2.isChecked():
@@ -5882,11 +5872,11 @@ class MyApp(QWidget):
         else:
             ### JE Line
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Reference')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
@@ -5914,7 +5904,6 @@ class MyApp(QWidget):
                         SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                         GROUP BY CoA.GLAccountNumber
-
                             SELECT 
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -5951,7 +5940,6 @@ class MyApp(QWidget):
                                 SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                 GROUP BY CoA.GLAccountNumber
-
                                 SELECT
                                     JournalEntries.BusinessUnit
                                     , JournalEntries.JENumber
@@ -6063,7 +6051,6 @@ class MyApp(QWidget):
                                     SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                     FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                     GROUP BY CoA.GLAccountNumber
-
                                     SELECT 
                                         JournalEntries.BusinessUnit
                                         , JournalEntries.JENumber
@@ -6101,7 +6088,6 @@ class MyApp(QWidget):
                                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                             GROUP BY CoA.GLAccountNumber
-
                                             SELECT
                                                 JournalEntries.BusinessUnit
                                                 , JournalEntries.JENumber
@@ -6213,7 +6199,6 @@ class MyApp(QWidget):
                         SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                         GROUP BY CoA.GLAccountNumber
-
                         SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6254,7 +6239,6 @@ class MyApp(QWidget):
                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                        GROUP BY CoA.GLAccountNumber
-
                        SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6360,7 +6344,6 @@ class MyApp(QWidget):
                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                        GROUP BY CoA.GLAccountNumber
-
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6399,7 +6382,6 @@ class MyApp(QWidget):
                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                        GROUP BY CoA.GLAccountNumber
-
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6507,7 +6489,6 @@ class MyApp(QWidget):
                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                             GROUP BY CoA.GLAccountNumber
-
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6548,7 +6529,6 @@ class MyApp(QWidget):
                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                             GROUP BY CoA.GLAccountNumber
-
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6656,7 +6636,6 @@ class MyApp(QWidget):
                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                            GROUP BY CoA.GLAccountNumber
-
                            SELECT				
                                   JournalEntries.BusinessUnit			
                                   , JournalEntries.JENumber			
@@ -6713,7 +6692,6 @@ class MyApp(QWidget):
                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                            GROUP BY CoA.GLAccountNumber
-
                            SELECT 				
                                JournalEntries.BusinessUnit			
                                , JournalEntries.JENumber			
@@ -6763,10 +6741,10 @@ class MyApp(QWidget):
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
-            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
-                                                             "---Filtered Result_2  Scenario09---\n" + sql]
             self.my_query.loc[self.tempSheet + "_Reference"] = [self.tempSheet + "_Reference", "Scenario09",
                                                                 "---Filtered Result_1  Scenario09---\n" + sql_refer]
+            self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario09",
+                                                             "---Filtered Result_2  Scenario09---\n" + sql]
 
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
@@ -6789,11 +6767,11 @@ class MyApp(QWidget):
 
         else:
             if self.rbtn1.isChecked():
-                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe_refer
-                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Reference')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 2)
+                self.combo_sheet.addItem(self.tempSheet + '_Result')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 model = DataFrameModel(self.dataframe)
                 self.viewtable.setModel(model)
 
@@ -6817,7 +6795,6 @@ class MyApp(QWidget):
                                  SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                  FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                  GROUP BY CoA.GLAccountNumber
-
                                  SELECT			
                                        JournalEntries.BusinessUnit		
                                        , JournalEntries.JENumber		
@@ -6858,7 +6835,6 @@ class MyApp(QWidget):
                                    SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                    GROUP BY CoA.GLAccountNumber
-
                                    SELECT 			
                                                 JournalEntries.BusinessUnit		
                                                 , JournalEntries.JENumber		
@@ -6953,7 +6929,6 @@ class MyApp(QWidget):
                                                   WHERE ABS(Amount) > {TE}
                                                   AND Year = '{YEAR}'
                                                   )
-
                                                     SELECT
                                                         JournalEntries.BusinessUnit
                                                         , JournalEntries.JENumber
@@ -7102,7 +7077,6 @@ class MyApp(QWidget):
                                                         )
                                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                                                     DROP TABLE #tmp
-
                                             '''.format(field=self.selected_project_id, CD=self.temp_State,
                                                        Account=checked_account_11, Account_1=checked_account_11_1,
                                                        TE=self.temp_TE, CD2=self.temp_State2, YEAR=self.pname_year)
@@ -7116,7 +7090,7 @@ class MyApp(QWidget):
 
         elif len(self.dataframe_refer) == 0:
             self.dataframe_refer = pd.DataFrame({'No Data': ["[중요성금액: " + str(
-                self.tempCost) + "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다"]})
+                self.tempCost) + "] 라인수 " + str(len(self.dataframe_refer)) + "개입니다"]})
             model = DataFrameModel(self.dataframe_refer)
             self.viewtable.setModel(model)
             self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe_refer
@@ -7255,7 +7229,7 @@ class MyApp(QWidget):
 
         elif len(self.dataframe) == 0:
             self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
-                self.tempCost) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다"]})
+                self.tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             self.scenario_dic[self.tempSheet + '_Reference'] = self.dataframe
@@ -7584,7 +7558,6 @@ class MyApp(QWidget):
                                         SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                         GROUP BY CoA.GLAccountNumber
-
                                         SELECT
                                             JournalEntries.BusinessUnit
                                             , JournalEntries.JENumber
@@ -7624,7 +7597,6 @@ class MyApp(QWidget):
                                         SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                                         FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                                         GROUP BY CoA.GLAccountNumber
-
                                         SELECT
                                             JournalEntries.BusinessUnit
                                             , JournalEntries.JENumber
@@ -7733,7 +7705,6 @@ class MyApp(QWidget):
                    SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                    GROUP BY CoA.GLAccountNumber
-
                    SELECT 		
                         JournalEntries.BusinessUnit	
                         , JournalEntries.JENumber	
@@ -7771,7 +7742,6 @@ class MyApp(QWidget):
                    SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                    GROUP BY CoA.GLAccountNumber
-
                    SELECT 			
                         JournalEntries.BusinessUnit		
                         , JournalEntries.JENumber		
