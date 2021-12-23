@@ -4020,7 +4020,7 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -4081,7 +4081,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_SAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - SKA1(' + str(self.dropped_items)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -4143,7 +4143,7 @@ class MyApp(QWidget):
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
                                                       + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
-                                                      + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + ')를 적용하였습니다. <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -4205,7 +4205,7 @@ class MyApp(QWidget):
                                                       "- 결산일(" + str(self.tempDate) + ") 전후" + str(int(self.tempTDate))
                                                       + "일에 입력된 전표가 " + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
-                                                      + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출",
@@ -4260,7 +4260,7 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일에 전기된 or 입력된 전표가 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
-                                                      + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 비영업일에 전기된 or 입력된 전표가 "
@@ -4320,7 +4320,7 @@ class MyApp(QWidget):
                                                       + str(int(self.realNDate)) + "인 전표가 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> - 중요성 금액(" + str(self.tempCost)
-                                                      + ")를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + ")를 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             else:
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- Effective Date와 Entry Date 간 차이가 "
@@ -4351,7 +4351,7 @@ class MyApp(QWidget):
         elif len(self.dataframe_refer) > 300:
             buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
                 self.temp_TE) + "] 라인수 " + str(
-                len(self.dataframe_refer) - 1) + "개입니다 <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]",
+                len(self.dataframe_refer) - 1) + "개입니다 <br> [전표번호 기준]",
                                                   QMessageBox.Ok)
 
         else:
@@ -4377,7 +4377,7 @@ class MyApp(QWidget):
 
         elif len(self.dataframe) > 300:
             buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
-                self.tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다 <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]",
+                self.tempCost) + "] 라인수 " + str(len(self.dataframe)) + "개입니다 <br> [전표번호 기준]",
                                                   QMessageBox.Ok)
 
         else:
@@ -4430,7 +4430,7 @@ class MyApp(QWidget):
             elif self.rbtn2.isChecked():
                 buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
                                                       + str(len(self.dataframe))
-                                                      + "건 추출되었습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                      + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
             if buttonReply == QMessageBox.Ok:
                 self.dialog12.activateWindow()
@@ -4494,7 +4494,7 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출',
                                                       '- 연속된 숫자(' + str(self.temp_Continuous) + ')로 끝나는 금액을 검토한 결과 '
                                                       + str(len(self.dataframe)) + '건 추출되었습니다. <br> - 중요성 금액('
-                                                      + str(self.temp_TE_13) + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]'
+                                                      + str(self.temp_TE_13) + ')를 적용하였습니다.  <br> [전표번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -4578,7 +4578,7 @@ class MyApp(QWidget):
                                                           + str(
                         len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액("
                                                           + str(
-                        self.tempTE) + ")을 적용하였습니다. <br> 추가 필터링이 필요해보입니다.<br> [전표번호 기준]"
+                        self.tempTE) + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표작성 빈도수가 " + str(self.tempN)
@@ -4667,7 +4667,7 @@ class MyApp(QWidget):
                         len(self.dataframe)) + "건 추출되었습니다. <br> - 중요성금액: "
                                                           + str(self.tempTE) + "<br> - 시작시점: " + str(
                         self.tempPoint1) + "<br> - 종료시점: " + str(
-                        self.tempPoint2) + "을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                        self.tempPoint2) + "을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표가 "
@@ -4745,7 +4745,7 @@ class MyApp(QWidget):
                                                           + str(self.baseKey) + "이/가 포함된 전표가 "
                                                           + str(len(self.dataframe))
                                                           + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
-                                                          + ")을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]"
+                                                          + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
@@ -6500,7 +6500,7 @@ class MyApp(QWidget):
                                 , JournalEntries.ApproverID	
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
                             WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
-                                AND DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate) >= {realNDate}
+                                AND ABS(DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate)) >= {realNDate}
                                 {Preparer}
                                 AND ABS(JournalEntries.Amount) > {TE}
                                 {Account}
@@ -6543,7 +6543,7 @@ class MyApp(QWidget):
                                 (
                                 SELECT DISTINCT JENumber
                                 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
-                                WHERE DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate) >= {realNDate}
+                                WHERE ABS(DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate)) >= {realNDate}
                                     {Preparer}
                                     AND ABS(JournalEntries.Amount) > {TE}
                                     {Account}
