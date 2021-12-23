@@ -18,7 +18,6 @@ import numpy as np
 import openpyxl
 from threading import Thread
 
-
 class Communicate(QObject):
     def resource_path(self, relative_path):
         try:
@@ -65,7 +64,6 @@ class Calendar(QDialog):
         vbox.addWidget(self.calendar)
         vbox.addLayout(hbox)
         self.setLayout(vbox)
-
 
 class Form(QGroupBox):
     def resource_path(self, relative_path):
@@ -360,7 +358,7 @@ class Preparer(QGroupBox):
 
         checked_prep = ''
         for i in checked_items:
-            checked_prep = checked_prep + ',' + '\'' + i + '\''
+            checked_prep = checked_prep + ', N' + '\'' + i + '\''
 
         checked_prep = checked_prep[1:]
 
@@ -513,7 +511,6 @@ class MyApp(QWidget):
         self.dateList = []
         self.string_date_list = []
         self.fianlDate = []
-        self.clickCount = 0
         self.dialoglist = set()
         self.timerVar = QTimer()
         self.timerVar.setInterval(1000)
@@ -536,6 +533,8 @@ class MyApp(QWidget):
         self.communicate9.closeApp.connect(self.doneAction9)
         self.communicate10 = Communicate()
         self.communicate10.closeApp.connect(self.doneAction10)
+        self.communicate11 = Communicate()
+        self.communicate11.closeApp.connect(self.doneAction11)
         self.communicate12 = Communicate()
         self.communicate12.closeApp.connect(self.doneAction12)
         self.communicate13 = Communicate()
@@ -2959,6 +2958,209 @@ class MyApp(QWidget):
         self.dialog12.setStyleSheet('background-color: #2E2E38')
         self.dialog12.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
 
+        ### 탭 3 - 시나리오 11================================================================
+        cursor1 = self.cnxn.cursor()
+
+        sql1 = '''
+                                 SELECT 											
+                                        *
+                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+
+                            '''.format(field=self.selected_project_id)
+
+        accountsname1 = pd.read_sql(sql1, self.cnxn)
+
+        ### 계정트리 - A, B
+        self.new_tree1 = Form(self)
+        self.new_tree2 = Form1(self)
+
+        self.new_tree1.tree.clear()
+        self.new_tree2.tree.clear()
+
+        for n, i in enumerate(accountsname1.AccountType.unique()):
+            self.new_tree1.parent = QTreeWidgetItem(self.new_tree1.tree)
+
+            self.new_tree1.parent.setText(0, "{}".format(i))
+            self.new_tree1.parent.setFlags(self.new_tree1.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items1 = accountsname1.AccountSubType[
+                accountsname1.AccountType == accountsname1.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items1):
+                self.new_tree1.child = QTreeWidgetItem(self.new_tree1.parent)
+
+                self.new_tree1.child.setText(0, "{}".format(x))
+                self.new_tree1.child.setFlags(self.new_tree1.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items1 = accountsname1.AccountClass[accountsname1.AccountSubType == child_items1[m]].unique()
+                for o, y in enumerate(grandchild_items1):
+                    self.new_tree1.grandchild = QTreeWidgetItem(self.new_tree1.child)
+                    self.new_tree1.grandchild.setText(0, "{}".format(y))
+                    self.new_tree1.grandchild.setFlags(
+                        self.new_tree1.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name1 = accountsname1[accountsname1.AccountClass == grandchild_items1[o]].iloc[:, 2:4]
+                    full_name1 = num_name1["GLAccountNumber"].map(str) + ' ' + num_name1["GLAccountName"]
+                    for z in full_name1:
+                        self.new_tree1.grandgrandchild = QTreeWidgetItem(self.new_tree1.grandchild)
+
+                        self.new_tree1.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree1.grandgrandchild.setFlags(
+                            self.new_tree1.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree1.grandgrandchild.setCheckState(0, Qt.Unchecked)
+
+        self.new_tree1.get_selected_leaves()
+
+        cursor2 = self.cnxn.cursor()
+
+        sql2 = '''
+                                 SELECT 											
+                                        *
+                                 FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+
+                            '''.format(field=self.selected_project_id)
+
+        accountsname2 = pd.read_sql(sql2, self.cnxn)
+
+        for n, i in enumerate(accountsname2.AccountType.unique()):
+            self.new_tree2.parent = QTreeWidgetItem(self.new_tree2.tree)
+            self.new_tree2.parent.setText(0, "{}".format(i))
+            self.new_tree2.parent.setFlags(self.new_tree2.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+            child_items2 = accountsname2.AccountSubType[
+                accountsname2.AccountType == accountsname2.AccountType.unique()[n]].unique()
+            for m, x in enumerate(child_items2):
+                self.new_tree2.child = QTreeWidgetItem(self.new_tree2.parent)
+                self.new_tree2.child.setText(0, "{}".format(x))
+                self.new_tree2.child.setFlags(self.new_tree2.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                grandchild_items2 = accountsname2.AccountClass[accountsname2.AccountSubType == child_items2[m]].unique()
+                for o, y in enumerate(grandchild_items2):
+                    self.new_tree2.grandchild = QTreeWidgetItem(self.new_tree2.child)
+                    self.new_tree2.grandchild.setText(0, "{}".format(y))
+                    self.new_tree2.grandchild.setFlags(
+                        self.new_tree2.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    num_name2 = accountsname2[accountsname2.AccountClass == grandchild_items2[o]].iloc[:, 2:4]
+                    full_name2 = num_name2["GLAccountNumber"].map(str) + ' ' + num_name2["GLAccountName"]
+                    for z in full_name2:
+                        self.new_tree2.grandgrandchild = QTreeWidgetItem(self.new_tree2.grandchild)
+                        self.new_tree2.grandgrandchild.setText(0, "{}".format(z))
+                        self.new_tree2.grandgrandchild.setFlags(
+                            self.new_tree2.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree2.grandgrandchild.setCheckState(0, Qt.Unchecked)
+
+        self.new_tree2.get_selected_leaves_1()
+
+        ### 버튼 1 - Extract Data
+        self.btn1 = QPushButton('   Extract Data', self.dialog12)
+        self.btn1.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btn1.clicked.connect(self.Thread11)
+        font9 = self.btn1.font()
+        font9.setBold(True)
+        self.btn1.setFont(font9)
+
+        ### 버튼 2 - Close
+        self.btnDialog1 = QPushButton("   Close", self.dialog12)
+        self.btnDialog1.setStyleSheet('color:white;  background-image : url(./bar.png)')
+        self.btnDialog1.clicked.connect(self.dialog_close12)
+        font10 = self.btnDialog1.font()
+        font10.setBold(True)
+        self.btnDialog1.setFont(font10)
+        self.btn1.resize(110, 30)
+        self.btnDialog1.resize(110, 30)
+
+        ### 라벨 1 - A 계정명/계정 코드
+        labelAccount1 = QLabel('A 계정명/계정 코드* : ', self.dialog12)
+        labelAccount1.setStyleSheet("color: white;")
+        font3 = labelAccount1.font()
+        font3.setBold(True)
+        labelAccount1.setFont(font3)
+
+        ### 라벨 2 - B 계정명/계정 코드
+        labelAccount2 = QLabel('B 계정명/계정 코드* : ', self.dialog12)
+        labelAccount2.setStyleSheet("color: white;")
+        font3 = labelAccount2.font()
+        font3.setBold(True)
+        labelAccount2.setFont(font3)
+
+        ### 라벨 3 - 중요성 금액
+        labelCost1 = QLabel('중요성 금액 : ', self.dialog12)
+        labelCost1.setStyleSheet("color: white;")
+        font3 = labelCost1.font()
+        font3.setBold(True)
+        labelCost1.setFont(font3)
+
+        ### Line Edit 1 - 중요성 금액
+        self.D12_Cost1 = QLineEdit(self.dialog12)
+        self.D12_Cost1.setStyleSheet("background-color: white;")
+        self.D12_Cost1.setPlaceholderText('중요성 금액을 입력하세요')
+        self.D12_Cost1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        ### 체크 박스 - CD
+        self.checkC2 = QCheckBox('Credit', self.dialog12)
+        self.checkD2 = QCheckBox('Debit', self.dialog12)
+        self.checkC2.setStyleSheet("color: white;")
+        self.checkD2.setStyleSheet("color: white;")
+
+        self.checkC22 = QCheckBox('Credit', self.dialog12)
+        self.checkD22 = QCheckBox('Debit', self.dialog12)
+        self.checkC22.setStyleSheet("color: white;")
+        self.checkD22.setStyleSheet("color: white;")
+
+        ### 라벨 4 - 시나리오 번호
+        labelSheet11 = QLabel('시나리오 번호* : ', self.dialog12)
+        labelSheet11.setStyleSheet("color: white;")
+        font5 = labelSheet11.font()
+        font5.setBold(True)
+        labelSheet11.setFont(font5)
+
+        ### Line Edit - 시나리오 번호
+        self.D12_Sheet11 = QLineEdit(self.dialog12)
+        self.D12_Sheet11.setStyleSheet("background-color: white;")
+        self.D12_Sheet11.setPlaceholderText('※ 입력 예시 : F01')
+        self.D12_Sheet11.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
+        ### 라벨 5 - CD
+        labelDC2 = QLabel('A 차변/대변 : ', self.dialog12)
+        labelDC2.setStyleSheet("color: white;")
+        font1 = labelDC2.font()
+        font1.setBold(True)
+        labelDC2.setFont(font1)
+
+        labelDC22 = QLabel('B 차변/대변 : ', self.dialog12)
+        labelDC22.setStyleSheet("color: white;")
+        font1 = labelDC22.font()
+        font1.setBold(True)
+        labelDC22.setFont(font1)
+
+        ### 레이아웃 배치
+        sublayout002 = QHBoxLayout()
+        sublayout002.addWidget(labelDC2)
+        sublayout002.addWidget(self.checkC2)
+        sublayout002.addWidget(self.checkD2)
+
+        sublayout003 = QHBoxLayout()
+        sublayout003.addWidget(labelDC22)
+        sublayout003.addWidget(self.checkC22)
+        sublayout003.addWidget(self.checkD22)
+
+        sublayout03 = QGridLayout()
+        sublayout03.addWidget(labelAccount1, 1, 0)
+        sublayout03.addWidget(self.new_tree1, 1, 1)
+        sublayout03.addWidget(labelAccount2, 2, 0)
+        sublayout03.addWidget(self.new_tree2, 2, 1)
+        sublayout03.addWidget(labelCost1, 3, 0)
+        sublayout03.addWidget(self.D12_Cost1, 3, 1)
+        sublayout03.addWidget(labelSheet11, 4, 0)
+        sublayout03.addWidget(self.D12_Sheet11, 4, 1)
+
+        sublayout04 = QHBoxLayout()
+        sublayout04.addStretch()
+        sublayout04.addStretch()
+        sublayout04.addWidget(self.btn1)
+        sublayout04.addWidget(self.btnDialog1)
+
+        main_layout3 = QVBoxLayout()
+        main_layout3.addLayout(sublayout03)
+        main_layout3.addLayout(sublayout002)
+        main_layout3.addLayout(sublayout003)
+        main_layout3.addStretch()
+        main_layout3.addLayout(sublayout04)
+
         # 시나리오12
         cursor = self.cnxn.cursor()
         sql = '''
@@ -3209,10 +3411,13 @@ class MyApp(QWidget):
         layout = QVBoxLayout()
         tabs = QTabWidget()
         tab1 = QWidget()  # 시나리오12
+        tab3 = QWidget()  # 시나리오11
         tab2 = QWidget()  # cursor문
         tab1.setLayout(main_layout1)
         tab2.setLayout(main_layout2)
-        tabs.addTab(tab1, "Step1")
+        tab3.setLayout(main_layout3)
+        tabs.addTab(tab1, "Step1-1")
+        tabs.addTab(tab3, "Step1-2")
         tabs.addTab(tab2, "Step2")
         layout.addWidget(tabs)
 
@@ -3768,7 +3973,8 @@ class MyApp(QWidget):
                 buttonReply = QMessageBox.information(self, '라인수 추출', '- 계정사용 빈도수가 ' + str(self.temp_N)
                                                       + '회 이하인 작성자에 의해 생성된 전표가 '
                                                       + str(len(self.dataframe)) + '건 추출되었습니다. <br> - TE 금액('
-                                                      + str(self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
+                                                      + str(
+                    self.temp_TE) + ')을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
 
             else:
@@ -3887,7 +4093,7 @@ class MyApp(QWidget):
             elif len(self.dataframe) > 300:
                 buttonReply = QMessageBox.information(self, '라인수 추출', '-당기('
                                                       + str(self.tempYear_NonSAP) + ')에 생성된 계정 리스트가 '
-                                                      + str(len(self.dataframe) )
+                                                      + str(len(self.dataframe))
                                                       + '건 추출되었습니다. <br> - 계정코드(' + str(self.AccCode_non_sap)
                                                       + ')를 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br> [전표라인번호 기준]'
                                                       , QMessageBox.Ok)
@@ -4105,6 +4311,33 @@ class MyApp(QWidget):
             if buttonReply == QMessageBox.Ok: self.dialog8.activateWindow()
 
         self.th8.join()
+
+    def doneAction11(self):
+        self.Action.close()
+        self.timerVar.stop()
+
+        if len(self.dataframe_refer) > 1048576:
+            self.alertbox_open3()
+
+        elif 'No Data' in self.dataframe_refer.columns.tolist():
+            buttonReply = QMessageBox.information(self, "라인수 추출",
+                                                  "[중요성 금액: " + str(self.temp_TE) +
+                                                  "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다",
+                                                  QMessageBox.Ok)
+
+        elif len(self.dataframe_refer) > 300:
+            buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
+                self.temp_TE) + "] 라인수 " + str(
+                len(self.dataframe_refer) - 1) + "개입니다 <br> 추가 필터링이 필요해보입니다. <br> [전표번호 기준]",
+                                                  QMessageBox.Ok)
+
+        else:
+            buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
+                self.temp_TE) + "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다", QMessageBox.Ok)
+
+        if buttonReply == QMessageBox.Ok: self.dialog12.activateWindow()
+
+        self.th11.join()
 
     def doneAction12(self):
         self.Action.close()
@@ -4685,7 +4918,7 @@ class MyApp(QWidget):
                 self.dropped_items_non_sap.append(myItem_non_sap)
 
             ### 예외처리 2 - Account 파일인지 확인 후 df로 변환
-            df_non_sap = pd.DataFrame() ### dataframe으로 저장
+            df_non_sap = pd.DataFrame()  ### dataframe으로 저장
             count = 0
             for file in self.dropped_items_non_sap:
                 if 'Account' in file:
@@ -4993,6 +5226,45 @@ class MyApp(QWidget):
                         self.alertbox_open2('N')
                     except:
                         self.alertbox_open2('N값과 중요성금액')
+
+    def Thread11(self):
+        self.temp_TE = self.D12_Cost1.text()
+        self.temp_Sheet = self.D12_Sheet11.text()
+
+        if self.temp_Sheet == '' or checked_account_11 == '' or checked_account_11_1 == '':
+            self.alertbox_open()
+
+        elif self.combo_sheet.findText(self.temp_Sheet + '_Reference') != -1:
+            self.alertbox_open5()
+
+        else:
+            if self.temp_TE == '': self.temp_TE = 0
+            try:
+                int(self.temp_TE)
+
+                if ((self.checkC2.isChecked()) and (self.checkD2.isChecked())) or (
+                        not (self.checkC2.isChecked()) and not (self.checkD2.isChecked())):
+                    self.temp_State = 'LVL2_1.DivideDC1 IN (' + "'" + 'Credit' + "'" + "," + "'" + 'Debit' + "')"
+                elif self.checkC2.isChecked():
+                    self.temp_State = 'LVL2_1.DivideDC1 IN (' + "'" + 'Credit' + "')"
+                elif self.checkD2.isChecked():
+                    self.temp_State = 'LVL2_1.DivideDC1 IN (' + "'" + 'Debit' + "')"
+
+                if ((self.checkC22.isChecked()) and (self.checkD22.isChecked())) or (
+                        not (self.checkC22.isChecked()) and not (self.checkD22.isChecked())):
+                    self.temp_State2 = 'LVL2_2.DivideDC2 IN (' + "'" + 'Credit' + "'" + "," + "'" + 'Debit' + "')"
+                elif self.checkC22.isChecked():
+                    self.temp_State2 = 'LVL2_2.DivideDC2 IN (' + "'" + 'Credit' + "')"
+                elif self.checkD22.isChecked():
+                    self.temp_State2 = 'LVL2_2.DivideDC2 IN (' + "'" + 'Debit' + "')"
+
+                self.doAction()
+                self.th11 = Thread(target=self.extButtonClicked11)
+                self.th11.daemon = True
+                self.th11.start()
+
+            except ValueError:
+                self.alertbox_open2('중요성 금액')
 
     def Thread12(self):
         self.tempCost = self.D12_Cost.text()
@@ -5396,115 +5668,128 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql_refer = """
-            
-                                SELECT 
-                                    JournalEntries.GLAccountNumber
-                                    , MAX(CoA.GLAccountName) AS GLAccountName
-                                    , COUNT(JournalEntries.GLAccountNumber) AS CNT
-                                    , SUM(Debit) Sum_of_Debit
-                                    , SUM(Credit) Sum_of_Credit				
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                                        AND JournalEntries.GLAccountNumber IN				
-                                (			
-                                    SELECT DISTINCT GLAccountNumber			
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
-                                    WHERE Year = {year}
-                                    GROUP BY GLAccountNumber
-                                    HAVING COUNT(GLAccountNumber) <= {N}
-                                ) AND ABS(JournalEntries.Amount) > {TE}
-                                {Account}
-                                AND JournalEntries.Year = {year}
-                                GROUP BY JournalEntries.GLAccountNumber	
-                                ORDER BY JournalEntries.GLAccountNumber
-                            """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                       Account=self.checked_account4, year=self.pname_year)
+                                SET NOCOUNT ON
+                                SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                GROUP BY CoA.GLAccountNumber
+
+                                        SELECT 
+                                            JournalEntries.GLAccountNumber
+                                            , MAX(#TMPCOA.GLAccountName) AS GLAccountName
+                                            , COUNT(JournalEntries.GLAccountNumber) AS CNT
+                                            , SUM(Debit) Sum_of_Debit
+                                            , SUM(Credit) Sum_of_Credit				
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                                        WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
+                                                AND JournalEntries.GLAccountNumber IN				
+                                        (			
+                                            SELECT DISTINCT GLAccountNumber			
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]			
+                                            WHERE Year = {year}
+                                            GROUP BY GLAccountNumber
+                                            HAVING COUNT(GLAccountNumber) <= {N}
+                                        ) AND ABS(JournalEntries.Amount) > {TE}
+                                        {Account}
+                                        AND JournalEntries.Year = {year}
+                                        GROUP BY JournalEntries.GLAccountNumber	
+                                        ORDER BY JournalEntries.GLAccountNumber
+                                        DROP TABLE #TMPCOA
+                                    """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
+                                               Account=self.checked_account4, year=self.pname_year)
 
             ### JE Line - Refer
             sql_query = '''
-                            SELECT				
-                                JournalEntries.BusinessUnit			
-                                , JournalEntries.JENumber			
-                                , JournalEntries.JELineNumber			
-                                , JournalEntries.EffectiveDate			
-                                , JournalEntries.EntryDate			
-                                , JournalEntries.Period			
-                                , JournalEntries.GLAccountNumber			
-                                , CoA.GLAccountName			
-                                , JournalEntries.Debit			
-                                , JournalEntries.Credit			
-                                , CASE
-                                       WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                       END AS DebitCredit
-                                , JournalEntries.Amount			
-                                , JournalEntries.FunctionalCurrencyCode			
-                                , JournalEntries.JEDescription			
-                                , JournalEntries.JELineDescription			
-                                , JournalEntries.PreparerID			
-                                , JournalEntries.ApproverID			
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.GLAccountNumber IN 				
-                                (			
-                                SELECT DISTINCT GLAccountNumber			
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                WHERE Year = {year}
-                                GROUP BY GLAccountNumber			
-                                HAVING COUNT(GLAccountNumber) <= {N}			
-                                ) AND ABS(JournalEntries.Amount) > {TE}
-                                {Account}
-                                AND JournalEntries.Year = {year}
-                            ORDER BY JENumber,JELineNumber				
-                        '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                   Account=self.checked_account4, year=self.pname_year)
+                    SET NOCOUNT ON
+                                SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                GROUP BY CoA.GLAccountNumber
+
+                                    SELECT				
+                                        JournalEntries.BusinessUnit			
+                                        , JournalEntries.JENumber			
+                                        , JournalEntries.JELineNumber			
+                                        , JournalEntries.EffectiveDate			
+                                        , JournalEntries.EntryDate			
+                                        , JournalEntries.Period			
+                                        , JournalEntries.GLAccountNumber			
+                                        , #TMPCOA.GLAccountName			
+                                        , JournalEntries.Debit			
+                                        , JournalEntries.Credit			
+                                        , CASE
+                                               WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                               END AS DebitCredit
+                                        , JournalEntries.Amount			
+                                        , JournalEntries.FunctionalCurrencyCode			
+                                        , JournalEntries.JEDescription			
+                                        , JournalEntries.JELineDescription			
+                                        , JournalEntries.PreparerID			
+                                        , JournalEntries.ApproverID			
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                                    WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.GLAccountNumber IN 				
+                                        (			
+                                        SELECT DISTINCT GLAccountNumber			
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                        WHERE Year = {year}
+                                        GROUP BY GLAccountNumber			
+                                        HAVING COUNT(GLAccountNumber) <= {N}			
+                                        ) AND ABS(JournalEntries.Amount) > {TE}
+                                        {Account}
+                                        AND JournalEntries.Year = {year}
+                                    ORDER BY JENumber,JELineNumber				
+                                    DROP TABLE #TMPCOA
+                                '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
+                                           Account=self.checked_account4, year=self.pname_year)
 
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
         ### JE - Journals
         elif self.rbtn2.isChecked():
             sql_query = '''
-                        SELECT				
-                             JournalEntries.BusinessUnit			
-                            , JournalEntries.JENumber			
-                            , JournalEntries.JELineNumber			
-                            , JournalEntries.EffectiveDate			
-                            , JournalEntries.EntryDate			
-                            , JournalEntries.Period			
-                            , JournalEntries.GLAccountNumber			
-                            , CoA.GLAccountName			
-                            , JournalEntries.Debit			
-                            , JournalEntries.Credit			
-                            , CASE
-                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                END AS DebitCredit
-                            , JournalEntries.Amount			
-                            , JournalEntries.FunctionalCurrencyCode			
-                            , JournalEntries.JEDescription			
-                            , JournalEntries.JELineDescription			
-                            , JournalEntries.PreparerID			
-                            , JournalEntries.ApproverID			
-                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                        WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (				
-                            SELECT DISTINCT JournalEntries.JENumber			
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries			
-                            WHERE JournalEntries.GLAccountNumber IN 			
-                                    (	
-                                    SELECT DISTINCT JournalEntries.GLAccountNumber	
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,	
-                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
-                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
-                                        AND JournalEntries.Year = {year}
-                                    GROUP BY JournalEntries.GLAccountNumber	
-                                    HAVING COUNT(JournalEntries.GLAccountNumber) <= {N}	
-                                    ) AND ABS(JournalEntries.Amount) > {TE}
-                                    {Account}
-                                    AND JournalEntries.Year = {year}
-                                ) AND JournalEntries.Year = {year}		
-                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
-                '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                           Account=self.checked_account4, year=self.pname_year)
+                    SET NOCOUNT ON
+                                SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                GROUP BY CoA.GLAccountNumber
+
+                                SELECT				
+                                     JournalEntries.BusinessUnit			
+                                    , JournalEntries.JENumber			
+                                    , JournalEntries.JELineNumber			
+                                    , JournalEntries.EffectiveDate			
+                                    , JournalEntries.EntryDate			
+                                    , JournalEntries.Period			
+                                    , JournalEntries.GLAccountNumber			
+                                    , #TMPCOA.GLAccountName			
+                                    , JournalEntries.Debit			
+                                    , JournalEntries.Credit			
+                                    , CASE
+                                        WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                        END AS DebitCredit
+                                    , JournalEntries.Amount			
+                                    , JournalEntries.FunctionalCurrencyCode			
+                                    , JournalEntries.JEDescription			
+                                    , JournalEntries.JELineDescription			
+                                    , JournalEntries.PreparerID			
+                                    , JournalEntries.ApproverID			
+                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                                WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN (				
+                                    SELECT DISTINCT JournalEntries.JENumber			
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries			
+                                    WHERE JournalEntries.GLAccountNumber IN 			
+                                            (	
+                                            SELECT DISTINCT JournalEntries.GLAccountNumber	
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,#TMPCOA
+                                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
+                                                AND JournalEntries.Year = {year}
+                                            GROUP BY JournalEntries.GLAccountNumber	
+                                            HAVING COUNT(JournalEntries.GLAccountNumber) <= {N}	
+                                            ) AND ABS(JournalEntries.Amount) > {TE}
+                                            {Account}
+                                            AND JournalEntries.Year = {year}
+                                        ) AND JournalEntries.Year = {year}		
+                                ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                DROP TABLE #TMPCOA
+                        '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
+                                   Account=self.checked_account4, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5586,6 +5871,11 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql_query = """
+                            SET NOCOUNT ON
+                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                        GROUP BY CoA.GLAccountNumber
+
                             SELECT 
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -5594,7 +5884,7 @@ class MyApp(QWidget):
                                 , JournalEntries.EntryDate
                                 , JournalEntries.Period	
                                 , JournalEntries.GLAccountNumber
-                                , CoA.GLAccountName
+                                , #TMPCOA.GLAccountName
                                 , JournalEntries.Debit
                                 , JournalEntries.Credit
                                 , CASE
@@ -5606,18 +5896,23 @@ class MyApp(QWidget):
                                 , JournalEntries.JELineDescription
                                 , JournalEntries.PreparerID
                                 , JournalEntries.ApproverID
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
                                     AND JournalEntries.GLAccountNumber IN ({CODE})
                                     {Account}
                                     AND JournalEntries.Year = {year}
-                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber	
+                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                            DROP TABLE #TMPCOA	
                         """.format(field=self.selected_project_id, CODE=self.real_Code,
                                    Account=self.checked_account5_SAP, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
             sql_query = '''
+                                SET NOCOUNT ON
+                                SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                GROUP BY CoA.GLAccountNumber
+
                                 SELECT
                                     JournalEntries.BusinessUnit
                                     , JournalEntries.JENumber
@@ -5626,7 +5921,7 @@ class MyApp(QWidget):
                                     , JournalEntries.EntryDate
                                     , JournalEntries.Period
                                     , JournalEntries.GLAccountNumber
-                                    , CoA.GLAccountName
+                                    , #TMPCOA.GLAccountName
                                     , JournalEntries.Debit
                                     , JournalEntries.Credit
                                     , CASE
@@ -5638,9 +5933,8 @@ class MyApp(QWidget):
                                     , JournalEntries.JELineDescription
                                     , JournalEntries.PreparerID
                                     , JournalEntries.ApproverID
-                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
-                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN	
+                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                                WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN	
                                     (
                                     SELECT DISTINCT JournalEntries.JENumber
                                     FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
@@ -5649,6 +5943,7 @@ class MyApp(QWidget):
                                     AND Year = {year}
                                     ) AND JournalEntries.Year = {year}
                                 ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                DROP TABLE #TMPCOA
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
                                        Account=self.checked_account5_SAP, year=self.pname_year)
 
@@ -5725,72 +6020,82 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql_query = """
-                            SELECT 
-                                JournalEntries.BusinessUnit
-                                , JournalEntries.JENumber
-                                , JournalEntries.JELineNumber
-                                , JournalEntries.EffectiveDate
-                                , JournalEntries.EntryDate
-                                , JournalEntries.Period    
-                                , JournalEntries.GLAccountNumber
-                                , CoA.GLAccountName
-                                , JournalEntries.Debit
-                                , JournalEntries.Credit
-                                , CASE
-                                    WHEN JournalEntries.Debit = 0 THEN "Credit" ELSE "Debit"
-                                    END AS DebitCredit
-                                , JournalEntries.Amount
-                                , JournalEntries.FunctionalCurrencyCode
-                                , JournalEntries.JEDescription
-                                , JournalEntries.JELineDescription
-                                , JournalEntries.PreparerID
-                                , JournalEntries.ApproverID
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                    [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
-                                    AND JournalEntries.GLAccountNumber IN ({CODE})
-                                    {Account}
-                                    AND JournalEntries.Year = {year}
-                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber  
-                        """.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
-                                   Account=self.checked_account5_Non, year=self.pname_year)
-        ### JE
-        elif self.rbtn2.isChecked():
+                                    SET NOCOUNT ON
+                                    SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                    GROUP BY CoA.GLAccountNumber
 
-            sql_query = '''
-                                    SELECT
+                                    SELECT 
                                         JournalEntries.BusinessUnit
                                         , JournalEntries.JENumber
                                         , JournalEntries.JELineNumber
                                         , JournalEntries.EffectiveDate
                                         , JournalEntries.EntryDate
-                                        , JournalEntries.Period
+                                        , JournalEntries.Period    
                                         , JournalEntries.GLAccountNumber
-                                        , CoA.GLAccountName
+                                        , #TMPCOA.GLAccountName
                                         , JournalEntries.Debit
                                         , JournalEntries.Credit
                                         , CASE
-                                               WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                               END AS DebitCredit
+                                            WHEN JournalEntries.Debit = 0 THEN "Credit" ELSE "Debit"
+                                            END AS DebitCredit
                                         , JournalEntries.Amount
                                         , JournalEntries.FunctionalCurrencyCode
                                         , JournalEntries.JEDescription
                                         , JournalEntries.JELineDescription
                                         , JournalEntries.PreparerID
                                         , JournalEntries.ApproverID
-                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,	
-                                            [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN	
-                                        (
-                                        SELECT DISTINCT JournalEntries.JENumber
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
-                                        WHERE JournalEntries.GLAccountNumber IN ({CODE})
-                                        {Account}
-                                        AND Year = {year}
-                                        ) AND JournalEntries.Year = {year}
+                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                                    WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
+                                            AND JournalEntries.GLAccountNumber IN ({CODE})
+                                            {Account}
+                                            AND JournalEntries.Year = {year}
                                     ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
-                                    '''.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
-                                               Account=self.checked_account5_Non, year=self.pname_year)
+                                    DROP TABLE #TMPCOA  
+                                """.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
+                                           Account=self.checked_account5_Non, year=self.pname_year)
+            ### JE
+        elif self.rbtn2.isChecked():
+
+            sql_query = '''
+                                            SET NOCOUNT ON
+                                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                            GROUP BY CoA.GLAccountNumber
+
+                                            SELECT
+                                                JournalEntries.BusinessUnit
+                                                , JournalEntries.JENumber
+                                                , JournalEntries.JELineNumber
+                                                , JournalEntries.EffectiveDate
+                                                , JournalEntries.EntryDate
+                                                , JournalEntries.Period
+                                                , JournalEntries.GLAccountNumber
+                                                , #TMPCOA.GLAccountName
+                                                , JournalEntries.Debit
+                                                , JournalEntries.Credit
+                                                , CASE
+                                                       WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                       END AS DebitCredit
+                                                , JournalEntries.Amount
+                                                , JournalEntries.FunctionalCurrencyCode
+                                                , JournalEntries.JEDescription
+                                                , JournalEntries.JELineDescription
+                                                , JournalEntries.PreparerID
+                                                , JournalEntries.ApproverID
+                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,#TMPCOA
+                                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN	
+                                                (
+                                                SELECT DISTINCT JournalEntries.JENumber
+                                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                                                WHERE JournalEntries.GLAccountNumber IN ({CODE})
+                                                {Account}
+                                                AND Year = {year}
+                                                ) AND JournalEntries.Year = {year}
+                                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                            DROP TABLE #TMPCOA
+                                            '''.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
+                                                       Account=self.checked_account5_Non, year=self.pname_year)
 
         self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
@@ -5865,7 +6170,12 @@ class MyApp(QWidget):
 
         if self.rbtn1.isChecked():
             sql = '''
-                       SELECT											
+                        SET NOCOUNT ON
+                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                        GROUP BY CoA.GLAccountNumber
+
+                        SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
                            , JournalEntries.JELineNumber											
@@ -5873,7 +6183,7 @@ class MyApp(QWidget):
                            , JournalEntries.EntryDate											
                            , JournalEntries.Period											
                            , JournalEntries.GLAccountNumber											
-                           , CoA.GLAccountName											
+                           , #TMPCOA.GLAccountName											
                            , JournalEntries.Debit											
                            , JournalEntries.Credit											
                            , CASE
@@ -5885,15 +6195,15 @@ class MyApp(QWidget):
                            , JournalEntries.JELineDescription											
                            , JournalEntries.PreparerID											
                            , JournalEntries.ApproverID											
-                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA											
+                       WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
                                AND (JournalEntries.EntryDate BETWEEN {first_date} AND {second_date})
                                AND ABS(JournalEntries.Amount) > {TE}
                                {Preparer}
                                {Account}
                                AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                       DROP TABLE #TMPCOA
                     '''.format(field=self.selected_project_id, Account=self.checked_account6, TE=self.tempCost,
                                first_date=str(self.first), second_date=str(self.second),
                                Preparer=self.checked_preparer6, year=self.pname_year)
@@ -5901,6 +6211,11 @@ class MyApp(QWidget):
 
         elif self.rbtn2.isChecked():
             sql = '''
+                       SET NOCOUNT ON
+                       SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                       FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                       GROUP BY CoA.GLAccountNumber
+
                        SELECT											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -5909,7 +6224,7 @@ class MyApp(QWidget):
                            , JournalEntries.EntryDate											
                            , JournalEntries.Period											
                            , JournalEntries.GLAccountNumber											
-                           , CoA.GLAccountName											
+                           , #TMPCOA.GLAccountName											
                            , JournalEntries.Debit											
                            , JournalEntries.Credit											
                            , CASE
@@ -5921,9 +6236,8 @@ class MyApp(QWidget):
                            , JournalEntries.JELineDescription											
                            , JournalEntries.PreparerID											
                            , JournalEntries.ApproverID											
-                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN		
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                       WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN		
                         (
                             SELECT DISTINCT JENumber
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
@@ -5934,6 +6248,7 @@ class MyApp(QWidget):
                                     AND Year = {year}
                         ) AND JournalEntries.Year = {year}
                         ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
+                        DROP TABLE #TMPCOA		
                     '''.format(field=self.selected_project_id, Account=self.checked_account6, TE=self.tempCost,
                                first_date=str(self.first), second_date=str(self.second),
                                Preparer=self.checked_preparer6, year=self.pname_year)
@@ -6003,6 +6318,10 @@ class MyApp(QWidget):
 
         if self.rbtn3.isChecked():
             sql = '''
+                       SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                       FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                       GROUP BY CoA.GLAccountNumber
+
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6011,7 +6330,7 @@ class MyApp(QWidget):
                            , JournalEntries.EntryDate											
                            , JournalEntries.Period											
                            , JournalEntries.GLAccountNumber											
-                           , CoA.GLAccountName											
+                           , #TMPCOA.GLAccountName											
                            , JournalEntries.Debit											
                            , JournalEntries.Credit											
                            , CASE
@@ -6024,20 +6343,24 @@ class MyApp(QWidget):
                            , JournalEntries.Source											
                            , JournalEntries.PreparerID											
                            , JournalEntries.ApproverID											
-                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA						
+                       WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
                             {Date}
                             {Account}
                             {Preparer}
                             AND ABS(JournalEntries.Amount) > {TE}
                             AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                       DROP TABLE #TMPCOA
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
         elif self.rbtn4.isChecked():
             sql = '''
+                       SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                       FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                       GROUP BY CoA.GLAccountNumber
+
                        SELECT 											
                            JournalEntries.BusinessUnit											
                            , JournalEntries.JENumber											
@@ -6046,7 +6369,7 @@ class MyApp(QWidget):
                            , JournalEntries.EntryDate											
                            , JournalEntries.Period											
                            , JournalEntries.GLAccountNumber											
-                           , CoA.GLAccountName											
+                           , #TMPCOA.GLAccountName											
                            , JournalEntries.Debit											
                            , JournalEntries.Credit											
                            , CASE
@@ -6059,11 +6382,10 @@ class MyApp(QWidget):
                            , JournalEntries.Source											
                            , JournalEntries.PreparerID											
                            , JournalEntries.ApproverID											
-                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                       WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (		
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA											
+                       WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN (		
                            SELECT DISTINCT JENumber
-                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
                            WHERE ABS(JournalEntries.Amount) > {TE}
                                 {Account}
                                 {Preparer}
@@ -6071,6 +6393,7 @@ class MyApp(QWidget):
                                 AND Year = {year})
                                 AND JournalEntries.Year = {year}
                        ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                       DROP TABLE #TMPCOA
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
@@ -6141,6 +6464,11 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql = '''
+                            SET NOCOUNT ON
+                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                            GROUP BY CoA.GLAccountNumber
+
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6150,7 +6478,7 @@ class MyApp(QWidget):
                                 , JournalEntries.EntryDate	
                                 , JournalEntries.Period	
                                 , JournalEntries.GLAccountNumber	
-                                , CoA.GLAccountName	
+                                , #TMPCOA.GLAccountName	
                                 , JournalEntries.Debit	
                                 , JournalEntries.Credit	
                                 , CASE
@@ -6162,21 +6490,26 @@ class MyApp(QWidget):
                                 , JournalEntries.JELineDescription	
                                 , JournalEntries.PreparerID	
                                 , JournalEntries.ApproverID	
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                                   [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
                                 AND DATEDIFF(dd, JournalEntries.EntryDate ,JournalEntries.EffectiveDate) >= {realNDate}
                                 {Preparer}
                                 AND ABS(JournalEntries.Amount) > {TE}
                                 {Account}
                                 AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                            DROP TABLE #TMPCOA
                         '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
                                    Preparer=self.checked_preparer8, Account=self.checked_account8, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
 
             sql = '''
+                            SET NOCOUNT ON
+                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                            GROUP BY CoA.GLAccountNumber
+
                             SELECT 
                                JournalEntries.FileId	
                                 , JournalEntries.BusinessUnit	
@@ -6186,7 +6519,7 @@ class MyApp(QWidget):
                                 , JournalEntries.EntryDate	
                                 , JournalEntries.Period	
                                 , JournalEntries.GLAccountNumber	
-                                , CoA.GLAccountName	
+                                , #TMPCOA.GLAccountName	
                                 , JournalEntries.Debit	
                                 , JournalEntries.Credit	
                                 , CASE
@@ -6198,9 +6531,8 @@ class MyApp(QWidget):
                                 , JournalEntries.JELineDescription	
                                 , JournalEntries.PreparerID	
                                 , JournalEntries.ApproverID	
-                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,											
-                                   [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
-                            WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN 
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN 
                                 (
                                 SELECT DISTINCT JENumber
                                 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries	
@@ -6211,6 +6543,7 @@ class MyApp(QWidget):
                                     AND Year = {year}
                                 ) AND JournalEntries.Year = {year}
                             ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                            DROP TABLE #TMPCOA
                             '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
                                        Preparer=self.checked_preparer8, Account=self.checked_account8,
                                        year=self.pname_year)
@@ -6280,6 +6613,11 @@ class MyApp(QWidget):
         # sql문 수정
         if self.rbtn1.isChecked():
             sql = '''
+                           SET NOCOUNT ON
+                           SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                           FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                           GROUP BY CoA.GLAccountNumber
+
                            SELECT				
                                   JournalEntries.BusinessUnit			
                                   , JournalEntries.JENumber			
@@ -6288,7 +6626,7 @@ class MyApp(QWidget):
                                   , JournalEntries.EntryDate			
                                   , JournalEntries.Period			
                                   , JournalEntries.GLAccountNumber			
-                                  , CoA.GLAccountName			
+                                  , #TMPCOA.GLAccountName			
                                   , JournalEntries.Debit			
                                   , JournalEntries.Credit			
                                   , CASE
@@ -6300,9 +6638,8 @@ class MyApp(QWidget):
                                   , JournalEntries.JELineDescription			
                                   , JournalEntries.PreparerID			
                                   , JournalEntries.ApproverID			
-                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-                                  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.PreparerID IN 				
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                           WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.PreparerID IN 				
                                   (			
                                   SELECT DISTINCT PreparerID			
                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
@@ -6310,7 +6647,8 @@ class MyApp(QWidget):
                                   GROUP BY PreparerID			
                                   HAVING COUNT(GLAccountNumber) <= {N}			
                                   )	AND ABS(JournalEntries.Amount) > {TE} {Account}	AND JournalEntries.Year = {year}	
-                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
+                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                           DROP TABLE #TMPCOA			
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9, year=self.pname_year)
 
@@ -6332,6 +6670,11 @@ class MyApp(QWidget):
 
         elif self.rbtn2.isChecked():
             sql = '''
+                           SET NOCOUNT ON
+                           SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                           FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                           GROUP BY CoA.GLAccountNumber
+
                            SELECT 				
                                JournalEntries.BusinessUnit			
                                , JournalEntries.JENumber			
@@ -6340,7 +6683,7 @@ class MyApp(QWidget):
                                , JournalEntries.EntryDate			
                                , JournalEntries.Period			
                                , JournalEntries.GLAccountNumber			
-                               , CoA.GLAccountName			
+                               , #TMPCOA.GLAccountName			
                                , JournalEntries.Debit			
                                , JournalEntries.Credit			
                                , CASE
@@ -6352,9 +6695,8 @@ class MyApp(QWidget):
                                , JournalEntries.JELineDescription			
                                , JournalEntries.PreparerID			
                                , JournalEntries.ApproverID			
-                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,				
-                               [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA			
-                           WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 				
+                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                           WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND 				
                                JournalEntries.JENumber IN 			
                                    (		
                                    SELECT DISTINCT JENumber		
@@ -6373,7 +6715,8 @@ class MyApp(QWidget):
                                        WHERE LVL1.PreparerID = JournalEntries.PreparerID	
                                        ) AND ABS(JournalEntries.Amount) > {TE} AND JournalEntries.Year = {year}	{Account} 
                                    ) AND JournalEntries.Year = {year}	
-                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber				
+                           ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                           DROP TABLE #TMPCOA				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9, year=self.pname_year)
 
@@ -6431,6 +6774,11 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql = '''
+                                 SET NOCOUNT ON
+                                 SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                 GROUP BY CoA.GLAccountNumber
+
                                  SELECT			
                                        JournalEntries.BusinessUnit		
                                        , JournalEntries.JENumber		
@@ -6439,7 +6787,7 @@ class MyApp(QWidget):
                                        , JournalEntries.EntryDate
                                        , JournalEntries.Period		
                                        , JournalEntries.GLAccountNumber		
-                                       , CoA.GLAccountName		
+                                       , #TMPCOA.GLAccountName		
                                        , JournalEntries.Debit		
                                        , JournalEntries.Credit		
                                        , CASE
@@ -6451,14 +6799,14 @@ class MyApp(QWidget):
                                        , JournalEntries.JELineDescription		
                                        , JournalEntries.PreparerID		
                                        , JournalEntries.ApproverID		
-                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
-                                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
-                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 			
+                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                               WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 			
                                            {Preparer}
                                            AND JournalEntries.EntryDate BETWEEN '{Point1}' AND '{Point2}'			        	
                                            AND ABS(JournalEntries.Amount) > {TE} {Account}
                                            AND JournalEntries.Year = {year}	
-                               ORDER BY JENumber,JELineNumber			
+                               ORDER BY JENumber,JELineNumber
+                               DROP TABLE #TMPCOA			
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2,
@@ -6467,6 +6815,11 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
 
             sql = '''
+                                   SET NOCOUNT ON
+                                   SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                   FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                   GROUP BY CoA.GLAccountNumber
+
                                    SELECT 			
                                                 JournalEntries.BusinessUnit		
                                                 , JournalEntries.JENumber		
@@ -6475,7 +6828,7 @@ class MyApp(QWidget):
                                                 , JournalEntries.EntryDate
                                                 , JournalEntries.Period		
                                                 , JournalEntries.GLAccountNumber		
-                                                , CoA.GLAccountName		
+                                                , #TMPCOA.GLAccountName		
                                                 , JournalEntries.Debit		
                                                 , JournalEntries.Credit		
                                                 , CASE
@@ -6487,9 +6840,8 @@ class MyApp(QWidget):
                                                 , JournalEntries.JELineDescription		
                                                 , JournalEntries.PreparerID		
                                                 , JournalEntries.ApproverID		
-                               FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,			
-                                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA		
-                               WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND 			
+                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries, #TMPCOA
+                                   WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND 			
                                                 JournalEntries.JENumber IN 		
                                                     (	
                                                     SELECT DISTINCT JENumber	
@@ -6499,7 +6851,8 @@ class MyApp(QWidget):
                                                     {Preparer} AND JournalEntries.Year = {year} {Account}
                                                     ) 
                                                     AND JournalEntries.Year = {year}
-                               ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
+                                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                   DROP TABLE #TMPCOA			
                             '''.format(field=self.selected_project_id, TE=self.tempTE,
                                        Preparer=self.checked_preparer10,
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2,
@@ -6548,12 +6901,202 @@ class MyApp(QWidget):
                 self.viewtable.setModel(model)
             self.communicate10.closeApp.emit()
 
-    def extButtonClicked12(self):
+    def extButtonClicked11(self):
+        cursor = self.cnxn.cursor()
 
+        sql_refer = '''
+                                SET NOCOUNT ON;
+                                SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
+                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                WHERE JENumber IN (
+                                                  SELECT DISTINCT JENumber
+                                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                                  WHERE ABS(Amount) > {TE}
+                                                  AND Year = '{YEAR}'
+                                                  )
+
+                                                    SELECT
+                                                        JournalEntries.BusinessUnit
+                                                        , JournalEntries.JENumber
+                                                        , JournalEntries.JELineNumber
+                                                        , JournalEntries.EffectiveDate
+                                                        , JournalEntries.EntryDate
+                                                        , JournalEntries.Period
+                                                        , JournalEntries.GLAccountNumber
+                                                        , CoA.GLAccountName
+                                                        , JournalEntries.Debit
+                                                        , JournalEntries.Credit
+                                                        , JournalEntries.Amount
+                                                        , JournalEntries.FunctionalCurrencyCode
+                                                        , JournalEntries.JEDescription
+                                                        , JournalEntries.JELineDescription
+                                                        , JournalEntries.PreparerID
+                                                        , JournalEntries.ApproverID
+                                                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
+                                                        [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                                    WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN (
+                                                        SELECT DISTINCT LVL2_1.JENumber1
+                                                        FROM
+                                                            (
+                                                                SELECT
+                                                                    LVL1_1.JENumber1,
+                                                                    LVL1_1.GLAccountNumber1,
+                                                                    MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                    MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                    SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                    SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                    DivideDC1,
+                                                                    COUNT(*) AS Cnt1
+                                                                FROM
+                                                                (
+                                                                        SELECT
+                                                                            #tmp.JENumber AS JENumber1,
+                                                                            #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                            CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                            CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                            CoA.AccountType AS AccountType1,
+                                                                            #tmp.Debit AS Debit1,
+                                                                            #tmp.Credit AS Credit1,
+                                                                            #tmp.Amount AS Amount1,
+                                                                            CASE
+                                                                            WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                            END AS 'DivideDC1'
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                ) LVL1_1
+                                                                GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                            ) LVL2_1,
+                                                            (
+                                                                SELECT
+                                                                    LVL1_2.JENumber2,
+                                                                    LVL1_2.GLAccountNumber2,
+                                                                    MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                    MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                    SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                    SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                    DivideDC2,
+                                                                    COUNT(*) AS Cnt2
+                                                                FROM
+                                                                (
+                                                                        SELECT #tmp.JENumber AS JENumber2,
+                                                                            #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                            CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                            CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                            CoA.AccountType AS AccountType2,
+                                                                            #tmp.Debit AS Debit2,
+                                                                            #tmp.Credit AS Credit2,
+                                                                            #tmp.Amount AS Amount2,
+                                                                            CASE
+                                                                            WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                            END AS 'DivideDC2'
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                ) LVL1_2
+                                                                GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                            ) LVL2_2
+                                                        WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND LVL2_1.GLAccountNumber1 IN ({Account})
+                                                            AND {CD}
+                                                        EXCEPT
+                                                            SELECT DISTINCT LVL2_1.JENumber1
+                                                        FROM
+                                                            (
+                                                                SELECT
+                                                                    LVL1_1.JENumber1,
+                                                                    LVL1_1.GLAccountNumber1,
+                                                                    MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,
+                                                                    MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                    SUM(LVL1_1.Debit1) AS SumOfDebit1,
+                                                                    SUM(LVL1_1.Credit1) AS SumOfCredit1,
+                                                                    DivideDC1,
+                                                                    COUNT(*) AS Cnt1
+                                                                FROM
+                                                                (
+                                                                        SELECT
+                                                                            #tmp.JENumber AS JENumber1,
+                                                                            #tmp.GLAccountNumber AS GLAccountNumber1,
+                                                                            CoA.GLAccountNumber AS CoA_GLAccountNumber1,
+                                                                            CoA.GLAccountName AS CoA_GLAccountName1,
+                                                                            CoA.AccountType AS AccountType1,
+                                                                            #tmp.Debit AS Debit1,
+                                                                            #tmp.Credit AS Credit1,
+                                                                            #tmp.Amount AS Amount1,
+                                                                            CASE
+                                                                            WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                            END AS 'DivideDC1'
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                    ) LVL1_1
+                                                                    GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1
+                                                            ) LVL2_1,
+                                                            (
+                                                                SELECT
+                                                                    LVL1_2.JENumber2,
+                                                                    LVL1_2.GLAccountNumber2,
+                                                                    MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,
+                                                                    MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                    SUM(LVL1_2.Debit2) AS SumOfDebit2,
+                                                                    SUM(LVL1_2.Credit2) AS SumOfCredit2,
+                                                                    DivideDC2,
+                                                                    COUNT(*) AS Cnt2
+                                                                FROM
+                                                                (
+                                                                        SELECT #tmp.JENumber AS JENumber2,
+                                                                            #tmp.GLAccountNumber AS GLAccountNumber2,
+                                                                            CoA.GLAccountNumber AS CoA_GLAccountNumber2,
+                                                                            CoA.GLAccountName AS CoA_GLAccountName2,
+                                                                            CoA.AccountType AS AccountType2,
+                                                                            #tmp.Debit AS Debit2,
+                                                                            #tmp.Credit AS Credit2,
+                                                                            #tmp.Amount AS Amount2,
+                                                                            CASE
+                                                                            WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'
+                                                                            END AS 'DivideDC2'
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber
+                                                                ) LVL1_2
+                                                                GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2
+                                                            ) LVL2_2
+                                                        WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2 AND (LVL2_1.GLAccountNumber1 IN ({Account}) AND
+                                                            {CD} AND
+                                                            LVL2_2.GLAccountNumber2 IN ({Account_1})
+                                                            AND {CD2})
+                                                        )
+                                                    ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                                                    DROP TABLE #tmp
+
+                                            '''.format(field=self.selected_project_id, CD=self.temp_State,
+                                                       Account=checked_account_11, Account_1=checked_account_11_1,
+                                                       TE=self.temp_TE, CD2=self.temp_State2, YEAR=self.pname_year)
+
+        self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+        self.my_query.loc[self.temp_Sheet + "_Reference"] = [self.temp_Sheet + "_Reference", "Scenario11",
+                                                             "---Filtered Result  Scenario11---\n" + sql_refer]
+
+        if len(self.dataframe_refer) > 1048576:
+            self.communicate11.closeApp.emit()
+
+        elif len(self.dataframe_refer) == 0:
+            self.dataframe_refer = pd.DataFrame({'No Data': ["[중요성금액: " + str(
+                self.tempCost) + "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다"]})
+            model = DataFrameModel(self.dataframe_refer)
+            self.viewtable.setModel(model)
+            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe_refer
+            self.combo_sheet.addItem(self.temp_Sheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            self.communicate11.closeApp.emit()
+
+        else:
+            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe_refer
+            self.combo_sheet.addItem(self.temp_Sheet + '_Reference')
+            self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
+            model = DataFrameModel(self.dataframe_refer)
+            self.viewtable.setModel(model)
+            self.communicate11.closeApp.emit()
+
+    def extButtonClicked12(self):
         cursor = self.cnxn.cursor()
 
         if not (self.checkF.isChecked()) and not (self.checkP.isChecked()):
-
             sql = '''
                            SET NOCOUNT ON;
                            SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
@@ -6653,119 +7196,12 @@ class MyApp(QWidget):
                                             WHERE {CD}
                                                   {Account}
                                                   AND LVL4.Posting_Type = '2.Correspondent Account'
-                                            ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
+                                            ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
+                                            DROP TABLE  #tmp     
                        '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
                                   TE=self.tempCost, YEAR=self.pname_year)
 
-            sql2 = '''
-                           SET NOCOUNT ON;
-                           DROP TABLE #tmp
-                           SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
-                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                           WHERE Year = {YEAR}
-                           AND JENumber IN (
-                                              SELECT DISTINCT JENumber
-                                              FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                              WHERE ABS(Amount) > {TE}
-                                              AND Year = {YEAR}
-                                              )
-                                             SELECT *                                                                                                       														
-                                             FROM                                                                                                    														
-                                             (                                                                                                       														
-                                                   SELECT                                                                                                                                            													
-                                                           LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
-                                                           MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
-                                                           MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
-                                                           LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
-                                                           CASE                                                                                                                      											
-                                                           WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
-                                                           WHEN LVL3.GLAccountNumber1 <> LVL3.GLAccountNumber2 and LVL3.DivideDC1 = LVL3.DivideDC2 THEN '3.Reference Account'                                                                                                                           											
-                                                           ELSE '2.Correspondent Account'                                                                                                                   
-                                                           END AS Posting_Type,                                                                                                                      
-                                                           LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
-                                                           MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
-                                                           MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
-                                                           LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
-                                                           SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
-                                                           SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
-                                                           SUM(LVL3.Cnt2) AS JE_Line_Count                                                                                                                                    
-                                                   FROM                                                                                             
-                                                   (                                                                                                
-                                                           SELECT *                                                                                         
-                                                           FROM                                                                                     
-                                                                  (                                                                                
-                                                                                 SELECT                                                             
-                                                                                        LVL1_1.JENumber1,                                                         
-                                                                                        LVL1_1.GLAccountNumber1,                                                          
-                                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
-                                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
-                                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
-                                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
-                                                                                        DivideDC1,                                                         
-                                                                                        COUNT(*) AS Cnt1                                                          
-                                                                                 FROM                                                               
-                                                                                 (                                                                  
-                                                                                                SELECT                                               
-                                                                                                       #tmp.JENumber AS JENumber1,                                          
-                                                                                                       #tmp.GLAccountNumber AS GLAccountNumber1,                                          
-                                                                                                       CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
-                                                                                                       CoA.GLAccountName AS CoA_GLAccountName1,                                      
-                                                                                                       CoA.AccountType AS AccountType1,                                       
-                                                                                                       #tmp.Debit AS Debit1,                                             
-                                                                                                       #tmp.Credit AS Credit1,                                            
-                                                                                                       #tmp.Amount AS Amount1,                                            
-                                                                                                       CASE                                         
-                                                                                                       WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
-                                                                                                       END AS 'DivideDC1'                                            
-                                                                                                FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                	
-                                                                                                WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
-                                                                                 ) LVL1_1                                                                  
-                                                                                 GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1                                                                					
-                                                                  ) LVL2_1,                                                                                
-                                                                  (                                                                                 
-                                                                                 SELECT                                                            
-                                                                                        LVL1_2.JENumber2,                                                        
-                                                                                        LVL1_2.GLAccountNumber2,                                                          
-                                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
-                                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
-                                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
-                                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
-                                                                                        DivideDC2,                                                         
-                                                                                        COUNT(*) AS Cnt2                                                          
-                                                                                 FROM                                                               
-                                                                                 (                                                                  
-                                                                                                SELECT #tmp.JENumber AS JENumber2,                                                  
-                                                                                                       #tmp.GLAccountNumber AS GLAccountNumber2,                                          
-                                                                                                       CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
-                                                                                                       CoA.GLAccountName AS CoA_GLAccountName2,                                      
-                                                                                                       CoA.AccountType AS AccountType2,                                       
-                                                                                                       #tmp.Debit AS Debit2,                                             
-                                                                                                       #tmp.Credit AS Credit2,                                            
-                                                                                                       #tmp.Amount AS Amount2,                                            
-                                                                                                       CASE                                         
-                                                                                                       WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
-                                                                                                       END AS 'DivideDC2'                                            
-                                                                                                FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                
-                                                                                                WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
-                                                                                 ) LVL1_2                                                                 
-                                                                                 GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2                                                              
-                                                                  ) LVL2_2                                                                                 
-                                                           WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2                                                                                    
-                                                   ) LVL3                                                                                                  
-                                                   GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
-                                            ) LVL4                                                                                                                                                                                                  														
-                                            WHERE {CD}
-                                                  {Account}
-                                                  AND LVL4.Posting_Type = '2.Correspondent Account'
-                                            ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number     
-                       '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
-                                  TE=self.tempCost, YEAR=self.pname_year)
-
-            if self.clickCount == 0:
-                self.dataframe = pd.read_sql(sql, self.cnxn)
-            else:
-                self.dataframe = pd.read_sql(sql2, self.cnxn)
-            self.clickCount += 1
+        self.dataframe = pd.read_sql(sql, self.cnxn)
 
         # elif self.checkF.isChecked() and not(self.checkP.isChecked()): 기능영역
         # elif not(self.checkF.isChecked()) and self.checkP.isChecked(): 회계일자
@@ -7105,6 +7541,11 @@ class MyApp(QWidget):
         ### JE Line
         if self.rbtn1.isChecked():
             sql_query = '''
+                                        SET NOCOUNT ON
+                                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                        GROUP BY CoA.GLAccountNumber
+
                                         SELECT
                                             JournalEntries.BusinessUnit
                                             , JournalEntries.JENumber
@@ -7113,7 +7554,7 @@ class MyApp(QWidget):
                                             , JournalEntries.EntryDate
                                             , JournalEntries.Period
                                             , JournalEntries.GLAccountNumber
-                                            , COA.GLAccountName
+                                            , #TMPCOA.GLAccountName
                                             , JournalEntries.Debit
                                             , JournalEntries.Credit
                                             , CASE
@@ -7125,14 +7566,14 @@ class MyApp(QWidget):
                                             , JournalEntries.JELineDescription
                                             , JournalEntries.PreparerID
                                             , JournalEntries.ApproverID
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,
-                                                [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                                        WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber 
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                                        WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
                                         {CONTI}
                                         {Account}
                                         AND ABS(JournalEntries.Amount) > {TE}
                                         AND JournalEntries.Year = {year}
                                         ORDER BY JENumber, JELineNumber
+                                        DROP TABLE #TMPCOA
                                 '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                            CONTI=self.filter_Continuous,
                                            Account=self.checked_account13, year=self.pname_year)
@@ -7140,6 +7581,11 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
 
             sql_query = '''
+                                        SET NOCOUNT ON
+                                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                                        GROUP BY CoA.GLAccountNumber
+
                                         SELECT
                                             JournalEntries.BusinessUnit
                                             , JournalEntries.JENumber
@@ -7148,7 +7594,7 @@ class MyApp(QWidget):
                                             , JournalEntries.EntryDate
                                             , JournalEntries.Period
                                             , JournalEntries.GLAccountNumber
-                                            , COA.GLAccountName
+                                            , #TMPCOA.GLAccountName
                                             , JournalEntries.Debit
                                             , JournalEntries.Credit
                                             , CASE
@@ -7160,19 +7606,14 @@ class MyApp(QWidget):
                                             , JournalEntries.JELineDescription
                                             , JournalEntries.PreparerID
                                             , JournalEntries.ApproverID
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries,
-                                             [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS COA
-                                        WHERE JournalEntries.GLAccountNumber = COA.GLAccountNumber AND JournalEntries.JENumber IN
-                                        (
-                                            SELECT DISTINCT JournalEntries.JENumber
-                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
-                                            WHERE 1=1 
-                                            {CONTI} 
-                                            {Account}
-                                            AND ABS(JournalEntries.Amount) > {TE}
-                                            AND Year = {year}
-                                        ) AND JournalEntries.Year = {year}
+                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                                        WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
+                                        {CONTI}
+                                        {Account}
+                                        AND ABS(JournalEntries.Amount) > {TE}
+                                        AND JournalEntries.Year = {year}
                                         ORDER BY JENumber, JELineNumber
+                                        DROP TABLE #TMPCOA
                                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                                CONTI=self.filter_Continuous,
                                                Account=self.checked_account13, year=self.pname_year)
@@ -7249,6 +7690,11 @@ class MyApp(QWidget):
         if self.rbtn1.isChecked():
 
             sql = '''
+                   SET NOCOUNT ON
+                   SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                   FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                   GROUP BY CoA.GLAccountNumber
+
                    SELECT 		
                         JournalEntries.BusinessUnit	
                         , JournalEntries.JENumber	
@@ -7257,7 +7703,7 @@ class MyApp(QWidget):
                         , JournalEntries.EntryDate	
                         , JournalEntries.Period	
                         , JournalEntries.GLAccountNumber	
-                        , CoA.GLAccountName	
+                        , #TMPCOA.GLAccountName	
                         , JournalEntries.Debit	
                         , JournalEntries.Credit	
                         , CASE
@@ -7269,19 +7715,24 @@ class MyApp(QWidget):
                         , JournalEntries.JELineDescription	
                         , JournalEntries.PreparerID	
                         , JournalEntries.ApproverID	
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,		
-                          [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA	
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber 		
+                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                   WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 		
                           AND ({KEY})	
                           AND ABS(JournalEntries.Amount) > {TE} {Account}
                           AND JournalEntries.Year = {year}
-                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber		
+                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                   DROP TABLE #TMPCOA		
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14, year=self.pname_year)
 
         elif self.rbtn2.isChecked():
 
             sql = '''
+                   SET NOCOUNT ON
+                   SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                   FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                   GROUP BY CoA.GLAccountNumber
+
                    SELECT 			
                         JournalEntries.BusinessUnit		
                         , JournalEntries.JENumber		
@@ -7290,7 +7741,7 @@ class MyApp(QWidget):
                         , JournalEntries.EntryDate		
                         , JournalEntries.Period		
                         , JournalEntries.GLAccountNumber		
-                        , CoA.GLAccountName		
+                        , #TMPCOA.GLAccountName		
                         , JournalEntries.Debit		
                         , JournalEntries.Credit		
                         , CASE
@@ -7302,15 +7753,15 @@ class MyApp(QWidget):
                         , JournalEntries.JELineDescription		
                         , JournalEntries.PreparerID		
                         , JournalEntries.ApproverID		
-                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries,		
-                       [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA
-                   WHERE JournalEntries.GLAccountNumber = CoA.GLAccountNumber AND JournalEntries.JENumber IN			
+                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                   WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber AND JournalEntries.JENumber IN			
                          (		
                             SELECT DISTINCT JournalEntries.JENumber		
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries		
                             WHERE ({KEY})  AND Year = {year} AND ABS(JournalEntries.Amount) > {TE} {Account}		
                          )   AND JournalEntries.Year = {year}
-                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber			
+                   ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
+                   DROP TABLE #TMPCOA			
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14, year=self.pname_year)
 
