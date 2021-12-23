@@ -18,6 +18,7 @@ import numpy as np
 import openpyxl
 from threading import Thread
 
+
 class Communicate(QObject):
     def resource_path(self, relative_path):
         try:
@@ -64,6 +65,7 @@ class Calendar(QDialog):
         vbox.addWidget(self.calendar)
         vbox.addLayout(hbox)
         self.setLayout(vbox)
+
 
 class Form(QGroupBox):
     def resource_path(self, relative_path):
@@ -356,15 +358,28 @@ class Preparer(QGroupBox):
 
         global checked_prep
 
+        np_y = 0  # 공란 있음
+        np_n = 0  # 공란 없음
         checked_prep = ''
         for i in checked_items:
-            checked_prep = checked_prep + ', N' + '\'' + i + '\''
+            if i == '전표입력자':
+                np_y = 1
+            else:
+                checked_prep = checked_prep + ', N' + '\'' + i + '\''
+                np_n = 1
 
         checked_prep = checked_prep[1:]
 
         global checked_preparer
 
-        checked_preparer = 'AND JournalEntries.PreparerID IN (' + checked_prep + ')'
+        if np_y == 0 and np_n == 0:
+            checked_preparer = 'AND JournalEntries.PreparerID IN (' + checked_prep + ')'  # 어느것도 선택 X
+        elif np_y == 0 and np_n == 1:
+            checked_preparer = 'AND JournalEntries.PreparerID IN (' + checked_prep + ')'  # 공란 선택 X
+        elif np_y == 1 and np_n == 1:
+            checked_preparer = 'AND ((JournalEntries.PreparerID IN (' + checked_prep + ')) OR (JournalEntries.PreparerID = ' + "'" + "'" + '))'
+        elif np_y == 1 and np_n == 0:
+            checked_preparer = 'AND JournalEntries.PreparerID = ' + "'" + "'"  # 공란만 선택
 
 
 class DataFrameModel(QAbstractTableModel):
@@ -1648,11 +1663,17 @@ class MyApp(QWidget):
         pID['real_PID'] = real_PID
         pID.sort_values(by='real_PID', inplace=True)
 
+        pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
+        pID.index = pID.index + 1  # shifting index
+        pID = pID.sort_index()  # sorting by index
+
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
+            if n == 0:
+                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -1959,11 +1980,17 @@ class MyApp(QWidget):
         pID['real_PID'] = real_PID
         pID.sort_values(by='real_PID', inplace=True)
 
+        pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
+        pID.index = pID.index + 1  # shifting index
+        pID = pID.sort_index()  # sorting by index
+
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
+            if n == 0:
+                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -2268,11 +2295,17 @@ class MyApp(QWidget):
         pID['real_PID'] = real_PID
         pID.sort_values(by='real_PID', inplace=True)
 
+        pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
+        pID.index = pID.index + 1  # shifting index
+        pID = pID.sort_index()  # sorting by index
+
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
+            if n == 0:
+                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -2692,11 +2725,17 @@ class MyApp(QWidget):
         pID['real_PID'] = real_PID
         pID.sort_values(by='real_PID', inplace=True)
 
+        pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
+        pID.index = pID.index + 1  # shifting index
+        pID = pID.sort_index()  # sorting by index
+
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
+            if n == 0:
+                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
