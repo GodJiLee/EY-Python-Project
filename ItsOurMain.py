@@ -1665,15 +1665,12 @@ class MyApp(QWidget):
 
         pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
         pID.index = pID.index + 1  # shifting index
-        pID = pID.sort_index()  # sorting by index
 
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
-            if n == 0:
-                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -1982,15 +1979,12 @@ class MyApp(QWidget):
 
         pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
         pID.index = pID.index + 1  # shifting index
-        pID = pID.sort_index()  # sorting by index
 
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
-            if n == 0:
-                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -2297,15 +2291,12 @@ class MyApp(QWidget):
 
         pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
         pID.index = pID.index + 1  # shifting index
-        pID = pID.sort_index()  # sorting by index
 
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
-            if n == 0:
-                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()
 
@@ -2727,15 +2718,12 @@ class MyApp(QWidget):
 
         pID.loc[-1] = ['', '', '전표입력자 공란']  # adding a row
         pID.index = pID.index + 1  # shifting index
-        pID = pID.sort_index()  # sorting by index
 
         for n, i in enumerate(pID.real_PID.unique()):
             self.new_prep.parent = QTreeWidgetItem(self.new_prep.prep)
             self.new_prep.parent.setText(0, "{}".format(i))
             self.new_prep.parent.setFlags(self.new_prep.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             self.new_prep.parent.setCheckState(0, Qt.Unchecked)
-            if n == 0:
-                self.new_prep.parent.setCheckState(0, Qt.Checked)
 
         self.new_prep.get_selected_leaves()  # 초기값 모두 선택 (추가)
 
