@@ -3330,9 +3330,9 @@ class MyApp(QWidget):
         sublayout2.addWidget(self.btnDialog)
 
         main_layout1 = QVBoxLayout()
-        main_layout1.addLayout(sublayout00)
         main_layout1.addLayout(sublayout1)
         main_layout1.addLayout(sublayout0)
+        main_layout1.addLayout(sublayout00)
         main_layout1.addLayout(sublayout2)
 
         ### Cursor문
@@ -3352,6 +3352,17 @@ class MyApp(QWidget):
         self.btn2.resize(110, 30)
         self.btnDialog2.resize(110, 30)
 
+        labelCost2 = QLabel('중요성 금액 : ', self.dialog12)
+        labelCost2.setStyleSheet("color: white;")
+        font3 = labelCost2.font()
+        font3.setBold(True)
+        labelCost2.setFont(font3)
+
+        self.D12_Cost2 = QLineEdit(self.dialog12)
+        self.D12_Cost2.setStyleSheet("background-color: white;")
+        self.D12_Cost2.setPlaceholderText('중요성 금액을 입력하세요')
+        self.D12_Cost2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
+
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog12)
         self.rbtn1.setStyleSheet("color: white;")
@@ -3364,6 +3375,22 @@ class MyApp(QWidget):
         font12 = self.rbtn2.font()
         font12.setBold(True)
         self.rbtn2.setFont(font12)
+
+        self.checkF2 = QCheckBox('기능영역', self.dialog12)
+        self.checkP2 = QCheckBox('회계일자', self.dialog12)
+        self.checkF2.setStyleSheet("color: white;")
+        self.checkP2.setStyleSheet("color: white;")
+
+        labelFP2 = QLabel('구분자 : ', self.dialog12)
+        labelFP2.setStyleSheet("color: white;")
+        font112 = labelFP2.font()
+        font112.setBold(True)
+        labelFP2.setFont(font12)
+
+        sublayout000 = QHBoxLayout()
+        sublayout000.addWidget(labelFP2)
+        sublayout000.addWidget(self.checkF2)
+        sublayout000.addWidget(self.checkP2)
 
         # 입력된 Cursor문
         labelCursortext = QLabel('입력된 Cursor : ', self.dialog12)
@@ -3413,15 +3440,17 @@ class MyApp(QWidget):
         sublayout5 = QGridLayout()
         sublayout5.addWidget(self.rbtn1, 0, 0)
         sublayout5.addWidget(self.rbtn2, 0, 1)
-        sublayout5.addWidget(labelCursor, 1, 0)
-        sublayout5.addWidget(self.cursorCondition, 1, 1)
-        sublayout5.addWidget(self.cursorFile, 1, 2)
-        sublayout5.addWidget(listCursor, 2, 0)
-        sublayout5.addWidget(self.listCursor, 2, 1)
-        sublayout5.addWidget(labelCursortext, 3, 0)
-        sublayout5.addWidget(self.Cursortext, 3, 1)
-        sublayout5.addWidget(labelSheetc, 4, 0)
-        sublayout5.addWidget(self.D12_Sheetc, 4, 1)
+        sublayout5.addWidget(labelCost2, 1, 0)
+        sublayout5.addWidget(self.D12_Cost2, 1, 1)
+        sublayout5.addWidget(labelCursor, 2, 0)
+        sublayout5.addWidget(self.cursorCondition, 2, 1)
+        sublayout5.addWidget(self.cursorFile, 2, 2)
+        sublayout5.addWidget(listCursor, 3, 0)
+        sublayout5.addWidget(self.listCursor, 3, 1)
+        sublayout5.addWidget(labelCursortext, 4, 0)
+        sublayout5.addWidget(self.Cursortext, 4, 1)
+        sublayout5.addWidget(labelSheetc, 5, 0)
+        sublayout5.addWidget(self.D12_Sheetc, 5, 1)
 
         sublayout6 = QHBoxLayout()
         sublayout6.addStretch(2)
@@ -3430,6 +3459,7 @@ class MyApp(QWidget):
 
         main_layout2 = QVBoxLayout()
         main_layout2.addLayout(sublayout5)
+        main_layout2.addLayout(sublayout000)
         main_layout2.addLayout(sublayout6)
 
         ### 탭 지정
@@ -5391,9 +5421,14 @@ class MyApp(QWidget):
             self.th13.start()
 
     def ThreadC(self):
+        self.temp_TE = self.D12_Cost2.text()
         self.tempSheet = self.D12_Sheetc.text()
         self.cursorpath = self.cursorCondition.text()
         self.wbC = self.wb2.parse(self.listCursor.currentText())
+
+        if self.temp_TE == '':
+            self.temp_TE = 0
+
         if self.tempSheet == '' or self.cursorpath == '':
             self.alertbox_open()
             # 시트명 중복 확인
@@ -5402,6 +5437,9 @@ class MyApp(QWidget):
 
         elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
             self.alertbox_open5()
+
+        elif self.checkF2.isChecked() and self.checkP2.isChecked():
+            self.alertbox_open6()
 
         elif os.path.isfile(self.cursorpath) == False:
             self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
@@ -5413,6 +5451,8 @@ class MyApp(QWidget):
             self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
         else:
             try:
+                int(self.temp_TE)
+
                 self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
                 self.doAction()
                 self.thC = Thread(target=self.extButtonClickedC)
@@ -7096,7 +7136,6 @@ class MyApp(QWidget):
 
     def extButtonClicked12(self):
         cursor = self.cnxn.cursor()
-
         if not (self.checkF.isChecked()) and not (self.checkP.isChecked()):
             sql = '''
                            SET NOCOUNT ON;
@@ -7202,10 +7241,212 @@ class MyApp(QWidget):
                        '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
                                   TE=self.tempCost, YEAR=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
-        # elif self.checkF.isChecked() and not(self.checkP.isChecked()): 기능영역
-        # elif not(self.checkF.isChecked()) and self.checkP.isChecked(): 회계일자
+        elif self.checkF.isChecked() and not (self.checkP.isChecked()):
+            sql = '''
+                       SET NOCOUNT ON;
+                       SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount, Segment01 INTO #tmp
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                       WHERE Year = {year} AND ABS(Amount) > {TE}
+
+                        SELECT *                                                                                                       														
+                        FROM                                                                                                    														
+                        (                                                                                                       														
+                            SELECT                                                                                                                                            													
+                                    LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
+                                    MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
+                                    MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                    LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
+                                    CASE                                                                                                                      											
+                                    WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
+                                    WHEN LVL3.GLAccountNumber1 <> LVL3.GLAccountNumber2 and LVL3.DivideDC1 = LVL3.DivideDC2 THEN '3.Reference Account'                                                                                                                           											
+                                    ELSE '2.Correspondent Account'                                                                                                                   
+                                    END AS Posting_Type,                                                                                                                      
+                                    LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
+                                    MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
+                                    MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                    LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
+                                    SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
+                                    SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
+                                    SUM(LVL3.Cnt2) AS JE_Line_Count                                                                                                                                    
+                            FROM                                                                                             
+                            (                                                                                                
+                                    SELECT *                                                                                         
+                                    FROM                                                                                     
+                                            (                                                                                
+                                                            SELECT                                                             
+                                                                LVL1_1.JENumber1,                                                         
+                                                                LVL1_1.GLAccountNumber1,                                                          
+                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
+                                                                MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
+                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
+                                                                DivideDC1,                                                         
+                                                                COUNT(*) AS Cnt1                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT                                               
+                                                                                #tmp.JENumber AS JENumber1,                                          
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName1,                                      
+                                                                                CoA.AccountType AS AccountType1,                                       
+                                                                                #tmp.Debit AS Debit1,                                             
+                                                                                #tmp.Credit AS Credit1,                                            
+                                                                                #tmp.Amount AS Amount1,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC1'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                	
+                                                                        WHERE CONCAT(#tmp.GLAccountNumber, #tmp.Segment01) = CONCAT(CoA.GLAccountNumber, CoA.Segment01)	                                           
+                                                            ) LVL1_1                                                                  
+                                                            GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1                                                                					
+                                            ) LVL2_1,                                                                                
+                                            (                                                                                 
+                                                            SELECT                                                            
+                                                                LVL1_2.JENumber2,                                                        
+                                                                LVL1_2.GLAccountNumber2,                                                          
+                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
+                                                                MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
+                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
+                                                                DivideDC2,                                                         
+                                                                COUNT(*) AS Cnt2                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT #tmp.JENumber AS JENumber2,                                                  
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName2,                                      
+                                                                                CoA.AccountType AS AccountType2,                                       
+                                                                                #tmp.Debit AS Debit2,                                             
+                                                                                #tmp.Credit AS Credit2,                                            
+                                                                                #tmp.Amount AS Amount2,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC2'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                
+                                                                        WHERE CONCAT(#tmp.GLAccountNumber, #tmp.Segment01) = CONCAT(CoA.GLAccountNumber, CoA.Segment01)	                                              
+                                                            ) LVL1_2                                                                 
+                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2                                                              
+                                            ) LVL2_2                                                                                 
+                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2                                                                                    
+                            ) LVL3                                                                                                  
+                            GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
+                    ) LVL4                                                                                                                                                                                                  														
+                    WHERE {CD}
+                            {Account}
+                            AND LVL4.Posting_Type = '2.Correspondent Account'
+                    ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
+                    DROP TABLE #tmp
+                        '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
+                                   TE=self.tempCost, year=self.pname_year)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+
+        elif not (self.checkF.isChecked()) and self.checkP.isChecked():
+            sql = '''
+                        SET NOCOUNT ON;
+                        SELECT CONCAT(JENumber,'-',Effectivedate) AS JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
+                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                        WHERE Year = {year} AND ABS(Amount) > {TE}
+
+
+                        SELECT *                                                                                                       														
+                        FROM                                                                                                    														
+                        (                                                                                                       														
+                            SELECT                                                                                                                                            													
+                                    LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
+                                    MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
+                                    MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                    LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
+                                    CASE                                                                                                                      											
+                                    WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
+                                    WHEN LVL3.GLAccountNumber1 <> LVL3.GLAccountNumber2 and LVL3.DivideDC1 = LVL3.DivideDC2 THEN '3.Reference Account'                                                                                                                           											
+                                    ELSE '2.Correspondent Account'                                                                                                                   
+                                    END AS Posting_Type,                                                                                                                      
+                                    LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
+                                    MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
+                                    MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                    LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
+                                    SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
+                                    SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
+                                    SUM(LVL3.Cnt2) AS JE_Line_Count                                                                                                                                    
+                            FROM                                                                                             
+                            (                                                                                                
+                                    SELECT *                                                                                         
+                                    FROM                                                                                     
+                                            (                                                                                
+                                                            SELECT                                                             
+                                                                LVL1_1.JENumber1,                                                         
+                                                                LVL1_1.GLAccountNumber1,                                                          
+                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
+                                                                MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
+                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
+                                                                DivideDC1,                                                         
+                                                                COUNT(*) AS Cnt1                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT                                               
+                                                                                #tmp.JENumber AS JENumber1,                                          
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName1,                                      
+                                                                                CoA.AccountType AS AccountType1,                                       
+                                                                                #tmp.Debit AS Debit1,                                             
+                                                                                #tmp.Credit AS Credit1,                                            
+                                                                                #tmp.Amount AS Amount1,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC1'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                	
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
+                                                            ) LVL1_1                                                                  
+                                                            GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1                                                                					
+                                            ) LVL2_1,                                                                                
+                                            (                                                                                 
+                                                            SELECT                                                            
+                                                                LVL1_2.JENumber2,                                                        
+                                                                LVL1_2.GLAccountNumber2,                                                          
+                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
+                                                                MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
+                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
+                                                                DivideDC2,                                                         
+                                                                COUNT(*) AS Cnt2                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT #tmp.JENumber AS JENumber2,                                                  
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName2,                                      
+                                                                                CoA.AccountType AS AccountType2,                                       
+                                                                                #tmp.Debit AS Debit2,                                             
+                                                                                #tmp.Credit AS Credit2,                                            
+                                                                                #tmp.Amount AS Amount2,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC2'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
+                                                            ) LVL1_2                                                                 
+                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2                                                              
+                                            ) LVL2_2                                                                                 
+                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2                                                                                    
+                            ) LVL3                                                                                                  
+                            GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
+                    ) LVL4                                                                                                                                                                                                  														
+                    WHERE {CD}
+                            {Account}
+                            AND LVL4.Posting_Type = '2.Correspondent Account'
+                    ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
+                    DROP TABLE #tmp
+            '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
+                       TE=self.tempCost, year=self.pname_year)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         self.dataframe['비경상적계정 선택여부'] = ''
 
@@ -7249,261 +7490,845 @@ class MyApp(QWidget):
             cursor = self.cnxn.cursor()
             cursortext = cursortext + tempcursor + '\n'
 
-            if self.rbtn1.isChecked():
+            if not (self.checkF.isChecked()) and not (self.checkP.isChecked()):  # 기본
+                if self.rbtn1.isChecked():  # JE Line
+                    sql = '''
+                            SET NOCOUNT ON
+                    --****************************************************Filter Table***************************************************							
+                    CREATE TABLE #filter							
+                    (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))							
+                    INSERT INTO #filter							
+                    VALUES							
+                    ({cursor})							
+                    --****************************************************Insert ProjectID***************************************************							
+                    SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData						
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                    WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE} 
+                    SELECT * INTO #COAData							
+                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
+                    --****************************************************Result Table***************************************************							
+                    CREATE TABLE #result							
+                    (JENumber NVARCHAR(100),							
+                    JELineNumber BIGINT,							
+                    EffectiveDate DATE,							
+                    EntryDate DATE,							
+                    Period NVARCHAR(25),							
+                    GLAccountNumber NVARCHAR(100),							
+                    Debit NUMERIC(21,6),							
+                    Credit NUMERIC(21,6),							
+                    Amount NUMERIC(21,6),							
+                    FunctionalCurrencyCode NVARCHAR(50),							
+                    JEDescription NVARCHAR(200),							
+                    JELineDescription NVARCHAR(200),							
+                    PreparerID NVARCHAR(100),							
+                    ApproverID NVARCHAR(100)							
+                    )							
+                    --****************************************************Cursor Start***************************************************							
+                    DECLARE cur CURSOR FOR 							
+                    SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
+                    DECLARE @GLAccountNumber VARCHAR(100)							
+                    DECLARE @Debit_Credit VARCHAR(100)							
+                    DECLARE @AL_GLAccountNumber VARCHAR(100)							
+                    DECLARE @AL_Debit_Credit VARCHAR(100)							
+                    OPEN cur							
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    WHILE(@@FETCH_STATUS <> -1)							
+                    BEGIN;							
+                    IF (@Debit_Credit = 'Debit')							
+                        IF (@AL_Debit_Credit='Debit') /* Debit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 					
+                            JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1					
+                            WHERE JE1.JENumber IN (					
+                                SELECT DISTINCT(JE1_1.JENumber)				
+                                FROM #JEData JE1_1				
+                                WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0				
+                                ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0				
+                        ELSE /* Debit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 					
+                            JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2					
+                            WHERE JE2.JENumber IN (					
+                                SELECT DISTINCT(JE2_1.JENumber)				
+                                FROM #JEData JE2_1				
+                                WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0				
+                                ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0				
+                    ELSE							
+                        IF (@AL_Debit_Credit='Debit') /* Credit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 					
+                            JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3					
+                            WHERE JE3.JENumber IN (					
+                                SELECT DISTINCT(JE3_1.JENumber)				
+                                FROM #JEData JE3_1				
+                                WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0				
+                                ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0				
+                        ELSE /* Credit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 					
+                            JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4					
+                            WHERE JE4.JENumber IN (					
+                                SELECT DISTINCT(JE4_1.JENumber)				
+                                FROM #JEData JE4_1				
+                                WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0				
+                                ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0				
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    END;							
+                    Close cur;							
+                    Deallocate cur							
+                    --****************************************************Filtered Result_1***************************************************							
+                    SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        #result.GLAccountNumber,						
+                        COA.GLAccountName,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID						
+                    FROM #result 							
+                    LEFT JOIN #COAData COA							
+                    ON #result.GLAccountNumber = COA.GLAccountNumber
+                    DROP TABLE #filter, #JEData,#result,#COAData
 
-                # sql문 수정
-                sql = '''
-                        SET NOCOUNT ON
-                        --****************************************************Filter Table***************************************************							
-                        CREATE TABLE #filter							
-                        (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))							
-                        INSERT INTO #filter							
-                        VALUES							
-                        ({cursor})							
-                        --****************************************************Insert ProjectID***************************************************							
-                        SELECT JENumber,							
-                            JELineNumber,						
-                            EffectiveDate,						
-                            EntryDate,						
-                            Period,						
-                            GLAccountNumber,						
-                            Debit,						
-                            Credit,						
-                            Amount,						
-                            FunctionalCurrencyCode,						
-                            JEDescription,						
-                            JELineDescription,						
-                            PreparerID,						
-                            ApproverID  INTO #JEData						
-                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
-                        WHERE JE.Year = {year}
-                        SELECT * INTO #COAData							
-                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
-                        --****************************************************Result Table***************************************************							
-                        CREATE TABLE #result							
-                        (JENumber NVARCHAR(100),							
-                        JELineNumber BIGINT,							
-                        EffectiveDate DATE,							
-                        EntryDate DATE,							
-                        Period NVARCHAR(25),							
-                        GLAccountNumber NVARCHAR(100),							
-                        Debit NUMERIC(21,6),							
-                        Credit NUMERIC(21,6),							
-                        Amount NUMERIC(21,6),							
-                        FunctionalCurrencyCode NVARCHAR(50),							
-                        JEDescription NVARCHAR(200),							
-                        JELineDescription NVARCHAR(200),							
-                        PreparerID NVARCHAR(100),							
-                        ApproverID NVARCHAR(100)							
-                        )							
-                        --****************************************************Cursor Start***************************************************							
-                        DECLARE cur CURSOR FOR 							
-                        SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
-                        DECLARE @GLAccountNumber VARCHAR(100)							
-                        DECLARE @Debit_Credit VARCHAR(100)							
-                        DECLARE @AL_GLAccountNumber VARCHAR(100)							
-                        DECLARE @AL_Debit_Credit VARCHAR(100)							
-                        OPEN cur							
-                        Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
-                        WHILE(@@FETCH_STATUS <> -1)							
-                        BEGIN;							
-                        IF (@Debit_Credit = 'Debit')							
-                            IF (@AL_Debit_Credit='Debit') /* Debit/Debit */						
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 					
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
-                                SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 					
-                                JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1					
-                                WHERE JE1.JENumber IN (					
-                                    SELECT DISTINCT(JE1_1.JENumber)				
-                                    FROM #JEData JE1_1				
-                                    WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0				
-                                    ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0				
-                            ELSE /* Debit/Credit */						
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
-                                SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 					
-                                JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2					
-                                WHERE JE2.JENumber IN (					
-                                    SELECT DISTINCT(JE2_1.JENumber)				
-                                    FROM #JEData JE2_1				
-                                    WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0				
-                                    ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0				
-                        ELSE							
-                            IF (@AL_Debit_Credit='Debit') /* Credit/Debit */						
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
-                                SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 					
-                                JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3					
-                                WHERE JE3.JENumber IN (					
-                                    SELECT DISTINCT(JE3_1.JENumber)				
-                                    FROM #JEData JE3_1				
-                                    WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0				
-                                    ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0				
-                            ELSE /* Credit/Credit */						
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
-                                SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 					
-                                JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4					
-                                WHERE JE4.JENumber IN (					
-                                    SELECT DISTINCT(JE4_1.JENumber)				
-                                    FROM #JEData JE4_1				
-                                    WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0				
-                                    ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0				
-                        Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
-                        END;							
-                        Close cur;							
-                        Deallocate cur							
-                        --****************************************************Filtered Result_1***************************************************							
-                        SELECT JENumber,							
-                            JELineNumber,						
-                            EffectiveDate,						
-                            EntryDate,						
-                            Period,						
-                            #result.GLAccountNumber,						
-                            COA.GLAccountName,						
-                            Debit,						
-                            Credit,						
-                            Amount,						
-                            FunctionalCurrencyCode,						
-                            JEDescription,						
-                            JELineDescription,						
-                            PreparerID,						
-                            ApproverID						
-                        FROM #result 							
-                        LEFT JOIN #COAData COA							
-                        ON #result.GLAccountNumber = COA.GLAccountNumber
-                        DROP TABLE #filter, #JEData,#result,#COAData				
-                           '''.format(field=self.selected_project_id, cursor=tempcursor, year=self.pname_year)
+                    '''.format(field=self.selected_project_id, cursor=tempcursor, year=self.pname_year, TE=self.temp_TE)
 
-            elif self.rbtn2.isChecked():
-                sql = '''
-                        SET NOCOUNT ON
-                    -- Filtered JE				
-                        --****************************************************Filter Table***************************************************			
-                        CREATE TABLE #filter			
-                        (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))			
-                        INSERT INTO #filter			
-                        VALUES			
-                        ({cursor})			
-                        --****************************************************Insert ProjectID***************************************************			
-                        SELECT JENumber,			
-                            JELineNumber,		
-                            EffectiveDate,		
-                            EntryDate,		
-                            Period,		
-                            GLAccountNumber,		
-                            Debit,		
-                            Credit,		
-                            Amount,		
-                            FunctionalCurrencyCode,		
-                            JEDescription,		
-                            JELineDescription,		
-                            PreparerID,		
-                            ApproverID  INTO #JEData		
-                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
-                        WHERE JE.Year = {year}
-                        SELECT * INTO #COAData			
-                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]			
-                        --****************************************************Result Table***************************************************			
-                        CREATE TABLE #result			
-                        (JENumber NVARCHAR(100),			
-                        JELineNumber BIGINT,			
-                        EffectiveDate DATE,			
-                        EntryDate DATE,			
-                        Period NVARCHAR(25),			
-                        GLAccountNumber NVARCHAR(100),			
-                        Debit NUMERIC(21,6),			
-                        Credit NUMERIC(21,6),			
-                        Amount NUMERIC(21,6),			
-                        FunctionalCurrencyCode NVARCHAR(50),			
-                        JEDescription NVARCHAR(200),			
-                        JELineDescription NVARCHAR(200),			
-                        PreparerID NVARCHAR(100),			
-                        ApproverID NVARCHAR(100)			
-                        )			
-                        --****************************************************Cursor Start***************************************************			
-                        DECLARE cur CURSOR FOR 			
-                        SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter			
-                        DECLARE @GLAccountNumber VARCHAR(100)			
-                        DECLARE @Debit_Credit VARCHAR(100)			
-                        DECLARE @AL_GLAccountNumber VARCHAR(100)			
-                        DECLARE @AL_Debit_Credit VARCHAR(100)			
-                        OPEN cur			
-                        Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
-                        WHILE(@@FETCH_STATUS <> -1)			
-                        BEGIN;			
-                        IF (@Debit_Credit = 'Debit')			
-                            IF (@AL_Debit_Credit='Debit') /* Debit/Debit */		
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 	
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
-                                SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 	
-                                JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1	
-                                WHERE JE1.JENumber IN (	
-                                    SELECT DISTINCT(JE1_1.JENumber)
-                                    FROM #JEData JE1_1
-                                    WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0
-                                    ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0
-                            ELSE /* Debit/Credit */		
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
-                                SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 	
-                                JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2	
-                                WHERE JE2.JENumber IN (	
-                                    SELECT DISTINCT(JE2_1.JENumber)
-                                    FROM #JEData JE2_1
-                                    WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0
-                                    ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0
-                        ELSE			
-                            IF (@AL_Debit_Credit='Debit') /* Credit/Debit */		
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
-                                SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 	
-                                JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3	
-                                WHERE JE3.JENumber IN (	
-                                    SELECT DISTINCT(JE3_1.JENumber)
-                                    FROM #JEData JE3_1
-                                    WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0
-                                    ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0
-                            ELSE /* Credit/Credit */		
-                                INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
-                                FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
-                                SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 	
-                                JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4	
-                                WHERE JE4.JENumber IN (	
-                                    SELECT DISTINCT(JE4_1.JENumber)
-                                    FROM #JEData JE4_1
-                                    WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0
-                                    ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0
-                        Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
-                        END;			
-                        Close cur;			
-                        Deallocate cur			
-                        --****************************************************Filtered 전표추출***************************************************			
-                        SELECT JENumber,			
-                            JELineNumber,		
-                            EffectiveDate,		
-                            EntryDate,		
-                            Period,		
-                            #JEData.GLAccountNumber,		
-                            #COAData.GLAccountName,		
-                            Debit,		
-                            Credit,		
-                            Amount,		
-                            FunctionalCurrencyCode,		
-                            JEDescription,		
-                            JELineDescription,		
-                            PreparerID,		
-                            ApproverID		
-                        FROM #JEData,#COAData			
-                        WHERE #JEData.GLAccountNumber = #COAData.GLAccountNumber AND JENumber IN 			
-                            (		
-                            select distinct JENumber		
-                            from #result,#COAData		
-                            where #result.GLAccountNumber = #COAData.GLAccountNumber		
-                            )		
-                        ORDER BY JENumber,JELineNumber			
-                        DROP TABLE #filter, #JEData,#result,#COAData	
-                            '''.format(field=self.selected_project_id, cursor=tempcursor, year=self.pname_year)
+                elif self.rbtn2.isChecked():  # JE
+                    sql = '''
+                                SET NOCOUNT ON
+					--****************************************************Filter Table***************************************************			
+					CREATE TABLE #filter			
+					(GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))			
+					INSERT INTO #filter			
+					VALUES			
+					({cursor})			
+					--****************************************************Insert ProjectID***************************************************			
+					SELECT JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						GLAccountNumber,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID  INTO #JEData		
+					FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+					WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE}
+
+					SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData2				
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                    WHERE JE.JENumber IN (
+										 SELECT DISTINCT JENumber
+										 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+										 WHERE ABS(Amount) > {TE}
+										 ) AND JE.Year = {year}
+
+					SELECT * INTO #COAData			
+					FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]			
+					--****************************************************Result Table***************************************************			
+					CREATE TABLE #result			
+					(JENumber NVARCHAR(100),			
+					JELineNumber BIGINT,			
+					EffectiveDate DATE,			
+					EntryDate DATE,			
+					Period NVARCHAR(25),			
+					GLAccountNumber NVARCHAR(100),			
+					Debit NUMERIC(21,6),			
+					Credit NUMERIC(21,6),			
+					Amount NUMERIC(21,6),			
+					FunctionalCurrencyCode NVARCHAR(50),			
+					JEDescription NVARCHAR(200),			
+					JELineDescription NVARCHAR(200),			
+					PreparerID NVARCHAR(100),			
+					ApproverID NVARCHAR(100)			
+					)			
+					--****************************************************Cursor Start***************************************************			
+					DECLARE cur CURSOR FOR 			
+					SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter			
+					DECLARE @GLAccountNumber VARCHAR(100)			
+					DECLARE @Debit_Credit VARCHAR(100)			
+					DECLARE @AL_GLAccountNumber VARCHAR(100)			
+					DECLARE @AL_Debit_Credit VARCHAR(100)			
+					OPEN cur			
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					WHILE(@@FETCH_STATUS <> -1)			
+					BEGIN;			
+					IF (@Debit_Credit = 'Debit')			
+						IF (@AL_Debit_Credit='Debit') /* Debit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 	
+							JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1	
+							WHERE JE1.JENumber IN (	
+								SELECT DISTINCT(JE1_1.JENumber)
+								FROM #JEData JE1_1
+								WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0
+								) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0
+						ELSE /* Debit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 	
+							JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2	
+							WHERE JE2.JENumber IN (	
+								SELECT DISTINCT(JE2_1.JENumber)
+								FROM #JEData JE2_1
+								WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0
+								) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0
+					ELSE			
+						IF (@AL_Debit_Credit='Debit') /* Credit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 	
+							JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3	
+							WHERE JE3.JENumber IN (	
+								SELECT DISTINCT(JE3_1.JENumber)
+								FROM #JEData JE3_1
+								WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0
+								) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0
+						ELSE /* Credit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 	
+							JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4	
+							WHERE JE4.JENumber IN (	
+								SELECT DISTINCT(JE4_1.JENumber)
+								FROM #JEData JE4_1
+								WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0
+								) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					END;			
+					Close cur;			
+					Deallocate cur			
+					--****************************************************Filtered 전표추출***************************************************			
+					SELECT JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						#JEData2.GLAccountNumber,		
+						#COAData.GLAccountName,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID		
+					FROM #JEData2,#COAData			
+					WHERE #JEData2.GLAccountNumber = #COAData.GLAccountNumber AND JENumber IN 			
+						(		
+						select distinct JENumber		
+						from #result,#COAData		
+						where #result.GLAccountNumber = #COAData.GLAccountNumber		
+						)		
+					ORDER BY JENumber,JELineNumber			
+					DROP TABLE #filter, #JEData,#result,#COAData, #JEData2
+                                        '''.format(field=self.selected_project_id, cursor=tempcursor,
+                                                   year=self.pname_year, TE=self.temp_TE)
+
+            elif not (self.checkF.isChecked()) and self.checkP.isChecked():  # 회계일자
+                if self.rbtn1.isChecked():  # JE Line
+                    sql = '''
+                            SET NOCOUNT ON
+                    --****************************************************Filter Table***************************************************							
+                    CREATE TABLE #filter							
+                    (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))							
+                    INSERT INTO #filter							
+                    VALUES							
+                    ({cursor})							
+                    --****************************************************Insert ProjectID***************************************************							
+                    SELECT Concat(JENumber,'-',Effectivedate) AS JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData						
+                    FROM [47759446-5de8-49c9-b4da-3ca5ed2d4783_Import_CY_01].[dbo].[pbcJournalEntries] JE
+					WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE}
+                    SELECT * INTO #COAData							
+                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]						
+                    --****************************************************Result Table***************************************************							
+                    CREATE TABLE #result							
+                    (JENumber NVARCHAR(100),							
+                    JELineNumber BIGINT,							
+                    EffectiveDate DATE,							
+                    EntryDate DATE,							
+                    Period NVARCHAR(25),							
+                    GLAccountNumber NVARCHAR(100),							
+                    Debit NUMERIC(21,6),							
+                    Credit NUMERIC(21,6),							
+                    Amount NUMERIC(21,6),							
+                    FunctionalCurrencyCode NVARCHAR(50),							
+                    JEDescription NVARCHAR(200),							
+                    JELineDescription NVARCHAR(200),							
+                    PreparerID NVARCHAR(100),							
+                    ApproverID NVARCHAR(100)							
+                    )							
+                    --****************************************************Cursor Start***************************************************							
+                    DECLARE cur CURSOR FOR 							
+                    SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
+                    DECLARE @GLAccountNumber VARCHAR(100)							
+                    DECLARE @Debit_Credit VARCHAR(100)							
+                    DECLARE @AL_GLAccountNumber VARCHAR(100)							
+                    DECLARE @AL_Debit_Credit VARCHAR(100)							
+                    OPEN cur							
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    WHILE(@@FETCH_STATUS <> -1)							
+                    BEGIN;							
+                    IF (@Debit_Credit = 'Debit')							
+                        IF (@AL_Debit_Credit='Debit') /* Debit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 					
+                            JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1					
+                            WHERE JE1.JENumber IN (					
+                                SELECT DISTINCT(JE1_1.JENumber)				
+                                FROM #JEData JE1_1				
+                                WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0				
+                                ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0				
+                        ELSE /* Debit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 					
+                            JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2					
+                            WHERE JE2.JENumber IN (					
+                                SELECT DISTINCT(JE2_1.JENumber)				
+                                FROM #JEData JE2_1				
+                                WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0				
+                                ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0				
+                    ELSE							
+                        IF (@AL_Debit_Credit='Debit') /* Credit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 					
+                            JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3					
+                            WHERE JE3.JENumber IN (					
+                                SELECT DISTINCT(JE3_1.JENumber)				
+                                FROM #JEData JE3_1				
+                                WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0				
+                                ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0				
+                        ELSE /* Credit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 					
+                            JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4					
+                            WHERE JE4.JENumber IN (					
+                                SELECT DISTINCT(JE4_1.JENumber)				
+                                FROM #JEData JE4_1				
+                                WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0				
+                                ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0				
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    END;							
+                    Close cur;							
+                    Deallocate cur							
+                    --****************************************************Filtered Result_1***************************************************							
+                    SELECT SUBSTRING(JENumber, 1, CHARINDEX('-', JENumber)-1) as JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        #result.GLAccountNumber,						
+                        COA.GLAccountName,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID						
+                    FROM #result 							
+                    LEFT JOIN #COAData COA							
+                    ON #result.GLAccountNumber = COA.GLAccountNumber
+                    DROP TABLE #filter, #JEData,#result,#COAData
+                                        '''.format(field=self.selected_project_id, cursor=tempcursor,
+                                                   year=self.pname_year, TE=self.temp_TE)
+
+                elif self.rbtn2.isChecked():  # JE
+                    sql = '''
+                                SET NOCOUNT ON
+					--****************************************************Filter Table***************************************************			
+					CREATE TABLE #filter			
+					(GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))			
+					INSERT INTO #filter			
+					VALUES			
+					({cursor})			
+					--****************************************************Insert ProjectID***************************************************			
+					SELECT Concat(JENumber,'-',Effectivedate) AS JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						GLAccountNumber,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID  INTO #JEData		
+					FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+					WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE}
+
+
+					SELECT Concat(JENumber,'-',Effectivedate) AS JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData2				
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                    WHERE JE.JENumber IN (
+										 SELECT DISTINCT JENumber
+										 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+										 WHERE ABS(Amount) > {TE}
+										 ) AND JE.Year = {year}
+
+
+					SELECT * INTO #COAData			
+					FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]			
+					--****************************************************Result Table***************************************************			
+					CREATE TABLE #result			
+					(JENumber NVARCHAR(100),			
+					JELineNumber BIGINT,			
+					EffectiveDate DATE,			
+					EntryDate DATE,			
+					Period NVARCHAR(25),			
+					GLAccountNumber NVARCHAR(100),			
+					Debit NUMERIC(21,6),			
+					Credit NUMERIC(21,6),			
+					Amount NUMERIC(21,6),			
+					FunctionalCurrencyCode NVARCHAR(50),			
+					JEDescription NVARCHAR(200),			
+					JELineDescription NVARCHAR(200),			
+					PreparerID NVARCHAR(100),			
+					ApproverID NVARCHAR(100)			
+					)			
+					--****************************************************Cursor Start***************************************************			
+					DECLARE cur CURSOR FOR 			
+					SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter			
+					DECLARE @GLAccountNumber VARCHAR(100)			
+					DECLARE @Debit_Credit VARCHAR(100)			
+					DECLARE @AL_GLAccountNumber VARCHAR(100)			
+					DECLARE @AL_Debit_Credit VARCHAR(100)			
+					OPEN cur			
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					WHILE(@@FETCH_STATUS <> -1)			
+					BEGIN;			
+					IF (@Debit_Credit = 'Debit')			
+						IF (@AL_Debit_Credit='Debit') /* Debit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 	
+							JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1	
+							WHERE JE1.JENumber IN (	
+								SELECT DISTINCT(JE1_1.JENumber)
+								FROM #JEData JE1_1
+								WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0
+								) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0
+						ELSE /* Debit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 	
+							JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2	
+							WHERE JE2.JENumber IN (	
+								SELECT DISTINCT(JE2_1.JENumber)
+								FROM #JEData JE2_1
+								WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0
+								) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0
+					ELSE			
+						IF (@AL_Debit_Credit='Debit') /* Credit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 	
+							JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3	
+							WHERE JE3.JENumber IN (	
+								SELECT DISTINCT(JE3_1.JENumber)
+								FROM #JEData JE3_1
+								WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0
+								) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0
+						ELSE /* Credit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 	
+							JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4	
+							WHERE JE4.JENumber IN (	
+								SELECT DISTINCT(JE4_1.JENumber)
+								FROM #JEData JE4_1
+								WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0
+								) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					END;			
+					Close cur;			
+					Deallocate cur			
+					--****************************************************Filtered 전표추출***************************************************			
+					SELECT SUBSTRING(JENumber, 1, CHARINDEX('-', JENumber)-1) as JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						#JEData2.GLAccountNumber,		
+						#COAData.GLAccountName,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID		
+					FROM #JEData2,#COAData			
+					WHERE #JEData2.GLAccountNumber = #COAData.GLAccountNumber AND JENumber IN 			
+						(		
+						select distinct JENumber		
+						from #result,#COAData		
+						where #result.GLAccountNumber = #COAData.GLAccountNumber		
+						)		
+					ORDER BY JENumber,JELineNumber			
+					DROP TABLE #filter, #JEData, #JEData2, #result, #COAData
+                                        '''.format(field=self.selected_project_id, cursor=tempcursor,
+                                                   year=self.pname_year, TE=self.temp_TE)
+
+            elif self.checkF.isChecked() and not (self.checkP.isChecked()):  # 기능영역
+                if self.rbtn1.isChecked():  # JE Line
+                    sql = '''
+
+                            SET NOCOUNT ON
+                    --****************************************************Filter Table***************************************************							
+                    CREATE TABLE #filter							
+                    (GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))							
+                    INSERT INTO #filter							
+                    VALUES							
+                    ({cursor})							
+                    --****************************************************Insert ProjectID***************************************************							
+                    SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData						
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                    WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE}
+                    SELECT GLAccountNumber, MAX(GLAccountName) AS GLAccountName INTO #COAData							
+                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]		
+					Group by GLAccountName
+                    --****************************************************Result Table***************************************************							
+                    CREATE TABLE #result							
+                    (JENumber NVARCHAR(100),							
+                    JELineNumber BIGINT,							
+                    EffectiveDate DATE,							
+                    EntryDate DATE,							
+                    Period NVARCHAR(25),							
+                    GLAccountNumber NVARCHAR(100),							
+                    Debit NUMERIC(21,6),							
+                    Credit NUMERIC(21,6),							
+                    Amount NUMERIC(21,6),							
+                    FunctionalCurrencyCode NVARCHAR(50),							
+                    JEDescription NVARCHAR(200),							
+                    JELineDescription NVARCHAR(200),							
+                    PreparerID NVARCHAR(100),							
+                    ApproverID NVARCHAR(100)							
+                    )							
+                    --****************************************************Cursor Start***************************************************							
+                    DECLARE cur CURSOR FOR 							
+                    SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter							
+                    DECLARE @GLAccountNumber VARCHAR(100)							
+                    DECLARE @Debit_Credit VARCHAR(100)							
+                    DECLARE @AL_GLAccountNumber VARCHAR(100)							
+                    DECLARE @AL_Debit_Credit VARCHAR(100)							
+                    OPEN cur							
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    WHILE(@@FETCH_STATUS <> -1)							
+                    BEGIN;							
+                    IF (@Debit_Credit = 'Debit')							
+                        IF (@AL_Debit_Credit='Debit') /* Debit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 					
+                            JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1					
+                            WHERE JE1.JENumber IN (					
+                                SELECT DISTINCT(JE1_1.JENumber)				
+                                FROM #JEData JE1_1				
+                                WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0				
+                                ) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0				
+                        ELSE /* Debit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 					
+                            JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2					
+                            WHERE JE2.JENumber IN (					
+                                SELECT DISTINCT(JE2_1.JENumber)				
+                                FROM #JEData JE2_1				
+                                WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0				
+                                ) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0				
+                    ELSE							
+                        IF (@AL_Debit_Credit='Debit') /* Credit/Debit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 					
+                            JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3					
+                            WHERE JE3.JENumber IN (					
+                                SELECT DISTINCT(JE3_1.JENumber)				
+                                FROM #JEData JE3_1				
+                                WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0				
+                                ) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0				
+                        ELSE /* Credit/Credit */						
+                            INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 					
+                            FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)					
+                            SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 					
+                            JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4					
+                            WHERE JE4.JENumber IN (					
+                                SELECT DISTINCT(JE4_1.JENumber)				
+                                FROM #JEData JE4_1				
+                                WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0				
+                                ) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0				
+                    Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit							
+                    END;							
+                    Close cur;							
+                    Deallocate cur							
+                    --****************************************************Filtered Result_1***************************************************							
+                    SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        #result.GLAccountNumber,						
+                        COA.GLAccountName,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID						
+                    FROM #result 							
+                    LEFT JOIN #COAData COA							
+                    ON #result.GLAccountNumber = COA.GLAccountNumber
+                    DROP TABLE #filter, #JEData,#result,#COAData
+
+                                        '''.format(field=self.selected_project_id, cursor=tempcursor,
+                                                   year=self.pname_year, TE=self.temp_TE)
+
+                elif self.rbtn2.isChecked():  # JE
+                    sql = '''
+                            SET NOCOUNT ON
+					--****************************************************Filter Table***************************************************			
+					CREATE TABLE #filter			
+					(GLAccountNumber VARCHAR(100), Debit_Credit VARCHAR(100), AL_GLAccountNumber VARCHAR(100), AL_Debit_Credit VARCHAR(100))			
+					INSERT INTO #filter			
+					VALUES			
+					({cursor})			
+					--****************************************************Insert ProjectID***************************************************			
+					SELECT JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						GLAccountNumber,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID  INTO #JEData		
+					FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+					WHERE JE.Year = {year} AND ABS(JE.Amount) > {TE}
+
+					SELECT JENumber,							
+                        JELineNumber,						
+                        EffectiveDate,						
+                        EntryDate,						
+                        Period,						
+                        GLAccountNumber,						
+                        Debit,						
+                        Credit,						
+                        Amount,						
+                        FunctionalCurrencyCode,						
+                        JEDescription,						
+                        JELineDescription,						
+                        PreparerID,						
+                        ApproverID  INTO #JEData2				
+                    FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JE
+                    WHERE JE.JENumber IN (
+										 SELECT DISTINCT JENumber
+										 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+										 WHERE ABS(Amount) > {TE}
+										 ) AND JE.Year = {year}
+
+                    SELECT GLAccountNumber, MAX(GLAccountName) AS GLAccountName INTO #COAData							
+                    FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]		
+					Group by GLAccountName		
+					--****************************************************Result Table***************************************************			
+					CREATE TABLE #result			
+					(JENumber NVARCHAR(100),			
+					JELineNumber BIGINT,			
+					EffectiveDate DATE,			
+					EntryDate DATE,			
+					Period NVARCHAR(25),			
+					GLAccountNumber NVARCHAR(100),			
+					Debit NUMERIC(21,6),			
+					Credit NUMERIC(21,6),			
+					Amount NUMERIC(21,6),			
+					FunctionalCurrencyCode NVARCHAR(50),			
+					JEDescription NVARCHAR(200),			
+					JELineDescription NVARCHAR(200),			
+					PreparerID NVARCHAR(100),			
+					ApproverID NVARCHAR(100)			
+					)			
+					--****************************************************Cursor Start***************************************************			
+					DECLARE cur CURSOR FOR 			
+					SELECT GLAccountNumber, Debit_Credit, AL_GLAccountNumber, AL_Debit_Credit FROM #filter			
+					DECLARE @GLAccountNumber VARCHAR(100)			
+					DECLARE @Debit_Credit VARCHAR(100)			
+					DECLARE @AL_GLAccountNumber VARCHAR(100)			
+					DECLARE @AL_Debit_Credit VARCHAR(100)			
+					OPEN cur			
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					WHILE(@@FETCH_STATUS <> -1)			
+					BEGIN;			
+					IF (@Debit_Credit = 'Debit')			
+						IF (@AL_Debit_Credit='Debit') /* Debit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit,Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE1.JENumber, JE1.JELineNumber, JE1.EffectiveDate, JE1.EntryDate, JE1.Period, JE1.GLAccountNumber, 	
+							JE1.Debit,JE1.Credit,JE1.Amount, JE1.FunctionalCurrencyCode, JE1.JEDescription, JE1.JELineDescription, JE1.PreparerID, JE1.ApproverID FROM #JEData JE1	
+							WHERE JE1.JENumber IN (	
+								SELECT DISTINCT(JE1_1.JENumber)
+								FROM #JEData JE1_1
+								WHERE JE1_1.GLAccountNumber = @GLAccountNumber AND JE1_1.Debit<>0
+								) AND JE1.GLAccountNumber = @AL_GLAccountNumber AND JE1.Debit<>0
+						ELSE /* Debit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE2.JENumber, JE2.JELineNumber, JE2.EffectiveDate, JE2.EntryDate, JE2.Period, JE2.GLAccountNumber, 	
+							JE2.Debit,JE2.Credit,JE2.Amount, JE2.FunctionalCurrencyCode, JE2.JEDescription, JE2.JELineDescription, JE2.PreparerID, JE2.ApproverID FROM #JEData JE2	
+							WHERE JE2.JENumber IN (	
+								SELECT DISTINCT(JE2_1.JENumber)
+								FROM #JEData JE2_1
+								WHERE JE2_1.GLAccountNumber = @GLAccountNumber AND JE2_1.Debit<>0
+								) AND JE2.GLAccountNumber = @AL_GLAccountNumber AND JE2.Credit<>0
+					ELSE			
+						IF (@AL_Debit_Credit='Debit') /* Credit/Debit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE3.JENumber, JE3.JELineNumber, JE3.EffectiveDate, JE3.EntryDate, JE3.Period, JE3.GLAccountNumber, 	
+							JE3.Debit,JE3.Credit,JE3.Amount, JE3.FunctionalCurrencyCode, JE3.JEDescription, JE3.JELineDescription, JE3.PreparerID, JE3.ApproverID FROM #JEData JE3	
+							WHERE JE3.JENumber IN (	
+								SELECT DISTINCT(JE3_1.JENumber)
+								FROM #JEData JE3_1
+								WHERE JE3_1.GLAccountNumber = @GLAccountNumber AND JE3_1.Credit<>0
+								) AND JE3.GLAccountNumber = @AL_GLAccountNumber AND JE3.Debit<>0
+						ELSE /* Credit/Credit */		
+							INSERT INTO #result (JENumber, JELineNumber, EffectiveDate, EntryDate, Period, GLAccountNumber,Debit,Credit, Amount, 	
+							FunctionalCurrencyCode, JEDescription, JELineDescription, PreparerID, ApproverID)	
+							SELECT JE4.JENumber, JE4.JELineNumber, JE4.EffectiveDate, JE4.EntryDate, JE4.Period, JE4.GLAccountNumber, 	
+							JE4.Debit,JE4.Credit,JE4.Amount, JE4.FunctionalCurrencyCode, JE4.JEDescription, JE4.JELineDescription, JE4.PreparerID, JE4.ApproverID FROM #JEData JE4	
+							WHERE JE4.JENumber IN (	
+								SELECT DISTINCT(JE4_1.JENumber)
+								FROM #JEData JE4_1
+								WHERE JE4_1.GLAccountNumber = @GLAccountNumber AND JE4_1.Credit<>0
+								) AND JE4.GLAccountNumber = @AL_GLAccountNumber AND JE4.Credit<>0
+					Fetch Next From cur INTO @GLAccountNumber, @Debit_Credit, @AL_GLAccountNumber, @AL_Debit_Credit			
+					END;			
+					Close cur;			
+					Deallocate cur			
+					--****************************************************Filtered 전표추출***************************************************			
+					SELECT JENumber,			
+						JELineNumber,		
+						EffectiveDate,		
+						EntryDate,		
+						Period,		
+						#JEData2.GLAccountNumber,		
+						#COAData.GLAccountName,		
+						Debit,		
+						Credit,		
+						Amount,		
+						FunctionalCurrencyCode,		
+						JEDescription,		
+						JELineDescription,		
+						PreparerID,		
+						ApproverID		
+					FROM #JEData2,#COAData			
+					WHERE #JEData2.GLAccountNumber = #COAData.GLAccountNumber AND JENumber IN 			
+						(		
+						select distinct JENumber		
+						from #result,#COAData		
+						where #result.GLAccountNumber = #COAData.GLAccountNumber		
+						)		
+					ORDER BY JENumber,JELineNumber			
+					DROP TABLE #filter, #JEData,#result,#COAData, #JEData2
+                                        '''.format(field=self.selected_project_id, cursor=tempcursor,
+                                                   year=self.pname_year, TE=self.temp_TE)
 
             readlist = pd.read_sql(sql, self.cnxn)
             dflist.append(readlist)
