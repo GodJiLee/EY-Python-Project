@@ -3361,7 +3361,6 @@ class MyApp(QWidget):
         self.D12_Cost2 = QLineEdit(self.dialog12)
         self.D12_Cost2.setStyleSheet("background-color: white;")
         self.D12_Cost2.setPlaceholderText('중요성 금액을 입력하세요')
-        self.D12_Cost2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
         # JE Line / JE 라디오 버튼
         self.rbtn1 = QRadioButton('JE Line', self.dialog12)
@@ -3783,7 +3782,7 @@ class MyApp(QWidget):
 
         self.D14_Key = QLineEdit(self.dialog14)
         self.D14_Key.setStyleSheet("background-color: white;")
-        self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요, "," 구분자로 여러 단어 동시 검색이 가능합니다')
+        self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요(구분자:",")')
 
         labelTE = QLabel('중요성 금액 : ', self.dialog14)
         labelTE.setStyleSheet("color: white;")
@@ -3937,8 +3936,6 @@ class MyApp(QWidget):
         self.progressLabel.setText(elapsetime)
 
     def pClose(self):
-        self.close()
-        self.Action.close()
         for a in self.dialoglist:
             if a == 4:
                 self.dialog4.close()
@@ -3960,6 +3957,8 @@ class MyApp(QWidget):
                 self.dialog13.close()
             elif a == 14:
                 self.dialog14.close()
+        self.Action.close()
+        sys.exit()
 
     def doAction(self):
         self.Timer()
@@ -4435,7 +4434,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Result')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4443,7 +4442,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4453,12 +4452,12 @@ class MyApp(QWidget):
 
         elif len(self.dataframe) > 300:
             if self.rbtn1.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4467,12 +4466,12 @@ class MyApp(QWidget):
 
         else:
             if self.rbtn1.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "총 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다.<br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -5421,44 +5420,41 @@ class MyApp(QWidget):
             self.th13.start()
 
     def ThreadC(self):
-        self.temp_TE = self.D12_Cost2.text()
         self.tempSheet = self.D12_Sheetc.text()
         self.cursorpath = self.cursorCondition.text()
-        self.wbC = self.wb2.parse(self.listCursor.currentText())
-
+        self.temp_TE = self.D12_Cost2.text()
         if self.temp_TE == '':
             self.temp_TE = 0
-
-        if self.tempSheet == '' or self.cursorpath == '':
+        if self.listCursor.currentText() == '':
             self.alertbox_open()
-            # 시트명 중복 확인
-        elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
-            self.alertbox_open5()
-
-        elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
-            self.alertbox_open5()
-
-        elif self.checkF2.isChecked() and self.checkP2.isChecked():
-            self.alertbox_open6()
-
-        elif os.path.isfile(self.cursorpath) == False:
-            self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
-        elif len(self.wbC.columns) <= 12:
-            self.alertbox_open4('Cursor 필드가 존재하지 않습니다.')
-        elif self.wbC.iloc[:, 12].empty == True:
-            self.alertbox_open4('Check된 조건이 없습니다.')
-        elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
-            self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
         else:
-            try:
-                int(self.temp_TE)
+            self.wbC = self.wb2.parse(self.listCursor.currentText())
 
-                self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
-                self.doAction()
-                self.thC = Thread(target=self.extButtonClickedC)
-                self.thC.start()
-            except ValueError:
-                self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다.')
+            if self.tempSheet == '' or self.cursorpath == '':
+                self.alertbox_open()
+                # 시트명 중복 확인
+            elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
+                self.alertbox_open5()
+
+            elif self.rbtn2.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Journals') != -1:
+                self.alertbox_open5()
+
+            elif os.path.isfile(self.cursorpath) == False:
+                self.MessageBox_Open("경로에 해당 파일이 존재하지 않습니다.")
+            elif len(self.wbC.columns) <= 12:
+                self.alertbox_open4('Cursor 필드가 존재하지 않습니다.')
+            elif self.wbC.iloc[:, 12].empty == True:
+                self.alertbox_open4('Check된 조건이 없습니다.')
+            elif self.wbC.iloc[:, [0, 3, 5, 8]].isnull().any().any() == True:
+                self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
+            else:
+                try:
+                    self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
+                    self.doAction()
+                    self.thC = Thread(target=self.extButtonClickedC)
+                    self.thC.start()
+                except ValueError:
+                    self.alertbox_open4('필요 조건필드의 데이터 타입을 확인 바랍니다.')
 
     def Thread9(self):
         self.tempN = self.D9_N.text()  # 필수값
@@ -5588,13 +5584,16 @@ class MyApp(QWidget):
         self.baseKey_clean = []
         for a in self.baseKey:
             a = a.strip()
-            b = "JournalEntries.JEDescription LIKE N'%" + a + "%' OR JournalEntries.JELineDescription LIKE N'%" + a + "%'"
+            if a == '':
+                b = "JournalEntries.JEDescription LIKE '' OR JournalEntries.JELineDescription LIKE ''"
+            else:
+                b = "JournalEntries.JEDescription LIKE N'%" + a + "%' OR JournalEntries.JELineDescription LIKE N'%" + a + "%'"
             self.baseKey_clean.append(b)
         self.tempKey = str(' OR '.join(self.baseKey_clean))
         self.tempTE = self.D14_TE.text()
         self.tempSheet = self.D14_Sheet.text()
 
-        if self.tempSheet == '' or self.baseKey_clean == ['']:
+        if self.tempSheet == '' :
             self.alertbox_open()
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
