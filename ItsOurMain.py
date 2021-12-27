@@ -4389,25 +4389,25 @@ class MyApp(QWidget):
         self.Action.close()
         self.timerVar.stop()
 
-        if len(self.dataframe_refer) > 1048576:
+        if len(self.dataframe) > 1048576:
             self.alertbox_open3()
 
 
-        elif 'No Data' in self.dataframe_refer.columns.tolist():
+        elif 'No Data' in self.dataframe.columns.tolist():
             buttonReply = QMessageBox.information(self, "라인수 추출",
                                                   "[중요성 금액: " + str(self.temp_TE) +
-                                                  "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다",
+                                                  "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다",
                                                   QMessageBox.Ok)
 
-        elif len(self.dataframe_refer) > 300:
+        elif len(self.dataframe) > 300:
             buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
                 self.temp_TE) + "] 라인수 " + str(
-                len(self.dataframe_refer) - 1) + "개입니다 <br> [전표번호 기준]",
+                len(self.dataframe) - 1) + "개입니다 <br> [전표번호 기준]",
                                                   QMessageBox.Ok)
 
         else:
             buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(
-                self.temp_TE) + "] 라인수 " + str(len(self.dataframe_refer) - 1) + "개입니다", QMessageBox.Ok)
+                self.temp_TE) + "] 라인수 " + str(len(self.dataframe) - 1) + "개입니다", QMessageBox.Ok)
 
         if buttonReply == QMessageBox.Ok: self.dialog12.activateWindow()
 
@@ -7146,28 +7146,28 @@ class MyApp(QWidget):
                                                        Account=checked_account_11, Account_1=checked_account_11_1,
                                                        TE=self.temp_TE, CD2=self.temp_State2, YEAR=self.pname_year)
 
-        self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+        self.dataframe = pd.read_sql(sql_refer, self.cnxn)
         self.my_query.loc[self.temp_Sheet + "_Reference"] = [self.temp_Sheet + "_Reference", "Scenario11",
                                                              "---Filtered Result  Scenario11---\n" + sql_refer]
 
-        if len(self.dataframe_refer) > 1048576:
+        if len(self.dataframe) > 1048576:
             self.communicate11.closeApp.emit()
 
-        elif len(self.dataframe_refer) == 0:
+        elif len(self.dataframe) == 0:
             self.dataframe_refer = pd.DataFrame({'No Data': ["[중요성금액: " + str(
-                self.tempCost) + "] 라인수 " + str(len(self.dataframe_refer)) + "개입니다"]})
-            model = DataFrameModel(self.dataframe_refer)
+                self.temp_TE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
+            model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
-            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe_refer
+            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe
             self.combo_sheet.addItem(self.temp_Sheet + '_Reference')
             self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
             self.communicate11.closeApp.emit()
 
         else:
-            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe_refer
+            self.scenario_dic[self.temp_Sheet + '_Reference'] = self.dataframe
             self.combo_sheet.addItem(self.temp_Sheet + '_Reference')
             self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            model = DataFrameModel(self.dataframe_refer)
+            model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
             self.communicate11.closeApp.emit()
 
