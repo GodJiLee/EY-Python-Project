@@ -6404,6 +6404,7 @@ class MyApp(QWidget):
 
         if self.rbtn3.isChecked():
             sql = '''
+                       SET NOCOUNT ON
                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                        GROUP BY CoA.GLAccountNumber
@@ -6442,6 +6443,7 @@ class MyApp(QWidget):
 
         elif self.rbtn4.isChecked():
             sql = '''
+                       SET NOCOUNT ON
                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                        GROUP BY CoA.GLAccountNumber
