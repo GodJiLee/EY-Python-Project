@@ -696,6 +696,15 @@ class MyApp(QWidget):
         self.alt.setText(txt)
         self.alt.exec_()
 
+    def alertbox_open18(self, state):
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        txt = state
+        self.alt.setWindowTitle('필수값 형식 오류')
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
+        self.alt.setText(txt + ' 에 비연속 값이 포함되어 있습니다.')
+        self.alt.exec_()
+
     def init_UI(self):
 
         image = QImage(self.resource_path('./dark_gray.png'))
@@ -5390,22 +5399,36 @@ class MyApp(QWidget):
             self.temp_Continuous = self.temp_Continuous.split(',')
 
             for i in range(len(self.temp_Continuous)):
-                if self.temp_Continuous[i].isdigit() is False:
+                ### 예외처리 3 - 숫자가 아닌 값 입력한 경우
+                try:
+                    int(self.temp_Continuous[i])
+                except:
                     self.alertbox_open2("연속된 자릿수")
                     return
-                elif len(str(self.temp_Continuous[i])) < 6:
+
+            for i in range(len(self.temp_Continuous)):
+                ### 예외처리 4 - 입력값이 6자리 미만인 경우
+                if len(str(self.temp_Continuous[i])) < 6:
                     self.alertbox_open15()
                     return
 
+            ### 예외처리 5 - 연속된 숫자가 아닌 경우
+            for i in range(len(self.temp_Continuous)):
+                for j in range(len(self.temp_Continuous[i])):
+                    if self.temp_Continuous[i][5] != self.temp_Continuous[i][j]:
+                        self.alertbox_open18("연속된 자릿수")
+                        return
+
+            ### 예외처리 6 - 중요성 금액 숫자가 아닌 경우
             if str(self.temp_TE_13).isdigit() is False:
                 self.alertbox_open2("중요성금액")
                 return
 
-            ##Unselect all의 경우
+            ### Unselect all의 경우
             if checked_account == 'AND JournalEntries.GLAccountNumber IN ()':
                 self.checked_account13 = ''
 
-            ##Select all이나 일부 체크박스가 선택된 경우
+            ### Select all이나 일부 체크박스가 선택된 경우
             else:
                 self.checked_account13 = checked_account
 
