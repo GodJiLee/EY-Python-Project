@@ -352,6 +352,7 @@ class Preparer(QGroupBox):
 
     def get_selected_leaves(self):
         checked_items = []
+        # checked_items = [self.prep.topLevelItem(i).text(0).split(' ')[0] for i in range(self.prep.topLevelItemCount()) if self.prep.topLevelItem(i).checkState(0) == Qt.Checked]
         for i in range(self.prep.topLevelItemCount()):
             if self.prep.topLevelItem(i).checkState(0) == Qt.Checked:
                 checked_items.append(self.prep.topLevelItem(i).text(0).split(' ')[0])
@@ -5140,9 +5141,8 @@ class MyApp(QWidget):
                         self.alertbox_open2('T값과 중요성금액')
 
     def Thread7(self):
-        self.holiday = []
-        for i in range(2020, 2031):
-            self.holiday.append(pytimekr.holidays(i))
+        self.holiday = [pytimekr.holidays(i) for i in range(2020, 2031)]
+        print(self.holiday)
 
         self.holiday_str = []
 
@@ -5428,7 +5428,7 @@ class MyApp(QWidget):
             ### 예외처리 5 - 연속된 숫자가 아닌 경우
             for i in range(len(self.temp_Continuous)):
                 for j in range(len(self.temp_Continuous[i])):
-                    if self.temp_Continuous[i][5] != self.temp_Continuous[i][j]:
+                    if self.temp_Continuous[i][len(self.temp_Continuous[i])-1] != self.temp_Continuous[i][j]:
                         self.alertbox_open18("연속된 자릿수")
                         return
 
@@ -6143,7 +6143,7 @@ class MyApp(QWidget):
                                     DROP TABLE #TMPCOA  
                                 """.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
                                            Account=self.checked_account5_Non, year=self.pname_year)
-            ### JE
+        ### JE
         elif self.rbtn2.isChecked():
 
             sql_query = '''
@@ -7514,9 +7514,12 @@ class MyApp(QWidget):
     def extButtonClickedC(self):
 
         index = self.wbC[self.wbC.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
-        cursorindex = []
         dflist = []
+        cursorindex = []
         cursortext = ''
+
+        # cursorindex = ["'" + str(index.iloc[i, 0]) + "'" + ',' + "'" + index.iloc[i, 1] + "'" + ',' + "'" + str(index.iloc[i, 2]) + "'" + ',' + "'" + index.iloc[i, 3] + "'" for i in range(len(index))]
+
         for i in range(len(index)):
             cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
                                "'" + index.iloc[i, 1] + "'" + ',' +
