@@ -959,37 +959,50 @@ class MyApp(QWidget):
             self.MessageBox_Open("시나리오가 선택되지 않았습니다.")
             return
 
-        if self.selected_scenario_subclass_index == 1:
-            self.Dialog4()
+        else:
+            try:
+                cursor = self.cnxn.cursor()
+                sql = '''
+                                         SELECT 											
+                                                *
+                                         FROM  [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] COA											
+                                    '''.format(field=self.selected_project_id)
+                accountsname = pd.read_sql(sql, self.cnxn)
 
-        elif self.selected_scenario_subclass_index == 2:
-            self.Dialog5()
+                if self.selected_scenario_subclass_index == 1:
+                    self.Dialog4()
 
-        elif self.selected_scenario_subclass_index == 3:
-            self.Dialog6()
+                elif self.selected_scenario_subclass_index == 2:
+                    self.Dialog5()
 
-        elif self.selected_scenario_subclass_index == 4:
-            self.Dialog7()
+                elif self.selected_scenario_subclass_index == 3:
+                    self.Dialog6()
 
-        elif self.selected_scenario_subclass_index == 5:
-            self.Dialog8()
+                elif self.selected_scenario_subclass_index == 4:
+                    self.Dialog7()
 
-        elif self.selected_scenario_subclass_index == 6:
-            self.Dialog9()
+                elif self.selected_scenario_subclass_index == 5:
+                    self.Dialog8()
 
-        elif self.selected_scenario_subclass_index == 7:
-            self.Dialog10()
+                elif self.selected_scenario_subclass_index == 6:
+                    self.Dialog9()
 
-        elif self.selected_scenario_subclass_index == 8:
-            self.Dialog12()
+                elif self.selected_scenario_subclass_index == 7:
+                    self.Dialog10()
 
-        elif self.selected_scenario_subclass_index == 9:
-            self.Dialog13()
+                elif self.selected_scenario_subclass_index == 8:
+                    self.Dialog12()
 
-        elif self.selected_scenario_subclass_index == 10:
-            self.Dialog14()
+                elif self.selected_scenario_subclass_index == 9:
+                    self.Dialog13()
 
-        gc.collect()
+                elif self.selected_scenario_subclass_index == 10:
+                    self.Dialog14()
+
+                gc.collect()
+
+            except:
+                self.MessageBox_Open("접근 권한이 없는 프로젝트 입니다.")
 
     def Dialog4(self):
         self.dialoglist.add(4)
