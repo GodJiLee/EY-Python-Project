@@ -7154,7 +7154,7 @@ class MyApp(QWidget):
             self.communicate11.closeApp.emit()
 
         elif len(self.dataframe) == 0:
-            self.dataframe_refer = pd.DataFrame({'No Data': ["[중요성금액: " + str(
+            self.dataframe = pd.DataFrame({'No Data': ["[중요성금액: " + str(
                 self.temp_TE) + "] 라인수 " + str(len(self.dataframe)) + "개입니다"]})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
