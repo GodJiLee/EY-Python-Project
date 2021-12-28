@@ -5142,7 +5142,6 @@ class MyApp(QWidget):
 
     def Thread7(self):
         self.holiday = [pytimekr.holidays(i) for i in range(2020, 2031)]
-        print(self.holiday)
 
         self.holiday_str = []
 
@@ -6989,7 +6988,7 @@ class MyApp(QWidget):
                                 SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
                                 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
                                 WHERE Year = {YEAR} AND ABS(Amount) > {TE}
-                                
+
                                                     SELECT
                                                         JournalEntries.BusinessUnit
                                                         , JournalEntries.JENumber
@@ -8673,28 +8672,33 @@ class MyApp(QWidget):
             event.ignore()
 
     def saveFile(self):
+        self.scenario_dic['Query'] = self.my_query
+        ### 예외처리 1 - 데이터 프레임 빈 경우
         if self.dataframe is None:
             self.MessageBox_Open("저장할 데이터가 없습니다.")
             return
+        ### 예외처리 2 - 딕셔너리 빈 경우
         if self.scenario_dic == {}:
             self.MessageBox_Open("저장할 Sheet가 없습니다.")
             return
+
         else:
             fileName = QFileDialog.getSaveFileName(self, self.tr("Save Data files"), "./",
                                                    self.tr("xlsx(*.xlsx);; All Files(*.*)"))
             path = fileName[0]
-
+            ### 신규 저장
             if path == '':
                 pass
-
+            ### 덮어쓰기
             else:
-
                 if os.path.isfile(path):
                     changecount = 0
                     addcount = 0
                     wb = openpyxl.load_workbook(path)
                     wb.create_sheet('Scenario Updated>>>')
                     ws_names = wb.get_sheet_names()
+                    query_sheet = wb.get_sheet_by_name('Query')
+
                     for temp in list(self.scenario_dic.keys()):
                         if temp in ws_names:
                             changecount += 1
@@ -8703,6 +8707,12 @@ class MyApp(QWidget):
                             addcount += 1
                     wb.save(path)
                     with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
+                        real_query = pd.DataFrame(query_sheet.values)
+                        real_query.columns = ["Sheet name", "Scenario number", "Query"]
+
+                        if changecount == 1:
+                            self.scenario_dic['Query'] = pd.concat([real_query, self.scenario_dic['Query']])
+
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
@@ -8714,9 +8724,6 @@ class MyApp(QWidget):
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
-
-                        self.my_query.to_excel(writer, sheet_name='Query', index=False, freeze_panes=(1, 0))
-
                     self.MessageBox_Open("저장을 완료했습니다.")
 
 
