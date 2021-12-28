@@ -4465,7 +4465,7 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4475,12 +4475,12 @@ class MyApp(QWidget):
 
         elif len(self.dataframe) > 300:
             if self.rbtn1.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> 추가 필터링이 필요해보입니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -4489,12 +4489,12 @@ class MyApp(QWidget):
 
         else:
             if self.rbtn1.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다.<br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
             elif self.rbtn2.isChecked():
-                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) +"] 라인수 "
+                buttonReply = QMessageBox.information(self, "라인수 추출", "[중요성 금액: " + str(self.temp_TE) + "] 라인수 "
                                                       + str(len(self.dataframe))
                                                       + "건 추출되었습니다.<br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
@@ -5428,7 +5428,7 @@ class MyApp(QWidget):
             ### 예외처리 5 - 연속된 숫자가 아닌 경우
             for i in range(len(self.temp_Continuous)):
                 for j in range(len(self.temp_Continuous[i])):
-                    if self.temp_Continuous[i][len(self.temp_Continuous[i])-1] != self.temp_Continuous[i][j]:
+                    if self.temp_Continuous[i][len(self.temp_Continuous[i]) - 1] != self.temp_Continuous[i][j]:
                         self.alertbox_open18("연속된 자릿수")
                         return
 
@@ -5629,7 +5629,7 @@ class MyApp(QWidget):
         self.tempTE = self.D14_TE.text()
         self.tempSheet = self.D14_Sheet.text()
 
-        if self.tempSheet == '' :
+        if self.tempSheet == '':
             self.alertbox_open()
         # 시트명 중복 확인
         elif self.rbtn1.isChecked() and self.combo_sheet.findText(self.tempSheet + '_Result') != -1:
@@ -6988,12 +6988,8 @@ class MyApp(QWidget):
                                 SET NOCOUNT ON;
                                 SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
                                 FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                WHERE JENumber IN (
-                                                  SELECT DISTINCT JENumber
-                                                  FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                                  WHERE ABS(Amount) > {TE}
-                                                  AND Year = '{YEAR}'
-                                                  )
+                                WHERE Year = {YEAR} AND ABS(Amount) > {TE}
+                                
                                                     SELECT
                                                         JournalEntries.BusinessUnit
                                                         , JournalEntries.JENumber
@@ -7175,106 +7171,102 @@ class MyApp(QWidget):
         cursor = self.cnxn.cursor()
         if not (self.checkF.isChecked()) and not (self.checkP.isChecked()):
             sql = '''
-                           SET NOCOUNT ON;
-                           SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
-                           FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                           WHERE Year = {YEAR}
-                           AND JENumber IN (
-                                              SELECT DISTINCT JENumber
-                                              FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
-                                              WHERE ABS(Amount) > {TE}
-                                              AND Year = {YEAR}
-                                              )
-                                             SELECT *                                                                                                       														
-                                             FROM                                                                                                    														
-                                             (                                                                                                       														
-                                                   SELECT                                                                                                                                            													
-                                                           LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
-                                                           MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
-                                                           MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
-                                                           LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
-                                                           CASE                                                                                                                      											
-                                                           WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
-                                                           WHEN LVL3.GLAccountNumber1 <> LVL3.GLAccountNumber2 and LVL3.DivideDC1 = LVL3.DivideDC2 THEN '3.Reference Account'                                                                                                                           											
-                                                           ELSE '2.Correspondent Account'                                                                                                                   
-                                                           END AS Posting_Type,                                                                                                                      
-                                                           LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
-                                                           MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
-                                                           MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
-                                                           LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
-                                                           SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
-                                                           SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
-                                                           SUM(LVL3.Cnt2) AS JE_Line_Count                                                                                                                                    
-                                                   FROM                                                                                             
-                                                   (                                                                                                
-                                                           SELECT *                                                                                         
-                                                           FROM                                                                                     
-                                                                  (                                                                                
-                                                                                 SELECT                                                             
-                                                                                        LVL1_1.JENumber1,                                                         
-                                                                                        LVL1_1.GLAccountNumber1,                                                          
-                                                                                        MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
-                                                                                        MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
-                                                                                        SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
-                                                                                        SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
-                                                                                        DivideDC1,                                                         
-                                                                                        COUNT(*) AS Cnt1                                                          
-                                                                                 FROM                                                               
-                                                                                 (                                                                  
-                                                                                                SELECT                                               
-                                                                                                       #tmp.JENumber AS JENumber1,                                          
-                                                                                                       #tmp.GLAccountNumber AS GLAccountNumber1,                                          
-                                                                                                       CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
-                                                                                                       CoA.GLAccountName AS CoA_GLAccountName1,                                      
-                                                                                                       CoA.AccountType AS AccountType1,                                       
-                                                                                                       #tmp.Debit AS Debit1,                                             
-                                                                                                       #tmp.Credit AS Credit1,                                            
-                                                                                                       #tmp.Amount AS Amount1,                                            
-                                                                                                       CASE                                         
-                                                                                                       WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
-                                                                                                       END AS 'DivideDC1'                                            
-                                                                                                FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                	
-                                                                                                WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
-                                                                                 ) LVL1_1                                                                  
-                                                                                 GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1                                                                					
-                                                                  ) LVL2_1,                                                                                
-                                                                  (                                                                                 
-                                                                                 SELECT                                                            
-                                                                                        LVL1_2.JENumber2,                                                        
-                                                                                        LVL1_2.GLAccountNumber2,                                                          
-                                                                                        MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
-                                                                                        MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
-                                                                                        SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
-                                                                                        SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
-                                                                                        DivideDC2,                                                         
-                                                                                        COUNT(*) AS Cnt2                                                          
-                                                                                 FROM                                                               
-                                                                                 (                                                                  
-                                                                                                SELECT #tmp.JENumber AS JENumber2,                                                  
-                                                                                                       #tmp.GLAccountNumber AS GLAccountNumber2,                                          
-                                                                                                       CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
-                                                                                                       CoA.GLAccountName AS CoA_GLAccountName2,                                      
-                                                                                                       CoA.AccountType AS AccountType2,                                       
-                                                                                                       #tmp.Debit AS Debit2,                                             
-                                                                                                       #tmp.Credit AS Credit2,                                            
-                                                                                                       #tmp.Amount AS Amount2,                                            
-                                                                                                       CASE                                         
-                                                                                                       WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
-                                                                                                       END AS 'DivideDC2'                                            
-                                                                                                FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                
-                                                                                                WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
-                                                                                 ) LVL1_2                                                                 
-                                                                                 GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2                                                              
-                                                                  ) LVL2_2                                                                                 
-                                                           WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2                                                                                    
-                                                   ) LVL3                                                                                                  
-                                                   GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
-                                            ) LVL4                                                                                                                                                                                                  														
-                                            WHERE {CD}
-                                                  {Account}
-                                                  AND LVL4.Posting_Type = '2.Correspondent Account'
-                                            ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
-                                            DROP TABLE  #tmp     
+                        SET NOCOUNT ON;
+                        SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
+                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                        WHERE Year = {YEAR} AND ABS(Amount) > {TE}
+
+
+                        SELECT *                                                                                                       														
+                        FROM                                                                                                    														
+                        (                                                                                                       														
+                            SELECT                                                                                                                                            													
+                                    LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
+                                    MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
+                                    MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                    LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
+                                    CASE                                                                                                                      											
+                                    WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
+                                    WHEN LVL3.GLAccountNumber1 <> LVL3.GLAccountNumber2 and LVL3.DivideDC1 = LVL3.DivideDC2 THEN '3.Reference Account'                                                                                                                           											
+                                    ELSE '2.Correspondent Account'                                                                                                                   
+                                    END AS Posting_Type,                                                                                                                      
+                                    LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
+                                    MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
+                                    MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                    LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
+                                    SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
+                                    SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
+                                    SUM(LVL3.Cnt2) AS JE_Line_Count                                                                                                                                    
+                            FROM                                                                                             
+                            (                                                                                                
+                                    SELECT *                                                                                         
+                                    FROM                                                                                     
+                                            (                                                                                
+                                                            SELECT                                                             
+                                                                LVL1_1.JENumber1,                                                         
+                                                                LVL1_1.GLAccountNumber1,                                                          
+                                                                MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
+                                                                MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
+                                                                SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
+                                                                DivideDC1,                                                         
+                                                                COUNT(*) AS Cnt1                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT                                               
+                                                                                #tmp.JENumber AS JENumber1,                                          
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber1,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName1,                                      
+                                                                                CoA.AccountType AS AccountType1,                                       
+                                                                                #tmp.Debit AS Debit1,                                             
+                                                                                #tmp.Credit AS Credit1,                                            
+                                                                                #tmp.Amount AS Amount1,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC1'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                	
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
+                                                            ) LVL1_1                                                                  
+                                                            GROUP BY LVL1_1.JENumber1, LVL1_1.GLAccountNumber1, LVL1_1.DivideDC1                                                                					
+                                            ) LVL2_1,                                                                                
+                                            (                                                                                 
+                                                            SELECT                                                            
+                                                                LVL1_2.JENumber2,                                                        
+                                                                LVL1_2.GLAccountNumber2,                                                          
+                                                                MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
+                                                                MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
+                                                                SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
+                                                                DivideDC2,                                                         
+                                                                COUNT(*) AS Cnt2                                                          
+                                                            FROM                                                               
+                                                            (                                                                  
+                                                                        SELECT #tmp.JENumber AS JENumber2,                                                  
+                                                                                #tmp.GLAccountNumber AS GLAccountNumber2,                                          
+                                                                                CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
+                                                                                CoA.GLAccountName AS CoA_GLAccountName2,                                      
+                                                                                CoA.AccountType AS AccountType2,                                       
+                                                                                #tmp.Debit AS Debit2,                                             
+                                                                                #tmp.Credit AS Credit2,                                            
+                                                                                #tmp.Amount AS Amount2,                                            
+                                                                                CASE                                         
+                                                                                WHEN #tmp.Debit = 0 THEN 'Credit' ELSE 'Debit'                                       
+                                                                                END AS 'DivideDC2'                                            
+                                                                        FROM #tmp, [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] CoA                                                
+                                                                        WHERE #tmp.GLAccountNumber = CoA.GLAccountNumber                                                
+                                                            ) LVL1_2                                                                 
+                                                            GROUP BY LVL1_2.JENumber2, LVL1_2.GLAccountNumber2, LVL1_2.DivideDC2                                                              
+                                            ) LVL2_2                                                                                 
+                                    WHERE LVL2_1.JENumber1 = LVL2_2.JENumber2                                                                                    
+                            ) LVL3                                                                                                  
+                            GROUP BY LVL3.GLAccountNumber1, LVL3.DivideDC1, LVL3.GLAccountNumber2, LVL3.DivideDC2                                                                                          													
+                    ) LVL4                                                                                                                                                                                                  														
+                    WHERE {CD}
+                            {Account}
+                            AND LVL4.Posting_Type = '2.Correspondent Account'
+                    ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
+                    DROP TABLE  #tmp     
                        '''.format(field=self.selected_project_id, CD=self.tempState12, Account=self.checked_account12,
                                   TE=self.tempCost, YEAR=self.pname_year)
 
