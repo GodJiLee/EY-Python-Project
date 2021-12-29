@@ -3818,14 +3818,25 @@ class MyApp(QWidget):
 
         labelKeyword = QLabel('Key Words* : ', self.dialog14)
         labelKeyword.setStyleSheet("color: white;")
-
         font1 = labelKeyword.font()
         font1.setBold(True)
         labelKeyword.setFont(font1)
 
+        labelKeyword2 = QLabel('Except Key Words : ', self.dialog14)
+        labelKeyword2.setStyleSheet("color: white;")
+        font3 = labelKeyword2.font()
+        font3.setBold(True)
+        labelKeyword2.setFont(font3)
+
         self.D14_Key = QLineEdit(self.dialog14)
         self.D14_Key.setStyleSheet("background-color: white;")
         self.D14_Key.setPlaceholderText('검색할 단어를 입력하세요(구분자:",")')
+
+        self.D14_Key2 = QLineEdit(self.dialog14)
+        self.D14_Key2.setStyleSheet("background-color: white;")
+        self.D14_Key2.setPlaceholderText('제외할 단어를 입력하세요(구분자:",")')
+        self.D14_Key2C = QCheckBox('Activate')
+        self.D14_Key2C.setStyleSheet("color: white; font-weight: bold")
 
         labelTE = QLabel('중요성 금액 : ', self.dialog14)
         labelTE.setStyleSheet("color: white;")
@@ -3871,17 +3882,23 @@ class MyApp(QWidget):
         self.D14_TE.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
         self.D14_Sheet.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # LineEdit만 창 크기에 따라 확대/축소
 
+        self.D14_Key2C.toggle()
+        self.D14_Key2C.stateChanged.connect(self.D14_LabelC)
+
         layout1 = QGridLayout()
         layout1.addWidget(self.rbtn1, 0, 0)
         layout1.addWidget(self.rbtn2, 0, 1)
         layout1.addWidget(labelKeyword, 1, 0)
         layout1.addWidget(self.D14_Key, 1, 1)
-        layout1.addWidget(labelTE, 2, 0)
-        layout1.addWidget(self.D14_TE, 2, 1)
-        layout1.addWidget(label_tree, 3, 0)
-        layout1.addWidget(self.new_tree, 3, 1)
-        layout1.addWidget(labelSheet, 4, 0)
-        layout1.addWidget(self.D14_Sheet, 4, 1)
+        layout1.addWidget(labelKeyword2, 2, 0)
+        layout1.addWidget(self.D14_Key2, 2, 1)
+        layout1.addWidget(self.D14_Key2C, 2, 2)
+        layout1.addWidget(labelTE, 3, 0)
+        layout1.addWidget(self.D14_TE, 3, 1)
+        layout1.addWidget(label_tree, 4, 0)
+        layout1.addWidget(self.new_tree, 4, 1)
+        layout1.addWidget(labelSheet, 5, 0)
+        layout1.addWidget(self.D14_Sheet, 5, 1)
 
         layout_dc = QHBoxLayout()
         layout_dc.addWidget(labelDC)
@@ -3911,6 +3928,13 @@ class MyApp(QWidget):
         self.dialog14.setWindowTitle("Scenario14")
         self.dialog14.setWindowModality(Qt.NonModal)
         self.dialog14.show()
+
+    def D14_LabelC(self, state):
+        if state == 0:
+            self.D14_Key2.clear()
+            self.D14_Key2.setReadOnly(True)
+        else:
+            self.D14_Key2.setReadOnly(False)
 
     def dialog_close4(self):
         self.dialog4.close()
@@ -4756,6 +4780,10 @@ class MyApp(QWidget):
     def doneAction14(self):
         self.Action.close()
         self.timerVar.stop()
+        if self.D14_Key2C.isChecked():
+            tempword = ", " + str(self.baseKey2) + "이/가 제외"
+        else:
+            tempword = ''
 
         if len(self.dataframe) > 1048576:
             self.alertbox_open3()
@@ -4769,42 +4797,41 @@ class MyApp(QWidget):
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Result')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-
-            elif self.rbtn2.isChecked():
-                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
-                self.combo_sheet.addItem(self.tempSheet + '_Journals')
-                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
-            if self.rbtn1.isChecked():
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                      + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                      + str(self.baseKey) + "이/가 포함"
+                                                      + tempword + "된 전표가 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                       + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
-            else:
+            else :
+                self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
+                self.combo_sheet.addItem(self.tempSheet + '_Journals')
+                self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
                 buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                      + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                      + str(self.baseKey) + "이/가 포함"
+                                                      + tempword + "된 전표가 "
                                                       + str(len(self.dataframe) - 1)
                                                       + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                       + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                       , QMessageBox.Ok)
-
             if buttonReply == QMessageBox.Ok:
                 self.dialog14.activateWindow()
 
         else:
             if self.rbtn1.isChecked():
-
                 if len(self.dataframe) > 300:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                          + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                          + str(self.baseKey) + "이/가 포함"
+                                                          + tempword + "된 전표가 "
                                                           + str(len(self.dataframe))
                                                           + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> 추가 필터링이 필요해보입니다. <br>  [전표라인번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                          + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                          + str(self.baseKey) + "이/가 포함"
+                                                          + tempword + "된 전표가 "
                                                           + str(len(self.dataframe))
                                                           + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표라인번호 기준]"
@@ -4814,14 +4841,16 @@ class MyApp(QWidget):
             else:
                 if len(self.dataframe) > 300:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                          + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                          + str(self.baseKey) + "이/가 포함"
+                                                          + tempword + "된 전표가 "
                                                           + str(len(self.dataframe))
                                                           + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표번호 기준]"
                                                           , QMessageBox.Ok)
                 else:
                     buttonReply = QMessageBox.information(self, "라인수 추출", "- 전표 적요에 "
-                                                          + str(self.baseKey) + "이/가 포함된 전표가 "
+                                                          + str(self.baseKey) + "이/가 포함"
+                                                          + tempword + "된 전표가 "
                                                           + str(len(self.dataframe))
                                                           + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                           + ")을 적용하였습니다. <br> [전표번호 기준]"
@@ -5663,7 +5692,21 @@ class MyApp(QWidget):
             else:
                 b = "JournalEntries.JEDescription LIKE N'%" + a + "%' OR JournalEntries.JELineDescription LIKE N'%" + a + "%'"
             self.baseKey_clean.append(b)
-        self.tempKey = str(' OR '.join(self.baseKey_clean))
+
+        self.baseKey2 = self.D14_Key2.text().split(',')
+        self.baseKey2_clean = []
+        if self.D14_Key2C.isChecked():
+            for a in self.baseKey2:
+                a = a.strip()
+                if a == '':
+                    b = "JournalEntries.JEDescription NOT LIKE '' OR JournalEntries.JELineDescription NOT LIKE ''"
+                else:
+                    b = "JournalEntries.JEDescription NOT LIKE N'%" + a + "%' OR JournalEntries.JELineDescription NOT LIKE N'%" + a + "%'"
+                self.baseKey2_clean.append(b)
+            self.tempKey = '(' + str(' OR '.join(self.baseKey_clean)) + ') AND (' + str(' OR '.join(self.baseKey2_clean)) + ')'
+        else:
+            self.tempKey = '(' + str(' OR '.join(self.baseKey_clean)) + ')'
+
         self.tempTE = self.D14_TE.text()
         self.tempSheet = self.D14_Sheet.text()
 
