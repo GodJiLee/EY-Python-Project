@@ -174,16 +174,13 @@ class Form(QGroupBox):
         checked_name = checked_name[1:]
 
         global checked_account
-        global checked_account_11
         global checked_account_A
-        global checked_account_B
         global checked_account_12
 
         checked_account = 'AND JournalEntries.GLAccountNumber IN (' + checked_name + ')'
-        checked_account_11 = checked_name
+
         checked_account_12 = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
         checked_account_A = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
-        checked_account_B = 'AND LVL4.Analysis_GL_Account_Number NOT IN (' + checked_name + ')'
 
 class Form1(QGroupBox):
     def resource_path(self, relative_path):
@@ -291,8 +288,8 @@ class Form1(QGroupBox):
 
         checked_name = checked_name[1:]
 
-        global checked_account_11_1
-        checked_account_11_1 = checked_name
+        global checked_account_B
+        checked_account_B = 'AND LVL4.Analysis_GL_Account_Number NOT IN (' + checked_name + ')'
 
 
 class Preparer(QGroupBox):
