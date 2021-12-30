@@ -4891,6 +4891,15 @@ class MyApp(QWidget):
                 else:
                     self.checked_account4 = checked_account
 
+                if self.checkD.isChecked() and self.checkC.isChecked():
+                    self.tempCD = ''
+                elif not(self.checkD.isChecked()) and not(self.checkC.isChecked()):
+                    self.tempCD = ''
+                elif not (self.checkD.isChecked()) and self.checkC.isChecked(): #credit
+                    self.tempCD = 'AND Debit = 0'
+                elif self.checkD.isChecked() and not(self.checkC.isChecked()): #debit
+                    self.tempCD = 'AND Credit = 0'
+
                 self.doAction()
                 self.th4 = Thread(target=self.extButtonClicked4)
                 self.th4.daemon = True
@@ -5585,6 +5594,15 @@ class MyApp(QWidget):
                 else:
                     self.checked_account9 = checked_account
 
+                if self.checkD.isChecked() and self.checkC.isChecked():
+                    self.tempCD = ''
+                elif not(self.checkD.isChecked()) and not(self.checkC.isChecked()):
+                    self.tempCD = ''
+                elif not (self.checkD.isChecked()) and self.checkC.isChecked(): #credit
+                    self.tempCD = 'AND Debit = 0'
+                elif self.checkD.isChecked() and not(self.checkC.isChecked()): #debit
+                    self.tempCD = 'AND Credit = 0'
+
                 self.doAction()
                 self.th9 = Thread(target=self.extButtonClicked9)
                 self.th9.daemon = True
@@ -5864,12 +5882,13 @@ class MyApp(QWidget):
                                             HAVING COUNT(GLAccountNumber) <= {N}
                                         ) AND ABS(JournalEntries.Amount) > {TE}
                                         {Account}
+                                        {CD}
                                         AND JournalEntries.Year = {year}
                                         GROUP BY JournalEntries.GLAccountNumber	
                                         ORDER BY JournalEntries.GLAccountNumber
                                         DROP TABLE #TMPCOA
                                     """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                               Account=self.checked_account4, year=self.pname_year)
+                                               Account=self.checked_account4, year=self.pname_year, CD = self.tempCD)
 
             ### JE Line - Refer
             sql_query = '''
@@ -5914,6 +5933,15 @@ class MyApp(QWidget):
                                            Account=self.checked_account4, year=self.pname_year)
 
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            ### 차대 선택
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
 
         ### JE - Journals
         elif self.rbtn2.isChecked():
@@ -5963,7 +5991,7 @@ class MyApp(QWidget):
                         '''.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
                                    Account=self.checked_account4, year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -5975,15 +6003,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario04",
                                                                "---Filtered JE  Scenario04---\n" + sql_query]
-
-        ### 차대 선택
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 최대 추출 라인수
         if len(self.dataframe) > 1048576:
@@ -6076,6 +6095,17 @@ class MyApp(QWidget):
                         """.format(field=self.selected_project_id, CODE=self.real_Code,
                                    Account=self.checked_account5_SAP, year=self.pname_year)
 
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+            ### DebitCredit 열 생성
+            if not self.checkD2.isChecked() and self.checkC2.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD2.isChecked() and not self.checkC2.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
         elif self.rbtn2.isChecked():
             sql_query = '''
                                 SET NOCOUNT ON
@@ -6116,7 +6146,7 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id, CODE=self.real_Code,
                                        Account=self.checked_account5_SAP, year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -6128,15 +6158,6 @@ class MyApp(QWidget):
             self.my_query.loc[self.tempSheet_SAP + "_Journals"] = [self.tempSheet_SAP + "_Journals",
                                                                    "Scenario05",
                                                                    "---Filtered JE  Scenario05---\n" + sql_query]
-
-        ### DebitCredit 열 생성
-        if not self.checkD2.isChecked() and self.checkC2.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD2.isChecked() and not self.checkC2.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 예외처리 5 - 최대 라인 수 초과
         if len(self.dataframe) > 1048576:
@@ -6222,6 +6243,18 @@ class MyApp(QWidget):
                                     DROP TABLE #TMPCOA  
                                 """.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
                                            Account=self.checked_account5_Non, year=self.pname_year)
+
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
+
+            ### DebitCredit 열 생성
+            if not self.checkD1.isChecked() and self.checkC1.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD1.isChecked() and not self.checkC1.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
         ### JE
         elif self.rbtn2.isChecked():
 
@@ -6263,8 +6296,7 @@ class MyApp(QWidget):
                                             DROP TABLE #TMPCOA
                                             '''.format(field=self.selected_project_id, CODE=self.AccCode_non_sap,
                                                        Account=self.checked_account5_Non, year=self.pname_year)
-
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -6276,14 +6308,6 @@ class MyApp(QWidget):
                                                                       "Scenario05",
                                                                       "---Filtered JE  Scenario05---\n" + sql_query]
 
-        ### DebitCredit 열 생성
-        if not self.checkD1.isChecked() and self.checkC1.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD1.isChecked() and not self.checkC1.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         ### 예외처리 5 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
@@ -6374,6 +6398,16 @@ class MyApp(QWidget):
                                first_date=str(self.first), second_date=str(self.second),
                                Preparer=self.checked_preparer6, year=self.pname_year)
 
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
 
         elif self.rbtn2.isChecked():
             sql = '''
@@ -6417,8 +6451,7 @@ class MyApp(QWidget):
                     '''.format(field=self.selected_project_id, Account=self.checked_account6, TE=self.tempCost,
                                first_date=str(self.first), second_date=str(self.second),
                                Preparer=self.checked_preparer6, year=self.pname_year)
-
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario06",
@@ -6427,15 +6460,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario06",
                                                                "---Filtered JE  Scenario06---\n" + sql]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         if len(self.dataframe) > 1048576:
             self.communicate6.closeApp.emit()
@@ -6520,6 +6544,17 @@ class MyApp(QWidget):
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+
         elif self.rbtn4.isChecked():
             sql = '''
                        SET NOCOUNT ON
@@ -6562,7 +6597,7 @@ class MyApp(QWidget):
                    '''.format(field=self.selected_project_id, TE=self.tempCost, Date=self.tempState,
                               Account=self.checked_account7, Preparer=self.checked_preparer7, year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn3.isChecked():
@@ -6572,15 +6607,6 @@ class MyApp(QWidget):
         elif self.rbtn4.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario07",
                                                                "---Filtered JE  Scenario07---\n" + sql]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         if len(self.dataframe) > 1048576:
             self.communicate7.closeApp.emit()
@@ -6666,6 +6692,17 @@ class MyApp(QWidget):
                         '''.format(field=self.selected_project_id, realNDate=self.realNDate, TE=self.tempCost,
                                    Preparer=self.checked_preparer8, Account=self.checked_account8, year=self.pname_year)
 
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
         elif self.rbtn2.isChecked():
 
             sql = '''
@@ -6711,7 +6748,7 @@ class MyApp(QWidget):
                                        Preparer=self.checked_preparer8, Account=self.checked_account8,
                                        year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         if self.rbtn1.isChecked():
             self.my_query.loc[self.tempSheet + "_Result"] = [self.tempSheet + "_Result", "Scenario08",
@@ -6720,15 +6757,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario08",
                                                                "---Filtered JE  Scenario08---\n" + sql]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         if len(self.dataframe) > 1048576:
             self.communicate8.closeApp.emit()
@@ -6824,11 +6852,25 @@ class MyApp(QWidget):
                                   WHERE Year = {year}			
                                   GROUP BY PreparerID			
                                   HAVING COUNT(GLAccountNumber) <= {N}			
-                                  ) AND ABS(JournalEntries.Amount) > {TE} {Account}	AND JournalEntries.Year = {year}		
+                                  ) AND ABS(JournalEntries.Amount) > {TE}
+                                  {Account}
+                                  AND JournalEntries.Year = {year}
+                                  {CD}		
                            GROUP BY JournalEntries.PreparerID				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=self.checked_account9, year=self.pname_year)
+                                   Account=self.checked_account9, year=self.pname_year, CD = self.tempCD)
+
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
 
         elif self.rbtn2.isChecked():
             sql = '''
@@ -6881,7 +6923,7 @@ class MyApp(QWidget):
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
                                    Account=self.checked_account9, year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -6893,15 +6935,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario09",
                                                                "---Filtered JE  Scenario09---\n" + sql]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         if len(self.dataframe) > 1048576:
             self.communicate9.closeApp.emit()
@@ -6928,7 +6961,6 @@ class MyApp(QWidget):
             self.communicate9.closeApp.emit()
 
     def extButtonClicked10(self):
-
         cursor = self.cnxn.cursor()
 
         # sql문 수정
@@ -6971,6 +7003,16 @@ class MyApp(QWidget):
                                        Preparer=self.checked_preparer10,
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2,
                                        year=self.pname_year)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
 
         elif self.rbtn2.isChecked():
 
@@ -7017,7 +7059,7 @@ class MyApp(QWidget):
                                        Account=self.checked_account10, Point1=self.tempPoint1, Point2=self.tempPoint2,
                                        year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -7028,15 +7070,6 @@ class MyApp(QWidget):
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario10",
                                                                "---Filtered JE  Scenario10---\n" + sql]
 
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
         if len(self.dataframe) > 1048576:
             self.communicate10.closeApp.emit()
 
@@ -7044,7 +7077,6 @@ class MyApp(QWidget):
             self.communicate10.closeApp.emit()
 
         else:
-
             if self.rbtn1.isChecked():
                 self.scenario_dic[self.tempSheet + '_Result'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Result')
@@ -8673,9 +8705,19 @@ class MyApp(QWidget):
                                 '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                            CONTI=self.filter_Continuous,
                                            Account=self.checked_account13, year=self.pname_year)
+
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
             ### JE - Journals
         elif self.rbtn2.isChecked():
-
             sql_query = '''
                                         SET NOCOUNT ON
                                         SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
@@ -8712,9 +8754,8 @@ class MyApp(QWidget):
                                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                                CONTI=self.filter_Continuous,
                                                Account=self.checked_account13, year=self.pname_year)
-        ####수정사항 끝####
 
-        self.dataframe = pd.read_sql(sql_query, self.cnxn)
+            self.dataframe = pd.read_sql(sql_query, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -8723,16 +8764,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario13",
                                                                "---Filtered JE  Scenario13---\n" + sql_query]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
         ### 예외처리 3 - 최대 추출 라인수
         if len(self.dataframe) > 1048576:
             self.communicate13.closeApp.emit()
@@ -8819,6 +8850,16 @@ class MyApp(QWidget):
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14, year=self.pname_year)
 
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            ### DebitCredit 열 생성
+            if not self.checkD.isChecked() and self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
+            elif self.checkD.isChecked() and not self.checkC.isChecked():
+                self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
+                self.dataframe.reset_index(drop=True, inplace=True)
+
         elif self.rbtn2.isChecked():
 
             sql = '''
@@ -8858,7 +8899,7 @@ class MyApp(QWidget):
                 '''.format(field=self.selected_project_id, KEY=self.tempKey, TE=self.tempTE,
                            Account=self.checked_account14, year=self.pname_year)
 
-        self.dataframe = pd.read_sql(sql, self.cnxn)
+            self.dataframe = pd.read_sql(sql, self.cnxn)
 
         ### 마지막 시트 쿼리 내역 추가
         if self.rbtn1.isChecked():
@@ -8867,15 +8908,6 @@ class MyApp(QWidget):
         elif self.rbtn2.isChecked():
             self.my_query.loc[self.tempSheet + "_Journals"] = [self.tempSheet + "_Journals", "Scenario14",
                                                                "---Filtered JE  Scenario14---\n" + sql]
-
-        ### DebitCredit 열 생성
-        if not self.checkD.isChecked() and self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Credit']
-            self.dataframe.reset_index(drop=True, inplace=True)
-
-        elif self.checkD.isChecked() and not self.checkC.isChecked():
-            self.dataframe = self.dataframe[self.dataframe['DebitCredit'] == 'Debit']
-            self.dataframe.reset_index(drop=True, inplace=True)
 
         if len(self.dataframe) > 1048576:
             self.communicate14.closeApp.emit()
