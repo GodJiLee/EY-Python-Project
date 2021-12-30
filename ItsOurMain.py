@@ -8944,7 +8944,7 @@ class MyApp(QWidget):
             event.ignore()
 
     def saveFile(self):
-        self.scenario_dic['Query'] = self.my_query
+        self.scenario_dic['JEA_Query'] = self.my_query
         ### 예외처리 1 - 데이터 프레임 빈 경우
         if self.dataframe is None:
             self.MessageBox_Open("저장할 데이터가 없습니다.")
@@ -8969,7 +8969,7 @@ class MyApp(QWidget):
                     wb = openpyxl.load_workbook(path)
                     wb.create_sheet('Scenario Updated>>>')
                     ws_names = wb.get_sheet_names()
-                    query_sheet = wb.get_sheet_by_name('Query')
+                    query_sheet = wb.get_sheet_by_name('JEA_Query')
 
                     for temp in list(self.scenario_dic.keys()):
                         if temp in ws_names:
@@ -8977,17 +8977,27 @@ class MyApp(QWidget):
                             wb.remove(wb['' + temp + ''])
                         else:
                             addcount += 1
+
+                    real_query = pd.DataFrame(query_sheet.values)
+                    real_query.columns = ["Sheet name", "Scenario number", "Query"]
+
+                    if changecount == 1:
+                        self.scenario_dic['JEA_Query'] = pd.concat([real_query, self.scenario_dic['JEA_Query']])
+
                     wb.save(path)
+
                     with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
-                        real_query = pd.DataFrame(query_sheet.values)
-                        real_query.columns = ["Sheet name", "Scenario number", "Query"]
-
-                        if changecount == 1:
-                            self.scenario_dic['Query'] = pd.concat([real_query, self.scenario_dic['Query']])
-
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
-                                                                       freeze_panes=(1, 0))
+                                                            freeze_panes=(1, 0))
+
+                    query_wb = openpyxl.load_workbook(path)
+                    sht = query_wb.get_sheet_by_name('JEA_Query')
+                    # query_copy = query_wb.copy_worksheet(sht)
+                    query_wb.move_sheet(sht, addcount)
+                    sht.sheet_properties.tabColor = '00FFFF'
+
+                    query_wb.save(path)
 
                     self.MessageBox_Open("총 " + str(changecount) + "개 시트가 교체\n" + str(addcount) + "개 시트가 추가되었습니다.")
 
