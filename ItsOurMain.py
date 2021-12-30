@@ -5487,11 +5487,11 @@ class MyApp(QWidget):
                     self.alertbox_open2("연속된 자릿수")
                     return
 
-            for i in range(len(self.temp_Continuous)):
-                ### 예외처리 4 - 입력값이 6자리 미만인 경우
-                if len(str(self.temp_Continuous[i])) < 6:
-                    self.alertbox_open15()
-                    return
+            # for i in range(len(self.temp_Continuous)):
+            #     ### 예외처리 4 - 입력값이 6자리 미만인 경우
+            #     if len(str(self.temp_Continuous[i])) < 6:
+            #         self.alertbox_open15()
+            #         return
 
             ### 예외처리 5 - 연속된 숫자가 아닌 경우
             for i in range(len(self.temp_Continuous)):
