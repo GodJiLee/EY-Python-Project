@@ -182,6 +182,7 @@ class Form(QGroupBox):
         checked_account_12 = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
         checked_account_A = 'AND LVL4.GL_Account_Number IN (' + checked_name + ')'
 
+
 class Form1(QGroupBox):
     def resource_path(self, relative_path):
         try:
@@ -3194,13 +3195,13 @@ class MyApp(QWidget):
 
         sublayout002 = QHBoxLayout()
         sublayout002.addWidget(labelDC2)
-        sublayout002.addWidget(self.checkC2)
         sublayout002.addWidget(self.checkD2)
+        sublayout002.addWidget(self.checkC2)
 
         sublayout003 = QHBoxLayout()
         sublayout003.addWidget(labelDC22)
-        sublayout003.addWidget(self.checkC22)
         sublayout003.addWidget(self.checkD22)
+        sublayout003.addWidget(self.checkC22)
 
         sublayout03 = QGridLayout()
         sublayout03.addWidget(labelAccount1, 1, 0)
@@ -4801,7 +4802,7 @@ class MyApp(QWidget):
                                                       + "건 추출되었습니다. <br> - 중요성금액(" + str(self.tempTE)
                                                       + ")을 적용하였습니다. <br> [전표라인번호 기준]"
                                                       , QMessageBox.Ok)
-            else :
+            else:
                 self.scenario_dic[self.tempSheet + '_Journals'] = self.dataframe
                 self.combo_sheet.addItem(self.tempSheet + '_Journals')
                 self.combo_sheet.setCurrentIndex(self.combo_sheet.count() - 1)
@@ -5549,7 +5550,6 @@ class MyApp(QWidget):
                 self.alertbox_open4('필요 조건 필드를 충족하지 않습니다.')
             else:
                 try:
-                    self.wbC.astype({'GL_Account_Number': 'int64', 'Analysis_GL_Account_Number': 'int64'})
                     self.doAction()
                     self.thC = Thread(target=self.extButtonClickedC)
                     self.thC.start()
@@ -5700,7 +5700,8 @@ class MyApp(QWidget):
                 else:
                     b = "JournalEntries.JEDescription NOT LIKE N'%" + a + "%' OR JournalEntries.JELineDescription NOT LIKE N'%" + a + "%'"
                 self.baseKey2_clean.append(b)
-            self.tempKey = '(' + str(' OR '.join(self.baseKey_clean)) + ') AND (' + str(' OR '.join(self.baseKey2_clean)) + ')'
+            self.tempKey = '(' + str(' OR '.join(self.baseKey_clean)) + ') AND (' + str(
+                ' OR '.join(self.baseKey2_clean)) + ')'
         else:
             self.tempKey = '(' + str(' OR '.join(self.baseKey_clean)) + ')'
 
@@ -7061,7 +7062,7 @@ class MyApp(QWidget):
 
     def extButtonClicked11(self):
         cursor = self.cnxn.cursor()
-        if not (self.checkF3.isChecked()) and not (self.checkP3.isChecked()): # 기본
+        if not (self.checkF3.isChecked()) and not (self.checkP3.isChecked()):  # 기본
             sql = '''
                                     SET NOCOUNT ON;
                                     SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
@@ -7162,7 +7163,8 @@ class MyApp(QWidget):
                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
                                 DROP TABLE  #tmp     
                                    '''.format(field=self.selected_project_id, CD=self.tempStateA,
-                                              Account=self.checked_accountA, Account2 = self.checked_accountB, CD2 = self.tempStateB,
+                                              Account=self.checked_accountA, Account2=self.checked_accountB,
+                                              CD2=self.tempStateB,
                                               TE=self.tempCost, YEAR=self.pname_year)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
@@ -7267,12 +7269,13 @@ class MyApp(QWidget):
                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
                                 DROP TABLE #tmp
                                     '''.format(field=self.selected_project_id, CD=self.tempStateA,
-                                              Account=self.checked_accountA, Account2 = self.checked_accountB, CD2 = self.tempStateB,
-                                              TE=self.tempCost, YEAR=self.pname_year)
+                                               Account=self.checked_accountA, Account2=self.checked_accountB,
+                                               CD2=self.tempStateB,
+                                               TE=self.tempCost, YEAR=self.pname_year)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
 
-        elif not(self.checkF3.isChecked()) and (self.checkP3.isChecked()):  # 회계 영역
+        elif not (self.checkF3.isChecked()) and (self.checkP3.isChecked()):  # 회계 영역
             sql = '''
                                     SET NOCOUNT ON;
                                     SELECT CONCAT(JENumber,'-',Effectivedate) AS JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount INTO #tmp
@@ -7373,7 +7376,7 @@ class MyApp(QWidget):
                                 ORDER BY LVL4.GL_Account_Number, LVL4.GL_Account_Position, LVL4.Posting_Type, LVL4.Analysis_GL_Account_Number
                                 DROP TABLE #tmp
                         '''.format(field=self.selected_project_id, CD=self.tempStateA,
-                                   Account=self.checked_accountA, Account2 = self.checked_accountB, CD2 = self.tempStateB,
+                                   Account=self.checked_accountA, Account2=self.checked_accountB, CD2=self.tempStateB,
                                    TE=self.tempCost, YEAR=self.pname_year)
 
             self.dataframe = pd.read_sql(sql, self.cnxn)
@@ -7750,9 +7753,9 @@ class MyApp(QWidget):
 
         for i in range(len(index)):
             cursorindex.append("'" + str(index.iloc[i, 0]) + "'" + ',' +
-                               "'" + index.iloc[i, 1] + "'" + ',' +
+                               "'" + str(index.iloc[i, 1]) + "'" + ',' +
                                "'" + str(index.iloc[i, 2]) + "'" + ',' +
-                               "'" + index.iloc[i, 3] + "'")
+                               "'" + str(index.iloc[i, 3]) + "'")
 
         for tempcursor in cursorindex:
             cursor = self.cnxn.cursor()
