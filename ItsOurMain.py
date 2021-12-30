@@ -8983,6 +8983,7 @@ class MyApp(QWidget):
 
                     if changecount == 1:
                         self.scenario_dic['JEA_Query'] = pd.concat([real_query, self.scenario_dic['JEA_Query']])
+                        self.scenario_dic['JEA_Query'] = self.scenario_dic['JEA_Query'].drop(self.scenario_dic['JEA_Query'].index[0])
 
                     wb.save(path)
 
@@ -9006,6 +9007,14 @@ class MyApp(QWidget):
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
                                                                        freeze_panes=(1, 0))
+
+                    query_wb_origin = openpyxl.load_workbook(path)
+                    sht_origin = query_wb_origin.get_sheet_by_name('JEA_Query')
+                    sht_origin.sheet_properties.tabColor = '00FFFF'
+                    query_wb_origin.move_sheet(sht_origin, len(self.scenario_dic)-1)
+
+                    query_wb_origin.save(path)
+
                     self.MessageBox_Open("저장을 완료했습니다.")
 
 
