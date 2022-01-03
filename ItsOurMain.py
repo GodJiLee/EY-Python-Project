@@ -926,6 +926,7 @@ class MyApp(QWidget):
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
         btn_connect.clicked.connect(self.connectButtonClicked)
+        btn_connect.setShortcut("Ctrl+P")
         self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
         btn_condition.clicked.connect(self.connectDialog)
 
@@ -5766,7 +5767,7 @@ class MyApp(QWidget):
     def RemoveSheetButton_Clicked(self):
 
         ##예외 처리 - 삭제할 Sheet가 없는 경우
-        if not self.scenario_dic:
+        if not self.combo_sheet:
             self.MessageBox_Open("삭제할 Sheet가 없습니다.")
             return
 
@@ -5778,7 +5779,7 @@ class MyApp(QWidget):
         self.combo_sheet.removeItem(self.combo_sheet.currentIndex())
         gc.collect()
 
-        if not self.scenario_dic:
+        if not self.combo_sheet:
             self.dataframe = pd.DataFrame({'No Sheet': []})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
@@ -5823,7 +5824,9 @@ class MyApp(QWidget):
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
         RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
+        RemoveSheet_button.setShortcut("Ctrl+R")
         export_file_button.clicked.connect(self.saveFile)
+        export_file_button.setShortcut("Ctrl+S")
         self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
 
         ##layout 쌓기
