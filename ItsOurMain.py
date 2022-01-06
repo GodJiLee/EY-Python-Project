@@ -932,6 +932,7 @@ class MyApp(QWidget):
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
         btn_connect.clicked.connect(self.connectButtonClicked)
+        btn_connect.setShortcut("Ctrl+P") # remove sheet 업데이트 부분
         self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
         btn_condition.clicked.connect(self.connectDialog)
 
@@ -5203,9 +5204,8 @@ class MyApp(QWidget):
                         self.alertbox_open2('T값과 중요성금액')
 
     def Thread7(self):
-        self.holiday = [pytimekr.holidays(i) for i in range(2020, 2031)]
-
-        self.holiday_str = []
+        self.holiday_str = []  # 공휴일, 사용자가 입력한 날짜, 주말
+        self.holiday = [pytimekr.holidays(i) for i in range(2020, 2023)]  # 공휴일
 
         for i in range(len(self.holiday)):
             for d in range(0, len(self.holiday[i])):
@@ -5215,8 +5215,8 @@ class MyApp(QWidget):
         for i in self.fianlDate:
             self.holiday_str.append(i)
 
-        self.start_date = date(2021, 1, 1)
-        self.end_date = date(2023, 12, 31)
+        self.start_date = date(2020, 1, 1)
+        self.end_date = date(2022, 12, 31)
         self.delta = timedelta(days=1)
         while self.start_date <= self.end_date:
             if self.start_date.weekday() == 5 or self.start_date.weekday() == 6:  # 주말 추가
@@ -5234,8 +5234,10 @@ class MyApp(QWidget):
             self.realDate = self.tempDate[0] + self.tempDate[1] + self.tempDate[2]
             self.realDate_List.append(self.realDate)
 
+        self.realDate_List_final = set(self.realDate_List)
+
         self.checked_date = ''
-        for i in self.realDate_List:
+        for i in self.realDate_List_final:
             self.checked_date = self.checked_date + ',' + '\'' + i + '\''
 
         self.checked_date = self.checked_date[1:]
@@ -5772,7 +5774,7 @@ class MyApp(QWidget):
     def RemoveSheetButton_Clicked(self):
 
         ##예외 처리 - 삭제할 Sheet가 없는 경우
-        if not self.scenario_dic:
+        if not self.combo_sheet:
             self.MessageBox_Open("삭제할 Sheet가 없습니다.")
             return
 
@@ -5784,7 +5786,7 @@ class MyApp(QWidget):
         self.combo_sheet.removeItem(self.combo_sheet.currentIndex())
         gc.collect()
 
-        if not self.scenario_dic:
+        if not self.combo_sheet:
             self.dataframe = pd.DataFrame({'No Sheet': []})
             model = DataFrameModel(self.dataframe)
             self.viewtable.setModel(model)
@@ -5829,7 +5831,9 @@ class MyApp(QWidget):
         #########
         #########버튼 클릭 or 콤보박스 선택시 발생하는 시그널 함수들
         RemoveSheet_button.clicked.connect(self.RemoveSheetButton_Clicked)
+        RemoveSheet_button.setShortcut("Ctrl+R")
         export_file_button.clicked.connect(self.saveFile)
+        export_file_button.setShortcut("Ctrl+S")
         self.combo_sheet.activated[str].connect(self.Sheet_ComboBox_Selected)
 
         ##layout 쌓기
