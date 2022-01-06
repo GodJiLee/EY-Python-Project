@@ -8727,38 +8727,45 @@ class MyApp(QWidget):
             ### JE - Journals
         elif self.rbtn2.isChecked():
             sql_query = '''
-                                        SET NOCOUNT ON
-                                        SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
-                                        GROUP BY CoA.GLAccountNumber
-                                        SELECT
-                                            JournalEntries.BusinessUnit
-                                            , JournalEntries.JENumber
-                                            , JournalEntries.JELineNumber
-                                            , JournalEntries.EffectiveDate
-                                            , JournalEntries.EntryDate
-                                            , JournalEntries.Period
-                                            , JournalEntries.GLAccountNumber
-                                            , #TMPCOA.GLAccountName
-                                            , JournalEntries.Debit
-                                            , JournalEntries.Credit
-                                            , CASE
-                                                WHEN JournalEntries.Debit = 0 THEN 'Credit' ELSE 'Debit'
-                                                END AS DebitCredit
-                                            , JournalEntries.Amount
-                                            , JournalEntries.FunctionalCurrencyCode
-                                            , JournalEntries.JEDescription
-                                            , JournalEntries.JELineDescription
-                                            , JournalEntries.PreparerID
-                                            , JournalEntries.ApproverID
-                                        FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
-                                        WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber 
-                                        {CONTI}
-                                        {Account}
-                                        AND ABS(JournalEntries.Amount) > {TE}
-                                        AND JournalEntries.Year = {year}
-                                        ORDER BY JENumber, JELineNumber
-                                        DROP TABLE #TMPCOA
+                            SET NOCOUNT ON
+
+                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
+                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
+                            GROUP BY CoA.GLAccountNumber
+                                                        
+                            SELECT
+                                JournalEntries.BusinessUnit
+                                , JournalEntries.JENumber
+                                , JournalEntries.JELineNumber
+                                , JournalEntries.EffectiveDate
+                                , JournalEntries.EntryDate
+                                , JournalEntries.Period
+                                , JournalEntries.GLAccountNumber
+                                , #TMPCOA.GLAccountName
+                                , JournalEntries.Debit
+                                , JournalEntries.Credit
+                                , JournalEntries.Amount
+                                , JournalEntries.FunctionalCurrencyCode
+                                , JournalEntries.JEDescription
+                                , JournalEntries.JELineDescription
+                                , JournalEntries.PreparerID
+                                , JournalEntries.ApproverID
+                            
+                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
+                            
+                            WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
+                                AND JournalEntries.JENumber IN
+                                                (
+                                                SELECT DISTINCT JENumber
+                                                FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
+                                                WHERE ABS(JournalEntries.Amount) > {TE}
+                                                    {CONTI}
+                                                    {Account}
+                                                    AND Year = {year}
+                                                ) AND JournalEntries.Year = {year}
+                            ORDER BY JENumber,JELineNumber
+                            
+                            DROP TABLE #TMPCOA
                                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                                CONTI=self.filter_Continuous,
                                                Account=self.checked_account13, year=self.pname_year)
