@@ -7163,7 +7163,8 @@ class MyApp(QWidget):
                                         SELECT                                                                                                                                            													
                                                 LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
                                                 MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
-                                                MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                                MAX(LVL3.AccountType1) AS Account_Type,
+                                                MAX(LVL3.AccountClass1) AS Account_Class,                                                                                                                              											
                                                 LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
                                                 CASE                                                                                                                      											
                                                 WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
@@ -7172,7 +7173,8 @@ class MyApp(QWidget):
                                                 END AS Posting_Type,                                                                                                                      
                                                 LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
                                                 MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
-                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,
+                                                MAX(LVL3.AccountClass2) AS Analysis_Account_Class,                                                                                      
                                                 LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
                                                 SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
                                                 SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
@@ -7186,7 +7188,8 @@ class MyApp(QWidget):
                                                                             LVL1_1.JENumber1,                                                         
                                                                             LVL1_1.GLAccountNumber1,                                                          
                                                                             MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
-                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                            MAX(LVL1_1.AccountClass1) AS AccountClass1,                                                      
                                                                             SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
                                                                             SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
                                                                             DivideDC1,                                                         
@@ -7198,7 +7201,9 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber1,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName1,                                      
-                                                                                            CoA.AccountType AS AccountType1,                                       
+                                                                                            CoA.AccountType AS AccountType1,
+                                                                                            CoA.AccountClass AS AccountClass1,
+                                                                                            CoA.AccountClass AS                                        
                                                                                             #tmp.Debit AS Debit1,                                             
                                                                                             #tmp.Credit AS Credit1,                                            
                                                                                             #tmp.Amount AS Amount1,                                            
@@ -7215,7 +7220,8 @@ class MyApp(QWidget):
                                                                             LVL1_2.JENumber2,                                                        
                                                                             LVL1_2.GLAccountNumber2,                                                          
                                                                             MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
-                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                            MAX(LVL1_2.AccountClass2) AS AccountClass2,                                                       
                                                                             SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
                                                                             SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
                                                                             DivideDC2,                                                         
@@ -7226,7 +7232,8 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber2,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName2,                                      
-                                                                                            CoA.AccountType AS AccountType2,                                       
+                                                                                            CoA.AccountType AS AccountType2,
+                                                                                            CoA.AccountClass AS AccountClass2,                                        
                                                                                             #tmp.Debit AS Debit2,                                             
                                                                                             #tmp.Credit AS Credit2,                                            
                                                                                             #tmp.Amount AS Amount2,                                            
@@ -7269,7 +7276,8 @@ class MyApp(QWidget):
                                         SELECT                                                                                                                                            													
                                                 LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
                                                 MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
-                                                MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                                MAX(LVL3.AccountType1) AS Account_Type,
+                                                MAX(LVL3.AccountClass1) AS Account_Class,                                                                                                                               											
                                                 LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
                                                 CASE                                                                                                                      											
                                                 WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
@@ -7278,7 +7286,8 @@ class MyApp(QWidget):
                                                 END AS Posting_Type,                                                                                                                      
                                                 LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
                                                 MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
-                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,
+                                                MAX(LVL3.AccountClass2) AS Analysis_Account_Class,                                                                                       
                                                 LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
                                                 SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
                                                 SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
@@ -7292,7 +7301,8 @@ class MyApp(QWidget):
                                                                             LVL1_1.JENumber1,                                                         
                                                                             LVL1_1.GLAccountNumber1,                                                          
                                                                             MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
-                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                            MAX(LVL1_1.AccountClass1) AS AccountClass1,                                                      
                                                                             SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
                                                                             SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
                                                                             DivideDC1,                                                         
@@ -7304,7 +7314,8 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber1,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName1,                                      
-                                                                                            CoA.AccountType AS AccountType1,                                       
+                                                                                            CoA.AccountType AS AccountType1,
+                                                                                            CoA.AccountClass AS AccountClass1,                                       
                                                                                             #tmp.Debit AS Debit1,                                             
                                                                                             #tmp.Credit AS Credit1,                                            
                                                                                             #tmp.Amount AS Amount1,                                            
@@ -7321,7 +7332,8 @@ class MyApp(QWidget):
                                                                             LVL1_2.JENumber2,                                                        
                                                                             LVL1_2.GLAccountNumber2,                                                          
                                                                             MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
-                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                            MAX(LVL1_2.AccountClass2) AS AccountClass2,                                                      
                                                                             SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
                                                                             SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
                                                                             DivideDC2,                                                         
@@ -7332,7 +7344,8 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber2,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName2,                                      
-                                                                                            CoA.AccountType AS AccountType2,                                       
+                                                                                            CoA.AccountType AS AccountType2,
+                                                                                            CoA.AccountClass AS AccountClass2,                                       
                                                                                             #tmp.Debit AS Debit2,                                             
                                                                                             #tmp.Credit AS Credit2,                                            
                                                                                             #tmp.Amount AS Amount2,                                            
@@ -7376,7 +7389,8 @@ class MyApp(QWidget):
                                         SELECT                                                                                                                                            													
                                                 LVL3.GLAccountNumber1 AS GL_Account_Number,                                                                                                                                											
                                                 MAX(LVL3.GLAccountName1) AS GL_ACcount_Name,                                                                                    											
-                                                MAX(LVL3.AccountType1) AS Account_Type,                                                                                                                              											
+                                                MAX(LVL3.AccountType1) AS Account_Type,
+                                                MAX(LVL3.ACcountClass1) AS Account_Class,                                                                                                                              											
                                                 LVL3.DivideDC1 AS GL_Account_Position,                                                                                 											
                                                 CASE                                                                                                                      											
                                                 WHEN LVL3.GLAccountNumber1 = LVL3.GLAccountNumber2 and  LVL3.DivideDC1  = LVL3.DivideDC2 THEN '1.Analysis Account'                                                                                                                            											
@@ -7385,7 +7399,8 @@ class MyApp(QWidget):
                                                 END AS Posting_Type,                                                                                                                      
                                                 LVL3.GLAccountNumber2 AS Analysis_GL_Account_Number,                                                                                                                        
                                                 MAX(LVL3.GLAccountName2) AS Analysis_GL_ACcount_Name,                                                                                  
-                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,                                                                                      
+                                                MAX(LVL3.AccountType2) AS Analysis_Account_Type,
+                                                MAX(LVL3.AccountClass2) AS Analysis_Account_Class,                                                                                      
                                                 LVL3.DivideDC2 AS Analysis_Position,                                                                                                            
                                                 SUM(LVL3.SumOfDebit2) AS Sum_Of_Debit_Amount,                                                                                                                                 
                                                 SUM(LVL3.SumOfCredit2) AS Sum_Of_Credit_Amount,                                                                                                                              
@@ -7399,7 +7414,8 @@ class MyApp(QWidget):
                                                                             LVL1_1.JENumber1,                                                         
                                                                             LVL1_1.GLAccountNumber1,                                                          
                                                                             MAX(LVL1_1.CoA_GLAccountName1) AS GLAccountName1,                                                            			
-                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,                                                      
+                                                                            MAX(LVL1_1.AccountType1) AS AccountType1,
+                                                                            MAX(LVL1_1.AccountClass1) AS AccountClass1,                                                       
                                                                             SUM(LVL1_1.Debit1) AS SumOfDebit1,                                                       
                                                                             SUM(LVL1_1.Credit1) AS SumOfCredit1,                                                      
                                                                             DivideDC1,                                                         
@@ -7411,7 +7427,8 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber1,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName1,                                      
-                                                                                            CoA.AccountType AS AccountType1,                                       
+                                                                                            CoA.AccountType AS AccountType1,
+                                                                                            CoA.AccountClass AS AccountClass1,                                       
                                                                                             #tmp.Debit AS Debit1,                                             
                                                                                             #tmp.Credit AS Credit1,                                            
                                                                                             #tmp.Amount AS Amount1,                                            
@@ -7428,7 +7445,8 @@ class MyApp(QWidget):
                                                                             LVL1_2.JENumber2,                                                        
                                                                             LVL1_2.GLAccountNumber2,                                                          
                                                                             MAX(LVL1_2.CoA_GLAccountName2) AS GLAccountName2,                                                          
-                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,                                                      
+                                                                            MAX(LVL1_2.AccountType2) AS AccountType2,
+                                                                            MAX(LVL1_2.AccountClass2) AS AccountClass2,                                                      
                                                                             SUM(LVL1_2.Debit2) AS SumOfDebit2,                                                       
                                                                             SUM(LVL1_2.Credit2) AS SumOfCredit2,                                                      
                                                                             DivideDC2,                                                         
@@ -7439,7 +7457,8 @@ class MyApp(QWidget):
                                                                                             #tmp.GLAccountNumber AS GLAccountNumber2,                                          
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber2,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName2,                                      
-                                                                                            CoA.AccountType AS AccountType2,                                       
+                                                                                            CoA.AccountType AS AccountType2,
+                                                                                            CoA.AccountClass AS AccountClass2,                                       
                                                                                             #tmp.Debit AS Debit2,                                             
                                                                                             #tmp.Credit AS Credit2,                                            
                                                                                             #tmp.Amount AS Amount2,                                            
@@ -7972,6 +7991,7 @@ class MyApp(QWidget):
                 FROM #result 							
                 LEFT JOIN #COAData COA							
                 ON #result.GLAccountNumber = COA.GLAccountNumber
+                ORDER BY JENumber, JELineNumber
                 DROP TABLE #filter, #JEData,#result,#COAData
 
                 '''.format(field=self.selected_project_id, cursor=cursortext, year=self.pname_year, TE=self.temp_TE)
@@ -8250,6 +8270,7 @@ class MyApp(QWidget):
                 FROM #result 							
                 LEFT JOIN #COAData COA							
                 ON #result.GLAccountNumber = COA.GLAccountNumber
+                ORDER BY JENumber,JELineNumber	
                 DROP TABLE #filter, #JEData,#result,#COAData
                                     '''.format(field=self.selected_project_id, cursor=cursortext,
                                                year=self.pname_year, TE=self.temp_TE)
@@ -8532,6 +8553,7 @@ class MyApp(QWidget):
                 FROM #result 							
                 LEFT JOIN #COAData COA							
                 ON #result.GLAccountNumber = COA.GLAccountNumber
+                ORDER BY JENumber,JELineNumber	
                 DROP TABLE #filter, #JEData,#result,#COAData
 
                                     '''.format(field=self.selected_project_id, cursor=cursortext,
