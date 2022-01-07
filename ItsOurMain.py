@@ -3026,15 +3026,16 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id)
 
         accountsname1 = pd.read_sql(sql1, self.cnxn)
-
         ### 계정트리 - A, B
         self.new_tree1 = Form(self)
         self.new_tree2 = Form1(self)
-
         self.new_tree1.tree.clear()
         self.new_tree2.tree.clear()
 
-        for n, i in enumerate(accountsname1.AccountType.unique()):
+        accountType1 = accountsname1.AccountType.unique()
+        accountType1.sort()
+
+        for n, i in enumerate(accountType1):
             self.new_tree1.parent = QTreeWidgetItem(self.new_tree1.tree)
 
             self.new_tree1.parent.setText(0, "{}".format(i))
@@ -3073,8 +3074,10 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id)
 
         accountsname2 = pd.read_sql(sql2, self.cnxn)
+        accountType2 = accountsname2.AccountType.unique()
+        accountType2.sort()
 
-        for n, i in enumerate(accountsname2.AccountType.unique()):
+        for n, i in enumerate(accountType2):
             self.new_tree2.parent = QTreeWidgetItem(self.new_tree2.tree)
             self.new_tree2.parent.setText(0, "{}".format(i))
             self.new_tree2.parent.setFlags(self.new_tree2.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
