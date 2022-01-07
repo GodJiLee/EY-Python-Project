@@ -713,6 +713,14 @@ class MyApp(QWidget):
         self.alt.setText(txt + ' 에 비연속 값이 포함되어 있습니다.')
         self.alt.exec_()
 
+    def alertbox_open20(self): # 19번은 시나리오 15번 관련 alert이니 숫자를 바꾸지 마세요!
+        self.alt = QMessageBox()
+        self.alt.setIcon(QMessageBox.Information)
+        self.alt.setWindowTitle('구분자 선택 오류')
+        self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
+        self.alt.setText('해당 프로젝트는 기능영역이 존재하지 않습니다.\n기능영역 선택을 해제한 후 데이터를 추출했습니다.')
+        self.alt.exec_()
+
     def init_UI(self):
 
         image = QImage(self.resource_path('./dark_gray.png'))
@@ -5381,6 +5389,16 @@ class MyApp(QWidget):
         elif self.checkF3.isChecked() and self.checkP3.isChecked():
             self.alertbox_open6()
 
+        elif self.checkF3.isChecked() and not (self.checkP3.isChecked()):
+            sql = '''
+                       SET NOCOUNT ON;
+                       SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount, Segment01
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]'''.format(field=self.selected_project_id)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            if self.dataframe['Segment01'].isnull().sum() == len(self.dataframe):
+                self.alertbox_open20()
+
         else:
             if self.tempCost == '': self.tempCost = 0
             try:
@@ -5437,6 +5455,16 @@ class MyApp(QWidget):
         elif self.checkF.isChecked() and self.checkP.isChecked():
             self.alertbox_open6()
 
+        elif self.checkF.isChecked() and not (self.checkP.isChecked()):
+            sql = '''
+                       SET NOCOUNT ON;
+                       SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount, Segment01
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]'''.format(field=self.selected_project_id)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            if self.dataframe['Segment01'].isnull().sum() == len(self.dataframe):
+                self.alertbox_open20()
+
         else:
             try:
                 int(self.tempCost)
@@ -5454,6 +5482,8 @@ class MyApp(QWidget):
                     return
                 else:
                     self.checked_account12 = checked_account_12
+
+
 
                 self.doAction()
                 self.th12 = Thread(target=self.extButtonClicked12)
@@ -5550,6 +5580,16 @@ class MyApp(QWidget):
 
         elif self.checkF2.isChecked() and self.checkP2.isChecked():
             self.alertbox_open6()
+
+        elif self.checkF2.isChecked() and not (self.checkP2.isChecked()):
+            sql = '''
+                       SET NOCOUNT ON;
+                       SELECT JENumber, JELineNumber, GLAccountNumber, Debit, Credit, Amount, Segment01
+                       FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]'''.format(field=self.selected_project_id)
+
+            self.dataframe = pd.read_sql(sql, self.cnxn)
+            if self.dataframe['Segment01'].isnull().sum() == len(self.dataframe):
+                self.alertbox_open20()
 
         else:
             self.wbC = self.wb2.parse(self.listCursor.currentText())
