@@ -932,7 +932,7 @@ class MyApp(QWidget):
         self.comboScenario.activated[str].connect(self.ComboSmall_Selected)
         self.cb_server.activated[str].connect(self.Server_ComboBox_Selected)
         btn_connect.clicked.connect(self.connectButtonClicked)
-        btn_connect.setShortcut("Ctrl+P") # remove sheet 업데이트 부분
+        btn_connect.setShortcut("Ctrl+P")  # remove sheet 업데이트 부분
         self.ProjectCombobox.activated[str].connect(self.Project_ComboBox_Selected)
         btn_condition.clicked.connect(self.connectDialog)
 
@@ -4900,11 +4900,11 @@ class MyApp(QWidget):
 
                 if self.checkD.isChecked() and self.checkC.isChecked():
                     self.tempCD = ''
-                elif not(self.checkD.isChecked()) and not(self.checkC.isChecked()):
+                elif not (self.checkD.isChecked()) and not (self.checkC.isChecked()):
                     self.tempCD = ''
-                elif not (self.checkD.isChecked()) and self.checkC.isChecked(): #credit
+                elif not (self.checkD.isChecked()) and self.checkC.isChecked():  # credit
                     self.tempCD = 'AND Debit = 0'
-                elif self.checkD.isChecked() and not(self.checkC.isChecked()): #debit
+                elif self.checkD.isChecked() and not (self.checkC.isChecked()):  # debit
                     self.tempCD = 'AND Credit = 0'
 
                 self.doAction()
@@ -5205,6 +5205,9 @@ class MyApp(QWidget):
 
     def Thread7(self):
         self.holiday_str = []  # 공휴일, 사용자가 입력한 날짜, 주말
+        self.realDate_List = []  # SQL 쿼리에 들어갈 리스트
+        self.holiday = [] # 공휴일 리스트
+
         self.holiday = [pytimekr.holidays(i) for i in range(2020, 2023)]  # 공휴일
 
         for i in range(len(self.holiday)):
@@ -5224,17 +5227,17 @@ class MyApp(QWidget):
                 self.holiday_str.append(self.a)
             self.start_date += self.delta
 
-        self.fianlDate = []  # 초기화 작업
-
-        self.realDate_List = []  # SQL 쿼리에 들어갈 리스트
-
         for i in range(0, len(self.holiday_str)):
             self.tempDate = []
             self.tempDate = str(self.holiday_str[i]).split('-')
-            self.realDate = self.tempDate[0] + self.tempDate[1] + self.tempDate[2]
+            self.realDate = self.tempDate[0] + '-' + self.tempDate[1] + '-' + self.tempDate[2]
             self.realDate_List.append(self.realDate)
 
         self.realDate_List_final = set(self.realDate_List)
+
+        self.string_date_list = []
+        self.finalDate = []
+        self.D7_Date.setText('')
 
         self.checked_date = ''
         for i in self.realDate_List_final:
@@ -5604,11 +5607,11 @@ class MyApp(QWidget):
 
                 if self.checkD.isChecked() and self.checkC.isChecked():
                     self.tempCD = ''
-                elif not(self.checkD.isChecked()) and not(self.checkC.isChecked()):
+                elif not (self.checkD.isChecked()) and not (self.checkC.isChecked()):
                     self.tempCD = ''
-                elif not (self.checkD.isChecked()) and self.checkC.isChecked(): #credit
+                elif not (self.checkD.isChecked()) and self.checkC.isChecked():  # credit
                     self.tempCD = 'AND Debit = 0'
-                elif self.checkD.isChecked() and not(self.checkC.isChecked()): #debit
+                elif self.checkD.isChecked() and not (self.checkC.isChecked()):  # debit
                     self.tempCD = 'AND Credit = 0'
 
                 self.doAction()
@@ -5898,7 +5901,7 @@ class MyApp(QWidget):
                                         ORDER BY JournalEntries.GLAccountNumber
                                         DROP TABLE #TMPCOA
                                     """.format(field=self.selected_project_id, TE=self.temp_TE, N=self.temp_N,
-                                               Account=self.checked_account4, year=self.pname_year, CD = self.tempCD)
+                                               Account=self.checked_account4, year=self.pname_year, CD=self.tempCD)
 
             ### JE Line - Refer
             sql_query = '''
@@ -6317,7 +6320,6 @@ class MyApp(QWidget):
             self.my_query.loc[self.tempSheet_NonSAP + "_Journals"] = [self.tempSheet_NonSAP + "_Journals",
                                                                       "Scenario05",
                                                                       "---Filtered JE  Scenario05---\n" + sql_query]
-
 
         ### 예외처리 5 - 최대 출력 라인 초과
         if len(self.dataframe) > 1048576:
@@ -6868,7 +6870,7 @@ class MyApp(QWidget):
                                   {CD}		
                            GROUP BY JournalEntries.PreparerID				
                         '''.format(field=self.selected_project_id, TE=self.tempTE, N=self.tempN,
-                                   Account=self.checked_account9, year=self.pname_year, CD = self.tempCD)
+                                   Account=self.checked_account9, year=self.pname_year, CD=self.tempCD)
 
             self.dataframe_refer = pd.read_sql(sql_refer, self.cnxn)
 
@@ -7798,7 +7800,7 @@ class MyApp(QWidget):
                                "'" + str(index.iloc[i, 1]) + "'" + ',' +
                                "'" + str(index.iloc[i, 2]) + "'" + ',' +
                                "'" + str(index.iloc[i, 3]) + "')")
-            if i != (len(index) -1):
+            if i != (len(index) - 1):
                 cursorindex.append(",")
 
         for tempcursor in cursorindex:
@@ -8736,7 +8738,7 @@ class MyApp(QWidget):
                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                             GROUP BY CoA.GLAccountNumber
-                                                        
+
                             SELECT
                                 JournalEntries.BusinessUnit
                                 , JournalEntries.JENumber
@@ -8754,9 +8756,9 @@ class MyApp(QWidget):
                                 , JournalEntries.JELineDescription
                                 , JournalEntries.PreparerID
                                 , JournalEntries.ApproverID
-                            
+
                             FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] JournalEntries, #TMPCOA
-                            
+
                             WHERE JournalEntries.GLAccountNumber = #TMPCOA.GLAccountNumber
                                 AND JournalEntries.JENumber IN
                                                 (
@@ -8768,7 +8770,7 @@ class MyApp(QWidget):
                                                     AND Year = {year}
                                                 ) AND JournalEntries.Year = {year}
                             ORDER BY JENumber,JELineNumber
-                            
+
                             DROP TABLE #TMPCOA
                                     '''.format(field=self.selected_project_id, TE=self.temp_TE_13,
                                                CONTI=self.filter_Continuous,
@@ -9002,14 +9004,15 @@ class MyApp(QWidget):
 
                     if changecount == 1:
                         self.scenario_dic['JEA_Query'] = pd.concat([real_query, self.scenario_dic['JEA_Query']])
-                        self.scenario_dic['JEA_Query'] = self.scenario_dic['JEA_Query'].drop(self.scenario_dic['JEA_Query'].index[0])
+                        self.scenario_dic['JEA_Query'] = self.scenario_dic['JEA_Query'].drop(
+                            self.scenario_dic['JEA_Query'].index[0])
 
                     wb.save(path)
 
                     with pd.ExcelWriter('' + path + '', mode='a', engine='openpyxl') as writer:
                         for temp in self.scenario_dic:
                             self.scenario_dic['' + temp + ''].to_excel(writer, sheet_name='' + temp + '', index=False,
-                                                            freeze_panes=(1, 0))
+                                                                       freeze_panes=(1, 0))
 
                     query_wb = openpyxl.load_workbook(path)
                     sht = query_wb.get_sheet_by_name('JEA_Query')
@@ -9030,7 +9033,7 @@ class MyApp(QWidget):
                     query_wb_origin = openpyxl.load_workbook(path)
                     sht_origin = query_wb_origin.get_sheet_by_name('JEA_Query')
                     sht_origin.sheet_properties.tabColor = '00FFFF'
-                    query_wb_origin.move_sheet(sht_origin, len(self.scenario_dic)-1)
+                    query_wb_origin.move_sheet(sht_origin, len(self.scenario_dic) - 1)
 
                     query_wb_origin.save(path)
 
