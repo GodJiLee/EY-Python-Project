@@ -718,7 +718,7 @@ class MyApp(QWidget):
         self.alt.setIcon(QMessageBox.Information)
         self.alt.setWindowTitle('구분자 선택 오류')
         self.alt.setWindowIcon(QIcon(self.resource_path('./EY_logo.png')))
-        self.alt.setText('해당 프로젝트는 기능영역이 존재하지 않습니다.\n기능영역 선택을 해제한 후 데이터를 추출했습니다.')
+        self.alt.setText('해당 프로젝트는 기능영역이 존재하지 않습니다.')
         self.alt.exec_()
 
     def init_UI(self):
