@@ -7214,8 +7214,7 @@ class MyApp(QWidget):
                                                                                             CoA.GLAccountNumber AS CoA_GLAccountNumber1,                                       
                                                                                             CoA.GLAccountName AS CoA_GLAccountName1,                                      
                                                                                             CoA.AccountType AS AccountType1,
-                                                                                            CoA.AccountClass AS AccountClass1,
-                                                                                            CoA.AccountClass AS                                        
+                                                                                            CoA.AccountClass AS AccountClass1,                                        
                                                                                             #tmp.Debit AS Debit1,                                             
                                                                                             #tmp.Credit AS Credit1,                                            
                                                                                             #tmp.Amount AS Amount1,                                            
