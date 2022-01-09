@@ -3034,6 +3034,7 @@ class MyApp(QWidget):
                             '''.format(field=self.selected_project_id)
 
         accountsname1 = pd.read_sql(sql1, self.cnxn)
+
         ### 계정트리 - A, B
         self.new_tree1 = Form(self)
         self.new_tree2 = Form1(self)
@@ -3048,21 +3049,27 @@ class MyApp(QWidget):
 
             self.new_tree1.parent.setText(0, "{}".format(i))
             self.new_tree1.parent.setFlags(self.new_tree1.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            child_items1 = accountsname1.AccountSubType[
-                accountsname1.AccountType == accountsname1.AccountType.unique()[n]].unique()
+
+            child_items1 = accountsname1.AccountSubType[accountsname1.AccountType == accountType1[n]].unique()
+            child_items1.sort()
+
             for m, x in enumerate(child_items1):
                 self.new_tree1.child = QTreeWidgetItem(self.new_tree1.parent)
 
                 self.new_tree1.child.setText(0, "{}".format(x))
                 self.new_tree1.child.setFlags(self.new_tree1.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
                 grandchild_items1 = accountsname1.AccountClass[accountsname1.AccountSubType == child_items1[m]].unique()
+                grandchild_items1.sort()
+
                 for o, y in enumerate(grandchild_items1):
                     self.new_tree1.grandchild = QTreeWidgetItem(self.new_tree1.child)
                     self.new_tree1.grandchild.setText(0, "{}".format(y))
-                    self.new_tree1.grandchild.setFlags(
-                        self.new_tree1.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    self.new_tree1.grandchild.setFlags(self.new_tree1.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
                     num_name1 = accountsname1[accountsname1.AccountClass == grandchild_items1[o]].iloc[:, 2:4]
                     full_name1 = num_name1["GLAccountNumber"].map(str) + ' ' + num_name1["GLAccountName"]
+                    full_name1.sort_values(inplace=True)
+
                     for z in full_name1:
                         self.new_tree1.grandgrandchild = QTreeWidgetItem(self.new_tree1.grandchild)
 
@@ -3089,25 +3096,30 @@ class MyApp(QWidget):
             self.new_tree2.parent = QTreeWidgetItem(self.new_tree2.tree)
             self.new_tree2.parent.setText(0, "{}".format(i))
             self.new_tree2.parent.setFlags(self.new_tree2.parent.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            child_items2 = accountsname2.AccountSubType[
-                accountsname2.AccountType == accountsname2.AccountType.unique()[n]].unique()
+
+            child_items2 = accountsname2.AccountSubType[accountsname2.AccountType == accountType2[n]].unique()
+            child_items2.sort()
+
             for m, x in enumerate(child_items2):
                 self.new_tree2.child = QTreeWidgetItem(self.new_tree2.parent)
                 self.new_tree2.child.setText(0, "{}".format(x))
                 self.new_tree2.child.setFlags(self.new_tree2.child.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
                 grandchild_items2 = accountsname2.AccountClass[accountsname2.AccountSubType == child_items2[m]].unique()
+                grandchild_items2.sort()
+
                 for o, y in enumerate(grandchild_items2):
                     self.new_tree2.grandchild = QTreeWidgetItem(self.new_tree2.child)
                     self.new_tree2.grandchild.setText(0, "{}".format(y))
-                    self.new_tree2.grandchild.setFlags(
-                        self.new_tree2.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+                    self.new_tree2.grandchild.setFlags(self.new_tree2.grandchild.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
                     num_name2 = accountsname2[accountsname2.AccountClass == grandchild_items2[o]].iloc[:, 2:4]
                     full_name2 = num_name2["GLAccountNumber"].map(str) + ' ' + num_name2["GLAccountName"]
+                    full_name2.sort_values(inplace=True)
+
                     for z in full_name2:
                         self.new_tree2.grandgrandchild = QTreeWidgetItem(self.new_tree2.grandchild)
                         self.new_tree2.grandgrandchild.setText(0, "{}".format(z))
-                        self.new_tree2.grandgrandchild.setFlags(
-                            self.new_tree2.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
+                        self.new_tree2.grandgrandchild.setFlags(self.new_tree2.grandgrandchild.flags() | Qt.ItemIsUserCheckable)
                         self.new_tree2.grandgrandchild.setCheckState(0, Qt.Unchecked)
 
         self.new_tree2.get_selected_leaves_1()
