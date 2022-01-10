@@ -7879,7 +7879,7 @@ class MyApp(QWidget):
 
     def extButtonClickedC(self):
 
-        index = self.wbC[self.wbC.iloc[:, 12].notnull()].iloc[:, [0, 3, 5, 8]]
+        index = self.wbC[self.wbC.iloc[:, 14].notnull()].iloc[:, [0, 4, 6, 10]]
         dflist = []
         cursorindex = []
         cursortext = ''
