@@ -6726,9 +6726,8 @@ class MyApp(QWidget):
                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                             GROUP BY CoA.GLAccountNumber
-                            SELECT 
-                               JournalEntries.FileId	
-                                , JournalEntries.BusinessUnit	
+                            SELECT
+                                JournalEntries.BusinessUnit	
                                 , JournalEntries.JENumber	
                                 , JournalEntries.JELineNumber	
                                 , JournalEntries.EffectiveDate	
@@ -6777,9 +6776,8 @@ class MyApp(QWidget):
                             SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                             FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                             GROUP BY CoA.GLAccountNumber
-                            SELECT 
-                               JournalEntries.FileId	
-                                , JournalEntries.BusinessUnit	
+                            SELECT
+                                JournalEntries.BusinessUnit	
                                 , JournalEntries.JENumber	
                                 , JournalEntries.JELineNumber	
                                 , JournalEntries.EffectiveDate	
