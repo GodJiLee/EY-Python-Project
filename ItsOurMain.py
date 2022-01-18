@@ -5238,7 +5238,7 @@ class MyApp(QWidget):
                 self.date_str = self.holiday[i][d].strftime('%Y-%m-%d')
                 self.holiday_str.append(self.date_str)
 
-        for i in self.fianlDate:
+        for i in self.finalDate:
             self.holiday_str.append(i)
 
         self.start_date = date(2020, 1, 1)
