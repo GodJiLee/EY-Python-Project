@@ -533,7 +533,7 @@ class MyApp(QWidget):
         self.new_prep = None
         self.dateList = []
         self.string_date_list = []
-        self.fianlDate = []
+        self.finalDate = []
         self.dialoglist = set()
         self.timerVar = QTimer()
         self.timerVar.setInterval(1000)
@@ -830,7 +830,7 @@ class MyApp(QWidget):
         self.viewtable.setModel(self.dataframe)
         self.scenario_dic = {}
         self.string_date_list = []
-        self.fianlDate = []
+        self.finalDate = []
         self.clickCount = 0
 
         gc.collect()
@@ -3006,7 +3006,7 @@ class MyApp(QWidget):
 
         for self.string_date in self.string_date_list:
             self.D7_Date.append(self.string_date)
-            self.fianlDate.append(self.string_date)
+            self.finalDate.append(self.string_date)
 
         self.dialog7.activateWindow()
 
