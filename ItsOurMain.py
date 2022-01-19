@@ -8636,7 +8636,7 @@ class MyApp(QWidget):
 
                 SELECT GLAccountNumber, MAX(GLAccountName) AS GLAccountName INTO #COAData							
                 FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts]		
-                Group by GLAccountName		
+                Group by GLAccountNumber		
                 --****************************************************Result Table***************************************************			
                 CREATE TABLE #result			
                 (JENumber NVARCHAR(100),			
