@@ -6873,6 +6873,7 @@ class MyApp(QWidget):
                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                            GROUP BY CoA.GLAccountNumber
+                           
                            SELECT				
                                   JournalEntries.BusinessUnit			
                                   , JournalEntries.JENumber			
@@ -6900,7 +6901,7 @@ class MyApp(QWidget):
                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
                                   WHERE Year = {year}		
                                   GROUP BY PreparerID			
-                                  HAVING COUNT(GLAccountNumber) <= {N}			
+                                  HAVING COUNT(PreparerID) <= {N}			
                                   )	AND ABS(JournalEntries.Amount) > {TE} {Account}	AND JournalEntries.Year = {year}	
                            ORDER BY JournalEntries.JENumber, JournalEntries.JELineNumber
                            DROP TABLE #TMPCOA			
@@ -6916,7 +6917,7 @@ class MyApp(QWidget):
                                   FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries]
                                   WHERE Year = {year}			
                                   GROUP BY PreparerID			
-                                  HAVING COUNT(GLAccountNumber) <= {N}			
+                                  HAVING COUNT(PreparerID) <= {N}			
                                   ) AND ABS(JournalEntries.Amount) > {TE}
                                   {Account}
                                   AND JournalEntries.Year = {year}
@@ -6943,6 +6944,7 @@ class MyApp(QWidget):
                            SELECT CoA.GLAccountNumber, MAX(CoA.GLAccountName) AS GLAccountName INTO #TMPCOA
                            FROM [{field}_Import_CY_01].[dbo].[pbcChartOfAccounts] AS CoA
                            GROUP BY CoA.GLAccountNumber
+                           
                            SELECT 				
                                JournalEntries.BusinessUnit			
                                , JournalEntries.JENumber			
@@ -6978,7 +6980,7 @@ class MyApp(QWidget):
                                            FROM [{field}_Import_CY_01].[dbo].[pbcJournalEntries] AS JournalEntries
                                            WHERE  Year = {year}
                                            GROUP BY JournalEntries.PreparerID
-                                           HAVING COUNT(GLAccountNumber) <= {N}
+                                           HAVING COUNT(PreparerID) <= {N}
                                            ) AS LVL1
                                        WHERE LVL1.PreparerID = JournalEntries.PreparerID	
                                        ) AND ABS(JournalEntries.Amount) > {TE} AND JournalEntries.Year = {year}	{Account} 
