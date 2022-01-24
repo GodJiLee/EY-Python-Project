@@ -5769,7 +5769,7 @@ class MyApp(QWidget):
         for a in self.baseKey:
             a = a.strip()
             if a == '':
-                b = "JournalEntries.JEDescription LIKE '' OR JournalEntries.JELineDescription LIKE ''"
+                b = "(JournalEntries.JEDescription LIKE '' AND JournalEntries.JELineDescription LIKE '')"
             else:
                 b = "JournalEntries.JEDescription LIKE N'%" + a + "%' OR JournalEntries.JELineDescription LIKE N'%" + a + "%'"
             self.baseKey_clean.append(b)
@@ -5780,7 +5780,7 @@ class MyApp(QWidget):
             for a in self.baseKey2:
                 a = a.strip()
                 if a == '':
-                    b = "JournalEntries.JEDescription NOT LIKE '' OR JournalEntries.JELineDescription NOT LIKE ''"
+                    b = "(JournalEntries.JEDescription NOT LIKE '' AND JournalEntries.JELineDescription NOT LIKE '')"
                 else:
                     b = "JournalEntries.JEDescription NOT LIKE N'%" + a + "%' OR JournalEntries.JELineDescription NOT LIKE N'%" + a + "%'"
                 self.baseKey2_clean.append(b)
